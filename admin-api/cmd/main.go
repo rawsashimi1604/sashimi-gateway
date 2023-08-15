@@ -8,10 +8,8 @@ import (
 )
 
 func main() {
-	// Set up zerolog configs.
 	logger.SetupLogger()
 	api.NewRouter()
 	rproxy.ReverseProxy()
-
 	log.Info().Msg("Hello world from admin api.")
 }
