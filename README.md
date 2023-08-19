@@ -12,5 +12,5 @@
 ## Multiple Golang applications
 ```
 go work init
-go work use ./admin-api ./salmon-api
+go work use ./admin-api ./salmon-api ./tuna-api
 ```

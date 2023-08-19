@@ -6,11 +6,8 @@ import (
 )
 
 func NewRouter() *mux.Router {
-	log.Info().Msg("Creating Mux Router.")
-
+	log.Info().Msg("Creating Admin Api Router.")
 	router := mux.NewRouter()
-
-	log.Info().Msg("Mux Router created successfully.")
-
+	log.Info().Msg("Admin Api Router created successfully.")
 	return router
 }
