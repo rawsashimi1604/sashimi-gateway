@@ -1,4 +1,4 @@
-module github.com/rawsashimi1604/salmon-api
+module github.com/rawsashimi1604/sashimi-gateway/salmon-api
 
 go 1.20
 

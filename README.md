@@ -9,4 +9,8 @@
 - Reverse Proxy
 - GUI Application 
 
-
+## Multiple Golang applications
+```
+go work init
+go work use ./admin-api ./salmon-api
+```
