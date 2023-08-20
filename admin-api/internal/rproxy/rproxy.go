@@ -1,7 +1,6 @@
 package rproxy
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway"
+	"github.com/rawsashimi1604/sashimi-gateway/salmon-api/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -30,8 +30,7 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 		log.Fatal().Msg(err.Error())
 	}
 
-	jsonifiedService, _ := json.Marshal(services)
-	log.Info().Msg(string(jsonifiedService))
+	log.Info().Msg(utils.JSONStringify(services))
 
 	// Define service server
 	serviceURL, err := url.Parse("http://localhost:8082")

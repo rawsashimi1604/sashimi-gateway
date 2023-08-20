@@ -17,3 +17,8 @@ func JSONError(w http.ResponseWriter, err string, code int) {
 		Message: err,
 	})
 }
+
+func JSONStringify(content any) string {
+	jsonified, _ := json.Marshal(content)
+	return string(jsonified)
+}
