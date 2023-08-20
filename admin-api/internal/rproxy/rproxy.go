@@ -1,6 +1,7 @@
 package rproxy
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
@@ -9,15 +10,19 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type Response struct {
-	Code       int         `json:"code"`
-	ReceivedAt time.Time   `json:"receivedAt"`
-	Data       interface{} `json:"data"`
-}
-
 func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("Reverse proxy received request: " + req.Host)
 	log.Info().Msg(time.Now().String())
+
+	// Read request body
+	reqBodyBytes, err := io.ReadAll(req.Body)
+	if err != nil {
+		log.Info().Msg("Failed to read request body")
+		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		return
+	}
+	// You might want to log the request body here
+	log.Info().Msg("body: " + string(reqBodyBytes))
 
 	// Define service server
 	serviceURL, err := url.Parse("http://localhost:8081")
@@ -39,13 +44,12 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	reqBody, err := json.Marshal(serviceResponse.Body)
+	if err != nil {
+		log.Info().Msg("something went wrong when marshalling json.")
+	}
 	w.WriteHeader(http.StatusOK)
-	io.Copy(w, serviceResponse.Body)
-
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(Response{
-	// 	Code:       http.StatusOK,
-	// 	ReceivedAt: time.Now(),
-	// 	Data:       "Hello world",
-	// })
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(reqBody)
+	// io.Copy(w, serviceResponse.Body)
 }
