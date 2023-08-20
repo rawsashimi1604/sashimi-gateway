@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/logger"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/rproxy"
 	"github.com/rs/zerolog/log"
 )
 
@@ -37,9 +37,13 @@ func main() {
 	}
 
 	rows.Close()
+	router := api.NewRouter()
 
-	api.NewRouter()
-	rproxy.ReverseProxy()
-	log.Info().Msg("Hello world from admin api.")
+	log.Info().Msg("starting the admin api.")
+	log.Info().Msg("admin api now listening for requests.")
+
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatal().Msg("error when starting the server.")
+	}
 
 }
