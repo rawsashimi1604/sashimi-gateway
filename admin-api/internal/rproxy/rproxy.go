@@ -9,8 +9,6 @@ import (
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/mapper"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
@@ -30,18 +28,9 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	}
 
 	serviceGateway := gateway.NewServiceGateway(conn)
-	servicesDb, err := serviceGateway.GetAllServices()
+	services, err := serviceGateway.GetAllServices()
 	if err != nil {
 		log.Fatal().Msg(err.Error())
-	}
-
-	// map service_db to service domain
-	var services []*models.Service
-	for _, service := range servicesDb {
-		services = append(
-			services,
-			mapper.MapServiceDbToDomain(&service),
-		)
 	}
 
 	log.Info().Msg(utils.JSONStringify(services))

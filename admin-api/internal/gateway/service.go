@@ -2,10 +2,10 @@ package gateway
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rs/zerolog/log"
 )
 
@@ -23,11 +23,24 @@ type Service_DB struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
+func mapServiceDbToDomain(sdb Service_DB) models.Service {
+	return models.Service{
+		Id:          sdb.Id,
+		Name:        sdb.Name,
+		TargetUrl:   sdb.TargetUrl,
+		Path:        sdb.Path,
+		Description: sdb.Description,
+		CreatedAt:   sdb.CreatedAt,
+		UpdatedAt:   sdb.UpdatedAt,
+		Routes:      make([]models.Route, 0),
+	}
+}
+
 func NewServiceGateway(conn *pgxpool.Pool) *ServiceGateway {
 	return &ServiceGateway{Conn: conn}
 }
 
-func (s *ServiceGateway) GetAllServices() ([]Service_DB, error) {
+func (s *ServiceGateway) GetAllServices() ([]models.Service, error) {
 
 	query := `
 		SELECT id, name, target_url, path, description, created_at, updated_at
@@ -48,7 +61,6 @@ func (s *ServiceGateway) GetAllServices() ([]Service_DB, error) {
 			log.Info().Msg("error retrieving service.")
 			continue
 		}
-		log.Info().Msg(fmt.Sprintf("service with id: %v successfully retrieved.", &service.Id))
 		services = append(services, service)
 	}
 
@@ -56,5 +68,10 @@ func (s *ServiceGateway) GetAllServices() ([]Service_DB, error) {
 		return nil, err
 	}
 
-	return services, nil
+	var mappedDbs []models.Service
+	for _, serviceDb := range services {
+		mapped := mapServiceDbToDomain(serviceDb)
+		mappedDbs = append(mappedDbs, mapped)
+	}
+	return mappedDbs, nil
 }
