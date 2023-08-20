@@ -15,7 +15,7 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg(time.Now().String())
 
 	// Define service server
-	serviceURL, err := url.Parse("http://localhost:8081")
+	serviceURL, err := url.Parse("http://localhost:8082")
 	if err != nil {
 		log.Fatal().Msg("invalid url passed in.")
 	}

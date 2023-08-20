@@ -8,5 +8,6 @@ import (
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", GetDishesHandler).Methods("GET")
+	r.HandleFunc("/", AddDishHandler).Methods("POST")
 	return r
 }
