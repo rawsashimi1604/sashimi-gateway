@@ -22,8 +22,8 @@ VALUES
 CREATE TABLE service (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
-    target_url TEXT NOT NULL,
-    path TEXT NOT NULL,
+    target_url TEXT UNIQUE NOT NULL,
+    path TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL

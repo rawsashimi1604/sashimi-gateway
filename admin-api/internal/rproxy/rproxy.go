@@ -20,6 +20,8 @@ import (
 func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("Reverse proxy received request: " + req.Host)
 	log.Info().Msg(time.Now().String())
+	log.Info().Msg(req.URL.Path)
+	log.Info().Msg(req.Method)
 
 	// Create Gateway to access services
 	conn, err := db.CreatePostgresConnection()
@@ -53,8 +55,6 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	req.Host = serviceURL.Host
 	req.URL.Host = serviceURL.Host
 	req.URL.Scheme = serviceURL.Scheme
-	log.Info().Msg("host: " + serviceURL.Host)
-	log.Info().Msg("scheme: " + serviceURL.Scheme)
 	// We can't have this set when using http.DefaultClient
 	req.RequestURI = ""
 
@@ -91,7 +91,7 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("response body: " + string(respBodyBytes))
 
 	// Send back response
+	w.Header().Set("Content-Type", serviceResponse.Header.Get("Content-Type"))
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
 	w.Write(respBodyBytes)
 }

@@ -9,7 +9,7 @@ import (
 func NewRouter() *mux.Router {
 	log.Info().Msg("Creating Admin Api Router.")
 	router := mux.NewRouter()
-	router.HandleFunc("/", rproxy.ForwardRequest).Methods("GET", "PUT", "POST", "DELETE")
+	router.PathPrefix("/").HandlerFunc(rproxy.ForwardRequest).Methods("GET", "PUT", "POST", "DELETE")
 	log.Info().Msg("Admin Api Router created successfully.")
 	return router
 }
