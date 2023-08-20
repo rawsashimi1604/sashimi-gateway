@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// TODO: add tables and parse.. match the service psql table...
 func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("Reverse proxy received request: " + req.Host)
 	log.Info().Msg(time.Now().String())
