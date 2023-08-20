@@ -1,12 +1,15 @@
 package rproxy
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
 
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,6 +17,21 @@ import (
 func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("Reverse proxy received request: " + req.Host)
 	log.Info().Msg(time.Now().String())
+
+	// Create Gateway to access services
+	conn, err := db.CreatePostgresConnection()
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+
+	serviceGateway := gateway.NewServiceGateway(conn)
+	services, err := serviceGateway.GetAllServices()
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+
+	jsonifiedService, _ := json.Marshal(services)
+	log.Info().Msg(string(jsonifiedService))
 
 	// Define service server
 	serviceURL, err := url.Parse("http://localhost:8082")

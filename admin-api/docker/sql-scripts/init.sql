@@ -37,7 +37,7 @@ CREATE TABLE route (
     updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE route_methods (
+CREATE TABLE route_method (
     route_id INT NOT NULL,
     method_id INT NOT NULL,
     PRIMARY KEY (route_id, method_id),
@@ -56,7 +56,7 @@ VALUES
     ('/', 'Add salmon dish', current_timestamp, current_timestamp),
     ('/', 'Get all tuna dishes', current_timestamp, current_timestamp);
 
-INSERT INTO route_methods(route_id, method_id)
+INSERT INTO route_method(route_id, method_id)
 VALUES 
     (1, 1),
     (2, 2),
