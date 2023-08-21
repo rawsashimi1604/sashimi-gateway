@@ -11,7 +11,13 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type ServiceGateway struct {
+type ServiceGateway interface {
+	GetServiceByPath(path string) (models.Service, error)
+	GetServiceByTargetUrl(targetUrl string) (models.Service, error)
+	GetAllServices() ([]models.Service, error)
+}
+
+type PostgresServiceGateway struct {
 	Conn *pgxpool.Pool
 }
 
@@ -42,11 +48,11 @@ func mapServiceDbToDomain(sdb Service_DB) models.Service {
 	}
 }
 
-func NewServiceGateway(conn *pgxpool.Pool) *ServiceGateway {
-	return &ServiceGateway{Conn: conn}
+func NewPostgresServiceGateway(conn *pgxpool.Pool) *PostgresServiceGateway {
+	return &PostgresServiceGateway{Conn: conn}
 }
 
-func (s *ServiceGateway) GetServiceByPath(path string) (models.Service, error) {
+func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, error) {
 	query := `
 		SELECT id, name, target_url, path, description, created_at, updated_at
 		FROM service
@@ -72,7 +78,7 @@ func (s *ServiceGateway) GetServiceByPath(path string) (models.Service, error) {
 	return mapServiceDbToDomain(service), nil
 }
 
-func (s *ServiceGateway) GetServiceByTargetUrl(targetUrl string) (models.Service, error) {
+func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models.Service, error) {
 	query := `
 		SELECT id, name, target_url, path, description, created_at, updated_at
 		FROM service
@@ -98,7 +104,7 @@ func (s *ServiceGateway) GetServiceByTargetUrl(targetUrl string) (models.Service
 	return mapServiceDbToDomain(service), nil
 }
 
-func (s *ServiceGateway) GetAllServices() ([]models.Service, error) {
+func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 
 	query := `
 		SELECT id, name, target_url, path, description, created_at, updated_at

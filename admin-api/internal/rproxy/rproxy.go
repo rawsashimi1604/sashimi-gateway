@@ -8,30 +8,31 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
 )
 
-// TODO: add tables and parse.. match the service psql table...
-func ForwardRequest(w http.ResponseWriter, req *http.Request) {
+type ReverseProxyService struct {
+	serviceGateway gateway.ServiceGateway
+}
+
+func NewReverseProxyService(serviceGateway gateway.ServiceGateway) *ReverseProxyService {
+	return &ReverseProxyService{
+		serviceGateway: serviceGateway,
+	}
+}
+
+func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("Reverse proxy received request: " + req.Host)
 	log.Info().Msg(time.Now().String())
 	log.Info().Msg(req.URL.Path)
 	log.Info().Msg(req.Method)
 	log.Info().Msg(req.Host)
 
-	// Create Gateway to access services
-	conn, err := db.CreatePostgresConnection()
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
-	serviceGateway := gateway.NewServiceGateway(conn)
-
 	// Check if service exists given Path
-	service, err := serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
+	service, err := rps.serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
 	if err == gateway.ErrServiceNotFound {
 		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
 		http.Error(w, "service not found", http.StatusNotFound)
@@ -52,6 +53,7 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	req.Host = serviceURL.Host
 	req.URL.Host = serviceURL.Host
 	req.URL.Scheme = serviceURL.Scheme
+	// TODO: get the path to the server
 	req.URL.Path = ""
 	// We can't have this set when using http.DefaultClient
 	req.RequestURI = ""
