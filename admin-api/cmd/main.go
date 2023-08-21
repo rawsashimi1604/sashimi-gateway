@@ -10,7 +10,14 @@ import (
 
 func main() {
 
+	// TODO: add routing logic
 	// TODO: add middleware for analytics
+	// TODO: add health check route
+	// TODO: add authentication (JWT)
+	// TODO: add caching for services and routes (REDIS)
+	// TODO: add rate limiting
+	// TODO: add admin api
+	// TODO: add GUI dashboard
 
 	logger.SetupLogger()
 	router := api.NewRouter()
