@@ -7,10 +7,6 @@ CREATE TABLE api_method (
     method TEXT NOT NULL
 );
 
-INSERT INTO api_method (method)
-VALUES
-    ('GET'), ('POST'), ('PUT'), ('DELETE');
-
 CREATE TABLE service (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -31,6 +27,10 @@ CREATE TABLE route (
     updated_at TIMESTAMP NOT NULL
 );
 
+INSERT INTO api_method (method)
+VALUES
+    ('GET'), ('POST'), ('PUT'), ('DELETE');
+
 INSERT INTO service(name, target_url, path, description, created_at, updated_at)
 VALUES 
     ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp),
@@ -41,5 +41,3 @@ VALUES
     (1, 1, '/', 'Get all salmon dishes', current_timestamp, current_timestamp),
     (1, 2, '/', 'Add salmon dish', current_timestamp, current_timestamp),
     (2, 1, '/', 'Get all tuna dishes', current_timestamp, current_timestamp);
-
-
