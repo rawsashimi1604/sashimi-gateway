@@ -16,6 +16,7 @@ var dishes = []model.Salmon{
 // GetDishesHandler retrieves all salmon dishes
 func GetDishesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(dishes)
 }
 
@@ -40,6 +41,9 @@ func AddDishHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newSalmon)
 }
 
+// Nested dish
 func TestDish(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode("Hello from test route (salmon)")
 }
