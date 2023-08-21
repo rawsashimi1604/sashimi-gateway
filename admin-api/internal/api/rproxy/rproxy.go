@@ -38,9 +38,10 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	pathUrl := rps.parseRoutePath(req.URL.Path)
 	log.Info().Msg("path URL: " + pathUrl)
 
-	service, err := rps.validateServiceExists(w, req.URL.Path)
+	service, err := rps.validateServiceExists(req.URL.Path)
 	if err != nil {
 		if err == gatewayService.ErrServiceNotFound {
+			log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
 			http.Error(w, gatewayService.ErrServiceNotFound.Error(), http.StatusNotFound)
 			return
 		}
@@ -48,13 +49,20 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		http.Error(w, "service unable to be validated", http.StatusBadGateway)
 		return
 	}
+
+	validatedRoute, err := rps.validateRouteExists(service, pathUrl)
+	if err != nil {
+		log.Info().Msg("unable to find route")
+		http.Error(w, "unable to find route", http.StatusNotFound)
+	}
+
 	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
 		log.Info().Msg("invalid url passed in.")
 		http.Error(w, "invalid url passed in", http.StatusBadRequest)
 	}
 
-	rps.modifyRequestHeaders(serviceURL, req)
+	rps.modifyRequestHeaders(serviceURL, req, validatedRoute.Path)
 	reqBodyBytes, err := utils.ReadHttpBody(req.Body)
 	if err != nil {
 		http.Error(w, "unable to read request body", http.StatusBadRequest)
@@ -100,27 +108,32 @@ func (rps *ReverseProxyService) parseRoutePath(path string) string {
 	return "/" + pathUrl
 }
 
-func (rps *ReverseProxyService) validateServiceExists(w http.ResponseWriter, path string) (models.Service, error) {
-	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
-	if err != nil {
-		if err == gatewayService.ErrServiceNotFound {
-			log.Info().Msg(fmt.Sprintf("service with path: %v not found.", path))
-			return models.Service{}, gatewayService.ErrServiceNotFound
-		}
-		log.Info().Msg("Something went wrong")
-		return models.Service{}, errors.New("something went wrong")
-	}
-
-	log.Info().Msg("service: " + utils.JSONStringify(service))
-	return service, nil
-}
-
-func (rps *ReverseProxyService) modifyRequestHeaders(serviceURL *url.URL, req *http.Request) {
+func (rps *ReverseProxyService) modifyRequestHeaders(serviceURL *url.URL, req *http.Request, routePath string) {
 	req.Host = serviceURL.Host
 	req.URL.Host = serviceURL.Host
 	req.URL.Scheme = serviceURL.Scheme
-	// TODO: get the path to the server
-	req.URL.Path = ""
+	req.URL.Path = routePath
 	// We can't have this set when using http.DefaultClient
 	req.RequestURI = ""
+}
+
+func (rps *ReverseProxyService) validateServiceExists(path string) (models.Service, error) {
+	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
+	if err != nil {
+		if err == gatewayService.ErrServiceNotFound {
+			return models.Service{}, gatewayService.ErrServiceNotFound
+		}
+		return models.Service{}, errors.New("something went wrong")
+	}
+	return service, nil
+}
+
+func (rps *ReverseProxyService) validateRouteExists(service models.Service, routePath string) (models.Route, error) {
+	// Check if route exists in Service
+	for _, route := range service.Routes {
+		if routePath == route.Path {
+			return route, nil
+		}
+	}
+	return models.Route{}, errors.New("unable to find route from service object")
 }

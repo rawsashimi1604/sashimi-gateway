@@ -40,4 +40,5 @@ INSERT INTO route(service_id, method_id, path, description, created_at, updated_
 VALUES 
     (1, 1, '/', 'Get all salmon dishes', current_timestamp, current_timestamp),
     (1, 2, '/', 'Add salmon dish', current_timestamp, current_timestamp),
-    (2, 1, '/', 'Get all tuna dishes', current_timestamp, current_timestamp);
+    (2, 1, '/', 'Get all tuna dishes', current_timestamp, current_timestamp),
+    (1, 1, '/test', 'Test salmon service', current_timestamp, current_timestamp);
