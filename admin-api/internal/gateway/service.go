@@ -2,8 +2,10 @@ package gateway
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rs/zerolog/log"
@@ -22,6 +24,10 @@ type Service_DB struct {
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
+
+var (
+	ErrServiceNotFound = errors.New("service not found in the database")
+)
 
 func mapServiceDbToDomain(sdb Service_DB) models.Service {
 	return models.Service{
@@ -57,6 +63,9 @@ func (s *ServiceGateway) GetServiceByPath(path string) (models.Service, error) {
 		&service.CreatedAt,
 		&service.UpdatedAt,
 	); err != nil {
+		if err == pgx.ErrNoRows {
+			return models.Service{}, ErrServiceNotFound
+		}
 		return models.Service{}, err
 	}
 
@@ -80,6 +89,9 @@ func (s *ServiceGateway) GetServiceByTargetUrl(targetUrl string) (models.Service
 		&service.CreatedAt,
 		&service.UpdatedAt,
 	); err != nil {
+		if err == pgx.ErrNoRows {
+			return models.Service{}, ErrServiceNotFound
+		}
 		return models.Service{}, err
 	}
 

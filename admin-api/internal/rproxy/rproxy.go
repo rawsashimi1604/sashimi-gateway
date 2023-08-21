@@ -32,11 +32,17 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 
 	// Check if service exists given Path
 	service, err := serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
-	if err != nil {
-		log.Fatal().Msg(err.Error())
+	if err == gateway.ErrServiceNotFound {
+		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
+		http.Error(w, "service not found", http.StatusNotFound)
+		return
 	}
-	log.Info().Msg(utils.JSONStringify(service))
+	if err != nil {
+		log.Info().Msg("Something went wrong")
+		http.Error(w, "something went wrong", http.StatusBadGateway)
+	}
 
+	log.Info().Msg("service: " + utils.JSONStringify(service))
 	// Define service server
 	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
@@ -90,6 +96,5 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 
 func parseRequestPath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
-	log.Info().Msg("parseRequestPath: " + urlSeperatedStrings[1] + ">")
 	return urlSeperatedStrings[1]
 }
