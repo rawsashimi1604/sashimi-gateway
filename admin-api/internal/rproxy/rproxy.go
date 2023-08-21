@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
@@ -20,23 +21,24 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg(time.Now().String())
 	log.Info().Msg(req.URL.Path)
 	log.Info().Msg(req.Method)
+	log.Info().Msg(req.Host)
 
 	// Create Gateway to access services
 	conn, err := db.CreatePostgresConnection()
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-
 	serviceGateway := gateway.NewServiceGateway(conn)
-	services, err := serviceGateway.GetAllServices()
+
+	// Check if service exists given Path
+	service, err := serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-
-	log.Info().Msg(utils.JSONStringify(services))
+	log.Info().Msg(utils.JSONStringify(service))
 
 	// Define service server
-	serviceURL, err := url.Parse("http://localhost:8082")
+	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
 		log.Fatal().Msg("invalid url passed in.")
 	}
@@ -44,6 +46,7 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	req.Host = serviceURL.Host
 	req.URL.Host = serviceURL.Host
 	req.URL.Scheme = serviceURL.Scheme
+	req.URL.Path = ""
 	// We can't have this set when using http.DefaultClient
 	req.RequestURI = ""
 
@@ -83,4 +86,10 @@ func ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", serviceResponse.Header.Get("Content-Type"))
 	w.WriteHeader(http.StatusOK)
 	w.Write(respBodyBytes)
+}
+
+func parseRequestPath(path string) string {
+	urlSeperatedStrings := strings.Split(path, "/")
+	log.Info().Msg("parseRequestPath: " + urlSeperatedStrings[1] + ">")
+	return urlSeperatedStrings[1]
 }

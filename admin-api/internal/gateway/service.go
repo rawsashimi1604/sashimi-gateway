@@ -40,6 +40,52 @@ func NewServiceGateway(conn *pgxpool.Pool) *ServiceGateway {
 	return &ServiceGateway{Conn: conn}
 }
 
+func (s *ServiceGateway) GetServiceByPath(path string) (models.Service, error) {
+	query := `
+		SELECT id, name, target_url, path, description, created_at, updated_at
+		FROM service
+		WHERE path=$1
+	`
+
+	var service Service_DB
+	if err := s.Conn.QueryRow(context.Background(), query, path).Scan(
+		&service.Id,
+		&service.Name,
+		&service.TargetUrl,
+		&service.Path,
+		&service.Description,
+		&service.CreatedAt,
+		&service.UpdatedAt,
+	); err != nil {
+		return models.Service{}, err
+	}
+
+	return mapServiceDbToDomain(service), nil
+}
+
+func (s *ServiceGateway) GetServiceByTargetUrl(targetUrl string) (models.Service, error) {
+	query := `
+		SELECT id, name, target_url, path, description, created_at, updated_at
+		FROM service
+		WHERE target_url=$1
+	`
+
+	var service Service_DB
+	if err := s.Conn.QueryRow(context.Background(), query, targetUrl).Scan(
+		&service.Id,
+		&service.Name,
+		&service.TargetUrl,
+		&service.Path,
+		&service.Description,
+		&service.CreatedAt,
+		&service.UpdatedAt,
+	); err != nil {
+		return models.Service{}, err
+	}
+
+	return mapServiceDbToDomain(service), nil
+}
+
 func (s *ServiceGateway) GetAllServices() ([]models.Service, error) {
 
 	query := `

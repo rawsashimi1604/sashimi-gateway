@@ -47,8 +47,8 @@ CREATE TABLE route_method (
 
 INSERT INTO service(name, target_url, path, description, created_at, updated_at)
 VALUES 
-    ('Salmon', 'localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp),
-    ('Tuna', 'localhost:8082', 'tuna', 'The tuna microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp);
+    ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp),
+    ('Tuna', 'http://localhost:8082', 'tuna', 'The tuna microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp);
 
 INSERT INTO route(path, description, created_at, updated_at)
 VALUES 
