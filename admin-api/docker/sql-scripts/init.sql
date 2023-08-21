@@ -2,14 +2,6 @@ CREATE DATABASE admin_api;
 
 \c admin_api;
 
-CREATE TABLE test (
-    id SERIAL PRIMARY KEY,
-    test_text TEXT 
-);  
-
-INSERT INTO test(test_text)
-VALUES ('hello world from 1');
-
 CREATE TABLE api_method (
     id SERIAL PRIMARY KEY,
     method TEXT NOT NULL
