@@ -28,7 +28,7 @@ var (
 	ErrRouteNotFound = errors.New("route not found in the database")
 )
 
-func mapRouteDbToDomain(rdb Route_DB) models.Route {
+func MapRouteDbToDomain(rdb Route_DB) models.Route {
 	return models.Route{
 		Id:          rdb.Id,
 		Path:        rdb.Path,

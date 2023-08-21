@@ -37,7 +37,7 @@ func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 
 	var mappedDbs []models.Route
 	for _, routeDb := range routes {
-		mapped := mapRouteDbToDomain(routeDb)
+		mapped := MapRouteDbToDomain(routeDb)
 		mappedDbs = append(mappedDbs, mapped)
 	}
 	return mappedDbs, nil

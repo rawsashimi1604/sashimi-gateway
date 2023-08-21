@@ -31,6 +31,7 @@ CREATE TABLE service (
 
 CREATE TABLE route (
     id SERIAL PRIMARY KEY,
+    service_id INT REFERENCES service(id) NOT NULL,
     path TEXT NOT NULL,
     description TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
@@ -50,11 +51,11 @@ VALUES
     ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp),
     ('Tuna', 'http://localhost:8082', 'tuna', 'The tuna microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp);
 
-INSERT INTO route(path, description, created_at, updated_at)
+INSERT INTO route(service_id, path, description, created_at, updated_at)
 VALUES 
-    ('/', 'Get all salmon dishes', current_timestamp, current_timestamp),
-    ('/', 'Add salmon dish', current_timestamp, current_timestamp),
-    ('/', 'Get all tuna dishes', current_timestamp, current_timestamp);
+    (1, '/', 'Get all salmon dishes', current_timestamp, current_timestamp),
+    (1, '/', 'Add salmon dish', current_timestamp, current_timestamp),
+    (2, '/', 'Get all tuna dishes', current_timestamp, current_timestamp);
 
 INSERT INTO route_method(route_id, method_id)
 VALUES 

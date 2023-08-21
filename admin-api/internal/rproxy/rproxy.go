@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
@@ -25,12 +24,9 @@ func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway) *Rever
 }
 
 func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.Request) {
-	log.Info().Msg("Reverse proxy received request: " + req.Host)
-	log.Info().Msg(time.Now().String())
-	log.Info().Msg(req.URL.Path)
-	log.Info().Msg(req.Method)
-	log.Info().Msg(req.Host)
-
+	log.Info().Msg("------------------")
+	defer log.Info().Msg("------------------")
+	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 	// Check if service exists given Path
 	service, err := rps.serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
 	if err == gatewayService.ErrServiceNotFound {
@@ -39,6 +35,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		return
 	}
 	if err != nil {
+		log.Info().Msg(err.Error())
 		log.Info().Msg("Something went wrong")
 		http.Error(w, "something went wrong", http.StatusBadGateway)
 	}
