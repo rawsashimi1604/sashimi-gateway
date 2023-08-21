@@ -15,7 +15,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// TODO: create route matching algorithm
+// Routes:
+// /salmon/products/:id -> match to
+// TODO: create route matching algorithm (paths should be matched by ':' prefix... add it into the init.sql)
 
 type ReverseProxyService struct {
 	serviceGateway gatewayService.ServiceGateway
