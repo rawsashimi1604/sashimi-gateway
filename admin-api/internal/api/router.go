@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/rproxy"
 	"github.com/rs/zerolog/log"
 )
 
