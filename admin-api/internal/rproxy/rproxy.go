@@ -8,17 +8,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway"
+	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
 )
 
 type ReverseProxyService struct {
-	serviceGateway gateway.ServiceGateway
+	serviceGateway gatewayService.ServiceGateway
 }
 
-func NewReverseProxyService(serviceGateway gateway.ServiceGateway) *ReverseProxyService {
+func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway) *ReverseProxyService {
 	return &ReverseProxyService{
 		serviceGateway: serviceGateway,
 	}
@@ -33,7 +33,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 
 	// Check if service exists given Path
 	service, err := rps.serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
-	if err == gateway.ErrServiceNotFound {
+	if err == gatewayService.ErrServiceNotFound {
 		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
 		http.Error(w, "service not found", http.StatusNotFound)
 		return
