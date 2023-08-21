@@ -1,42 +1,13 @@
-package gateway
+package route
 
 import (
 	"context"
-	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rs/zerolog/log"
 )
 
-type RouteGateway struct {
-	Conn *pgxpool.Pool
-}
-
-type Route_DB struct {
-	Id          int       `json:"id"`
-	Path        string    `json:"path"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-}
-
-func mapRouteDbToDomain(rdb Route_DB) models.Route {
-	return models.Route{
-		Id:          rdb.Id,
-		Path:        rdb.Path,
-		Description: rdb.Description,
-		CreatedAt:   rdb.CreatedAt,
-		UpdatedAt:   rdb.UpdatedAt,
-		Methods:     make([]models.ApiMethod, 0),
-	}
-}
-
-func NewRouteGateway(conn *pgxpool.Pool) *RouteGateway {
-	return &RouteGateway{Conn: conn}
-}
-
-func (s *RouteGateway) GetAllRoutes() ([]models.Route, error) {
+func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 
 	query := `
 		SELECT id, path, description, created_at, updated_at
