@@ -14,11 +14,11 @@ func main() {
 
 	logger.SetupLogger()
 	router := api.NewRouter()
+	http.Handle("/", router)
 
 	log.Info().Msg("starting the admin api.")
 	log.Info().Msg("admin api now listening for requests.")
 
-	http.Handle("/", router)
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal().Msg("error when starting the server.")
 	}

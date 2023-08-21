@@ -33,6 +33,9 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	log.Info().Msg("------------------")
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 
+	pathUrl := rps.parseRoutePath(req.URL.Path)
+	log.Info().Msg("path URL: " + pathUrl)
+
 	service := rps.validateServiceExists(w, req.URL.Path)
 	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
@@ -70,13 +73,23 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	w.Write(respBodyBytes)
 }
 
-func (rps *ReverseProxyService) parseRequestPath(path string) string {
+func (rps *ReverseProxyService) parseServicePath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	return urlSeperatedStrings[1]
 }
 
+// join from index >= 2
+func (rps *ReverseProxyService) parseRoutePath(path string) string {
+	// Get from index >= 2
+	// slice = ["", <service>, ....routes ]
+	// example return : /products/1
+	urlSeperatedStrings := strings.Split(path, "/")
+	pathUrl := strings.Join(urlSeperatedStrings[2:], "/")
+	return "/" + pathUrl
+}
+
 func (rps *ReverseProxyService) validateServiceExists(w http.ResponseWriter, path string) models.Service {
-	service, err := rps.serviceGateway.GetServiceByPath(rps.parseRequestPath(path))
+	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
 	if err == gatewayService.ErrServiceNotFound {
 		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", path))
 		http.Error(w, "service not found", http.StatusNotFound)
