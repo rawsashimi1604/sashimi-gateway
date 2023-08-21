@@ -16,10 +16,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Routes:
-// /salmon/products/:id -> match to
-// TODO: create route matching algorithm (paths should be matched by ':' prefix... add it into the init.sql)
-
 type ReverseProxyService struct {
 	serviceGateway gatewayService.ServiceGateway
 }
@@ -54,6 +50,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	if err != nil {
 		log.Info().Msg("unable to find route")
 		http.Error(w, "unable to find route", http.StatusNotFound)
+		return
 	}
 
 	serviceURL, err := url.Parse(service.TargetUrl)
@@ -70,8 +67,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	}
 	log.Info().Msg("request body: " + string(reqBodyBytes))
 
-	// Send Http Request to the service
-	// When you read from this stream (i.e., the request body), you are essentially consuming bytes from the beginning to the point you've read up to. Once you've read a byte, it's gone from the stream – you can't go back and read it again without some sort of intervention. Thats why we reset the reqBodyBytes, as the request has already been read from above.
+	// Reached end of stream when reading req.Body at the start, so set the req.Body again.
 	req.Body = io.NopCloser(bytes.NewReader(reqBodyBytes))
 	serviceResponse, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -98,7 +94,6 @@ func (rps *ReverseProxyService) parseServicePath(path string) string {
 	return urlSeperatedStrings[1]
 }
 
-// join from index >= 2
 func (rps *ReverseProxyService) parseRoutePath(path string) string {
 	// Get from index >= 2
 	// slice = ["", <service>, ....routes ]
@@ -129,7 +124,9 @@ func (rps *ReverseProxyService) validateServiceExists(path string) (models.Servi
 }
 
 func (rps *ReverseProxyService) validateRouteExists(service models.Service, routePath string) (models.Route, error) {
-	// Check if route exists in Service
+	// Routes:
+	// /salmon/products/:id -> match to
+	// TODO: create route matching algorithm (paths should be matched by ':' prefix... add it into the init.sql)
 	for _, route := range service.Routes {
 		if routePath == route.Path {
 			return route, nil
