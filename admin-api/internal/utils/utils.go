@@ -2,7 +2,15 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
+)
+
+var (
+	ErrReadHttpBodyFail = errors.New("unable to read http body")
 )
 
 type JSONErrorMessage struct {
@@ -21,4 +29,13 @@ func JSONError(w http.ResponseWriter, err string, code int) {
 func JSONStringify(content any) string {
 	jsonified, _ := json.Marshal(content)
 	return string(jsonified)
+}
+
+func ReadHttpBody(body io.ReadCloser) ([]byte, error) {
+	bodyBytes, err := io.ReadAll(body)
+	if err != nil {
+		log.Info().Msg("Failed to read http body.")
+		return nil, ErrReadHttpBodyFail
+	}
+	return bodyBytes, nil
 }

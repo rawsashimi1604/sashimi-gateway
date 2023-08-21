@@ -12,7 +12,6 @@ type EnvVars struct {
 
 func LoadEnv() EnvVars {
 	godotenv.Load()
-
 	postgresUrl := os.Getenv("POSTGRES_URL")
 	return EnvVars{
 		POSTGRES_URL: postgresUrl,

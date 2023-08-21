@@ -2,12 +2,12 @@ package rproxy
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
 	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
@@ -27,47 +27,21 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	log.Info().Msg("------------------")
 	defer log.Info().Msg("------------------")
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
-	// Check if service exists given Path
-	service, err := rps.serviceGateway.GetServiceByPath(parseRequestPath(req.URL.Path))
-	if err == gatewayService.ErrServiceNotFound {
-		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
-		http.Error(w, "service not found", http.StatusNotFound)
-		return
-	}
-	if err != nil {
-		log.Info().Msg(err.Error())
-		log.Info().Msg("Something went wrong")
-		http.Error(w, "something went wrong", http.StatusBadGateway)
-	}
 
-	log.Info().Msg("service: " + utils.JSONStringify(service))
-	// Define service server
+	service := rps.validateServiceExists(w, req.URL.Path)
 	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
 		log.Fatal().Msg("invalid url passed in.")
 	}
 
-	req.Host = serviceURL.Host
-	req.URL.Host = serviceURL.Host
-	req.URL.Scheme = serviceURL.Scheme
-	// TODO: get the path to the server
-	req.URL.Path = ""
-	// We can't have this set when using http.DefaultClient
-	req.RequestURI = ""
+	rps.modifyRequestHeaders(serviceURL, req)
 
 	// Read request body
-	reqBodyBytes, err := io.ReadAll(req.Body)
+	reqBodyBytes, err := utils.ReadHttpBody(req.Body)
 	if err != nil {
-		log.Info().Msg("Failed to read request body")
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
-		return
+		http.Error(w, "unable to read request body", http.StatusBadRequest)
 	}
-	log.Info().Msg(fmt.Sprintf("request body: %q", func() string {
-		if len(reqBodyBytes) == 0 {
-			return "No body found."
-		}
-		return string(reqBodyBytes)
-	}()))
+	log.Info().Msg("request body: " + string(reqBodyBytes))
 
 	// Send Http Request to the service
 	serviceResponse, err := http.DefaultClient.Do(req)
@@ -79,10 +53,9 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	}
 
 	// Read the response body
-	respBodyBytes, err := io.ReadAll(serviceResponse.Body)
+	respBodyBytes, err := utils.ReadHttpBody(serviceResponse.Body)
 	if err != nil {
-		log.Info().Msg("Failed to read service response body")
-		http.Error(w, "Failed to read service response", http.StatusInternalServerError)
+		http.Error(w, "Failed to read service response", http.StatusBadRequest)
 		return
 	}
 	log.Info().Msg("response body: " + string(respBodyBytes))
@@ -96,4 +69,33 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 func parseRequestPath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	return urlSeperatedStrings[1]
+}
+
+func (rps *ReverseProxyService) validateServiceExists(w http.ResponseWriter, path string) models.Service {
+	service, err := rps.serviceGateway.GetServiceByPath(parseRequestPath(path))
+	if err == gatewayService.ErrServiceNotFound {
+		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", path))
+		http.Error(w, "service not found", http.StatusNotFound)
+		return models.Service{}
+	}
+	if err != nil {
+		log.Info().Msg(err.Error())
+		log.Info().Msg("Something went wrong")
+		http.Error(w, "something went wrong", http.StatusBadGateway)
+		return models.Service{}
+	}
+
+	log.Info().Msg("service: " + utils.JSONStringify(service))
+	return service
+}
+
+func (rps *ReverseProxyService) modifyRequestHeaders(serviceURL *url.URL, req *http.Request) {
+	// Reassign req headers
+	req.Host = serviceURL.Host
+	req.URL.Host = serviceURL.Host
+	req.URL.Scheme = serviceURL.Scheme
+	// TODO: get the path to the server
+	req.URL.Path = ""
+	// We can't have this set when using http.DefaultClient
+	req.RequestURI = ""
 }
