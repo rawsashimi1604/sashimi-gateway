@@ -15,6 +15,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// TODO: create route matching algorithm
+
 type ReverseProxyService struct {
 	serviceGateway gatewayService.ServiceGateway
 }
@@ -66,13 +68,13 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	w.Write(respBodyBytes)
 }
 
-func parseRequestPath(path string) string {
+func (rps *ReverseProxyService) parseRequestPath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	return urlSeperatedStrings[1]
 }
 
 func (rps *ReverseProxyService) validateServiceExists(w http.ResponseWriter, path string) models.Service {
-	service, err := rps.serviceGateway.GetServiceByPath(parseRequestPath(path))
+	service, err := rps.serviceGateway.GetServiceByPath(rps.parseRequestPath(path))
 	if err == gatewayService.ErrServiceNotFound {
 		log.Info().Msg(fmt.Sprintf("service with path: %v not found.", path))
 		http.Error(w, "service not found", http.StatusNotFound)

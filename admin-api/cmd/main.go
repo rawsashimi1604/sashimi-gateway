@@ -10,6 +10,8 @@ import (
 
 func main() {
 
+	// TODO: add middleware for analytics
+
 	logger.SetupLogger()
 	router := api.NewRouter()
 

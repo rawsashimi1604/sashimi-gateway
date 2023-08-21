@@ -39,3 +39,7 @@ func AddDishHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(newSalmon)
 }
+
+func TestDish(w http.ResponseWriter, r *http.Request) {
+
+}
