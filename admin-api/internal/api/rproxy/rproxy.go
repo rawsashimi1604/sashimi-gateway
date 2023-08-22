@@ -16,19 +16,19 @@ import (
 
 type ReverseProxyService struct {
 	serviceGateway gatewayService.ServiceGateway
+	transport      http.RoundTripper
 }
 
-func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway) *ReverseProxyService {
+func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxyService {
 	return &ReverseProxyService{
 		serviceGateway: serviceGateway,
+		transport:      httpTransport,
 	}
 }
 
 func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.Request) {
 	log.Info().Msg("------------------")
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
-
-	reqRoutePath := rps.parseRoutePath(req.URL.Path)
 
 	// validate service
 	service, err := rps.matchService(req.URL.Path)
@@ -44,7 +44,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	}
 
 	// validate route
-	validatedRoute, _, err := rps.matchRoute(service, reqRoutePath)
+	validatedRoute, _, err := rps.matchRoute(service, rps.parseRoutePath(req.URL.Path))
 	if err != nil {
 		log.Info().Msg("unable to find route")
 		http.Error(w, "unable to find route", http.StatusNotFound)
@@ -59,16 +59,22 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		return
 	}
 
-	// create reverse proxy and origin request, serve the request
+	// Prepare and serve the http
 	proxy := httputil.NewSingleHostReverseProxy(origin)
+	proxy.Transport = rps.transport
 	proxy.Director = func(directorReq *http.Request) {
 		directorReq.Header.Add("X-Forwarded-Host", req.Host)
 		directorReq.Header.Add("X-Origin-Host", origin.Host)
 		directorReq.URL.Scheme = origin.Scheme
 		directorReq.URL.Host = origin.Host
-		directorReq.URL.Path = reqRoutePath
+		directorReq.URL.Path = rps.parseRoutePath(req.URL.Path)
+	}
+	proxy.ErrorHandler = func(w http.ResponseWriter, req *http.Request, err error) {
+		log.Info().Msgf("Error while proxying request: %v", err)
+		http.Error(w, "Error while proxying request", http.StatusInternalServerError)
 	}
 	proxy.ServeHTTP(w, req)
+
 }
 
 func (rps *ReverseProxyService) parseServicePath(path string) string {

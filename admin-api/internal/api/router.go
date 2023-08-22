@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
@@ -21,7 +23,7 @@ func NewRouter() *mux.Router {
 
 	// Inject gateway dependencies
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
-	rproxyService := rproxy.NewReverseProxyService(pgServiceGateway)
+	rproxyService := rproxy.NewReverseProxyService(pgServiceGateway, http.DefaultTransport)
 
 	router.PathPrefix("/").HandlerFunc(rproxyService.ForwardRequest).Methods("GET", "PUT", "POST", "DELETE")
 
