@@ -32,7 +32,6 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 
 	requestPathUrl := rps.parseRoutePath(req.URL.Path)
-	log.Info().Msg("path URL: " + requestPathUrl)
 
 	service, err := rps.matchService(req.URL.Path)
 	if err != nil {
@@ -46,15 +45,21 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		return
 	}
 
-	validatedRoute, err := rps.matchRoute(service, requestPathUrl)
+	validatedRoute, pathParams, err := rps.matchRoute(service, requestPathUrl)
 	if err != nil {
 		log.Info().Msg("unable to find route")
 		http.Error(w, "unable to find route", http.StatusNotFound)
 		return
 	}
 
-	log.Info().Msg("logging the validated route:")
-	log.Info().Msg(utils.JSONStringify(validatedRoute))
+	log.Info().Msg("path URL: " + requestPathUrl)
+	if req.URL.Query().Encode() != "" {
+		log.Info().Msg("query params: " + req.URL.Query().Encode())
+	} else {
+		log.Info().Msg("query params: " + utils.JSONStringify(utils.EmptyStruct{}))
+	}
+	log.Info().Msg("path params: " + utils.JSONStringify(pathParams))
+	log.Info().Msg("route validated: " + utils.JSONStringify(validatedRoute))
 
 	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
@@ -126,40 +131,31 @@ func (rps *ReverseProxyService) matchService(path string) (models.Service, error
 	return service, nil
 }
 
-func (rps *ReverseProxyService) matchRoute(service models.Service, requestPath string) (models.Route, error) {
+func (rps *ReverseProxyService) matchRoute(service models.Service, requestPath string) (models.Route, map[string]string, error) {
 	for _, route := range service.Routes {
-		if isMatch, _ := rps.isRouteMatch(route.Path, requestPath); isMatch {
-			return route, nil
+		if isMatch, pathParams := rps.isRouteMatch(route.Path, requestPath); isMatch {
+			return route, pathParams, nil
 		}
 	}
-	return models.Route{}, errors.New("unable to match route from service object")
+	return models.Route{}, nil, errors.New("unable to match route from service object")
 }
 
 func (rps *ReverseProxyService) isRouteMatch(routePath string, requestPath string) (bool, map[string]string) {
-	// split the route path
-	routeSegments := strings.Split(routePath, "/")
 
-	// split the request path
+	routeSegments := strings.Split(routePath, "/")
 	requestSegments := strings.Split(requestPath, "/")
 
-	// Dont match the number of /
 	if len(routeSegments) != len(requestSegments) {
 		return false, nil
 	}
 
-	// map of path params. :id, :tag etc
 	params := make(map[string]string)
 
 	for i := range routeSegments {
-		// if route segment is a string starting with :
 		if strings.HasPrefix(routeSegments[i], ":") {
-			// Its a query string match
-			// remove the : and get the key (id or tag)
 			paramKey := strings.TrimPrefix(routeSegments[i], ":")
-			// map the param value in the hashmap
 			params[paramKey] = requestSegments[i]
 		} else if routeSegments[i] != requestSegments[i] {
-			// its not a match
 			return false, nil
 		}
 	}
