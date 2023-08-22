@@ -59,7 +59,10 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		return
 	}
 
-	// Prepare and serve the http
+	rps.prepareAndServeHttp(w, origin, req)
+}
+
+func (rps *ReverseProxyService) prepareAndServeHttp(w http.ResponseWriter, origin *url.URL, req *http.Request) {
 	proxy := httputil.NewSingleHostReverseProxy(origin)
 	proxy.Transport = rps.transport
 	proxy.Director = func(directorReq *http.Request) {
@@ -74,7 +77,6 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		http.Error(w, "Error while proxying request", http.StatusInternalServerError)
 	}
 	proxy.ServeHTTP(w, req)
-
 }
 
 func (rps *ReverseProxyService) parseServicePath(path string) string {
