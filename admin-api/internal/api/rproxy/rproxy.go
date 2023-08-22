@@ -1,17 +1,15 @@
 package rproxy
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strings"
 
 	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
 )
@@ -30,8 +28,9 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	log.Info().Msg("------------------")
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 
-	requestPathUrl := rps.parseRoutePath(req.URL.Path)
+	reqRoutePath := rps.parseRoutePath(req.URL.Path)
 
+	// validate service
 	service, err := rps.matchService(req.URL.Path)
 	if err != nil {
 		if err == gatewayService.ErrServiceNotFound {
@@ -44,56 +43,32 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		return
 	}
 
-	validatedRoute, pathParams, err := rps.matchRoute(service, requestPathUrl)
+	// validate route
+	validatedRoute, _, err := rps.matchRoute(service, reqRoutePath)
 	if err != nil {
 		log.Info().Msg("unable to find route")
 		http.Error(w, "unable to find route", http.StatusNotFound)
 		return
 	}
 
-	log.Info().Msg("path URL: " + requestPathUrl)
-	if req.URL.Query().Encode() != "" {
-		log.Info().Msg("query params: " + req.URL.Query().Encode())
-	} else {
-		log.Info().Msg("query params: " + utils.JSONStringify(utils.EmptyStruct{}))
-	}
-	log.Info().Msg("path params: " + utils.JSONStringify(pathParams))
-	log.Info().Msg("route validated: " + utils.JSONStringify(validatedRoute))
-
-	serviceURL, err := url.Parse(service.TargetUrl)
+	// create origin url
+	origin, err := url.Parse(service.TargetUrl + validatedRoute.Path)
 	if err != nil {
-		log.Info().Msg("invalid url passed in.")
-		http.Error(w, "invalid url passed in", http.StatusBadRequest)
-	}
-
-	reqBodyBytes, err := utils.ReadHttpBody(req.Body)
-	if err != nil {
-		http.Error(w, "unable to read request body", http.StatusBadRequest)
-		return
-	}
-	log.Info().Msg("request body: " + string(reqBodyBytes))
-
-	// Reached end of stream when reading req.Body at the start, so set the req.Body again.
-	req.Body = io.NopCloser(bytes.NewReader(reqBodyBytes))
-	rps.modifyRequestHeaders(serviceURL, req, requestPathUrl)
-	serviceResponse, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Info().Msg(err.Error())
-		log.Info().Msg("something went wrong when forwarding the request")
-		http.Error(w, "forward request error", http.StatusBadGateway)
+		log.Info().Msg("unable to parse upstream service and route url")
+		http.Error(w, "unable to parse upstream service and route url", http.StatusBadRequest)
 		return
 	}
 
-	respBodyBytes, err := utils.ReadHttpBody(serviceResponse.Body)
-	if err != nil {
-		http.Error(w, "Failed to read service response", http.StatusBadRequest)
-		return
+	// create reverse proxy and origin request, serve the request
+	proxy := httputil.NewSingleHostReverseProxy(origin)
+	proxy.Director = func(directorReq *http.Request) {
+		directorReq.Header.Add("X-Forwarded-Host", req.Host)
+		directorReq.Header.Add("X-Origin-Host", origin.Host)
+		directorReq.URL.Scheme = origin.Scheme
+		directorReq.URL.Host = origin.Host
+		directorReq.URL.Path = reqRoutePath
 	}
-	log.Info().Msg("response body: " + string(respBodyBytes))
-
-	rps.copyResponseHeaders(serviceResponse, w)
-	w.WriteHeader(serviceResponse.StatusCode)
-	w.Write(respBodyBytes)
+	proxy.ServeHTTP(w, req)
 }
 
 func (rps *ReverseProxyService) parseServicePath(path string) string {
@@ -105,24 +80,6 @@ func (rps *ReverseProxyService) parseRoutePath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	pathUrl := strings.Join(urlSeperatedStrings[2:], "/")
 	return "/" + pathUrl
-}
-
-func (rps *ReverseProxyService) modifyRequestHeaders(serviceURL *url.URL, req *http.Request, routePath string) {
-	req.Host = serviceURL.Host
-	req.URL.Host = serviceURL.Host
-	req.URL.Scheme = serviceURL.Scheme
-	req.URL.Path = routePath
-	// We can't have this set when using http.DefaultClient
-	req.RequestURI = ""
-}
-
-func (rps *ReverseProxyService) copyResponseHeaders(response *http.Response, w http.ResponseWriter) {
-	for key, values := range response.Header {
-		w.Header().Del(key)
-		for _, value := range values {
-			w.Header().Add(key, value)
-		}
-	}
 }
 
 func (rps *ReverseProxyService) matchService(path string) (models.Service, error) {
