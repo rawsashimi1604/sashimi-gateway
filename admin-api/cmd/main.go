@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	// TODO: add routing logic
+	// TODO: add routing logic ( add the dynamic routes )
 	// TODO: add middleware for analytics
 	// TODO: add health check route
 	// TODO: add authentication (JWT)

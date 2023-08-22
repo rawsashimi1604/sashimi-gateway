@@ -124,7 +124,6 @@ func (rps *ReverseProxyService) validateServiceExists(path string) (models.Servi
 }
 
 func (rps *ReverseProxyService) validateRouteExists(service models.Service, routePath string) (models.Route, error) {
-	// Routes:
 	// /salmon/products/:id -> match to
 	// TODO: create route matching algorithm (paths should be matched by ':' prefix... add it into the init.sql)
 	for _, route := range service.Routes {
