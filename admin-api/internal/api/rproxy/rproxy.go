@@ -27,7 +27,6 @@ func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway) *Rever
 }
 
 func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.Request) {
-
 	log.Info().Msg("------------------")
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 
@@ -67,7 +66,6 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		http.Error(w, "invalid url passed in", http.StatusBadRequest)
 	}
 
-	rps.modifyRequestHeaders(serviceURL, req, requestPathUrl)
 	reqBodyBytes, err := utils.ReadHttpBody(req.Body)
 	if err != nil {
 		http.Error(w, "unable to read request body", http.StatusBadRequest)
@@ -77,6 +75,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 
 	// Reached end of stream when reading req.Body at the start, so set the req.Body again.
 	req.Body = io.NopCloser(bytes.NewReader(reqBodyBytes))
+	rps.modifyRequestHeaders(serviceURL, req, requestPathUrl)
 	serviceResponse, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Info().Msg(err.Error())
@@ -92,8 +91,8 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	}
 	log.Info().Msg("response body: " + string(respBodyBytes))
 
-	w.Header().Set("Content-Type", serviceResponse.Header.Get("Content-Type"))
-	w.WriteHeader(http.StatusOK)
+	rps.copyResponseHeaders(serviceResponse, w)
+	w.WriteHeader(serviceResponse.StatusCode)
 	w.Write(respBodyBytes)
 }
 
@@ -103,9 +102,6 @@ func (rps *ReverseProxyService) parseServicePath(path string) string {
 }
 
 func (rps *ReverseProxyService) parseRoutePath(path string) string {
-	// Get from index >= 2
-	// slice = ["", <service>, ....routes ]
-	// example return : /products/1
 	urlSeperatedStrings := strings.Split(path, "/")
 	pathUrl := strings.Join(urlSeperatedStrings[2:], "/")
 	return "/" + pathUrl
@@ -118,6 +114,15 @@ func (rps *ReverseProxyService) modifyRequestHeaders(serviceURL *url.URL, req *h
 	req.URL.Path = routePath
 	// We can't have this set when using http.DefaultClient
 	req.RequestURI = ""
+}
+
+func (rps *ReverseProxyService) copyResponseHeaders(response *http.Response, w http.ResponseWriter) {
+	for key, values := range response.Header {
+		w.Header().Del(key)
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
 }
 
 func (rps *ReverseProxyService) matchService(path string) (models.Service, error) {
@@ -141,7 +146,6 @@ func (rps *ReverseProxyService) matchRoute(service models.Service, requestPath s
 }
 
 func (rps *ReverseProxyService) isRouteMatch(routePath string, requestPath string) (bool, map[string]string) {
-
 	routeSegments := strings.Split(routePath, "/")
 	requestSegments := strings.Split(requestPath, "/")
 
@@ -159,6 +163,5 @@ func (rps *ReverseProxyService) isRouteMatch(routePath string, requestPath strin
 			return false, nil
 		}
 	}
-
 	return true, params
 }
