@@ -31,10 +31,10 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 	log.Info().Msg("------------------")
 	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 
-	pathUrl := rps.parseRoutePath(req.URL.Path)
-	log.Info().Msg("path URL: " + pathUrl)
+	requestPathUrl := rps.parseRoutePath(req.URL.Path)
+	log.Info().Msg("path URL: " + requestPathUrl)
 
-	service, err := rps.validateServiceExists(req.URL.Path)
+	service, err := rps.matchService(req.URL.Path)
 	if err != nil {
 		if err == gatewayService.ErrServiceNotFound {
 			log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
@@ -46,12 +46,15 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		return
 	}
 
-	validatedRoute, err := rps.validateRouteExists(service, pathUrl)
+	validatedRoute, err := rps.matchRoute(service, requestPathUrl)
 	if err != nil {
 		log.Info().Msg("unable to find route")
 		http.Error(w, "unable to find route", http.StatusNotFound)
 		return
 	}
+
+	log.Info().Msg("logging the validated route:")
+	log.Info().Msg(utils.JSONStringify(validatedRoute))
 
 	serviceURL, err := url.Parse(service.TargetUrl)
 	if err != nil {
@@ -59,7 +62,7 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		http.Error(w, "invalid url passed in", http.StatusBadRequest)
 	}
 
-	rps.modifyRequestHeaders(serviceURL, req, validatedRoute.Path)
+	rps.modifyRequestHeaders(serviceURL, req, requestPathUrl)
 	reqBodyBytes, err := utils.ReadHttpBody(req.Body)
 	if err != nil {
 		http.Error(w, "unable to read request body", http.StatusBadRequest)
@@ -112,7 +115,7 @@ func (rps *ReverseProxyService) modifyRequestHeaders(serviceURL *url.URL, req *h
 	req.RequestURI = ""
 }
 
-func (rps *ReverseProxyService) validateServiceExists(path string) (models.Service, error) {
+func (rps *ReverseProxyService) matchService(path string) (models.Service, error) {
 	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
 	if err != nil {
 		if err == gatewayService.ErrServiceNotFound {
@@ -123,13 +126,43 @@ func (rps *ReverseProxyService) validateServiceExists(path string) (models.Servi
 	return service, nil
 }
 
-func (rps *ReverseProxyService) validateRouteExists(service models.Service, routePath string) (models.Route, error) {
-	// /salmon/products/:id -> match to
-	// TODO: create route matching algorithm (paths should be matched by ':' prefix... add it into the init.sql)
+func (rps *ReverseProxyService) matchRoute(service models.Service, requestPath string) (models.Route, error) {
 	for _, route := range service.Routes {
-		if routePath == route.Path {
+		if isMatch, _ := rps.isRouteMatch(route.Path, requestPath); isMatch {
 			return route, nil
 		}
 	}
-	return models.Route{}, errors.New("unable to find route from service object")
+	return models.Route{}, errors.New("unable to match route from service object")
+}
+
+func (rps *ReverseProxyService) isRouteMatch(routePath string, requestPath string) (bool, map[string]string) {
+	// split the route path
+	routeSegments := strings.Split(routePath, "/")
+
+	// split the request path
+	requestSegments := strings.Split(requestPath, "/")
+
+	// Dont match the number of /
+	if len(routeSegments) != len(requestSegments) {
+		return false, nil
+	}
+
+	// map of path params. :id, :tag etc
+	params := make(map[string]string)
+
+	for i := range routeSegments {
+		// if route segment is a string starting with :
+		if strings.HasPrefix(routeSegments[i], ":") {
+			// Its a query string match
+			// remove the : and get the key (id or tag)
+			paramKey := strings.TrimPrefix(routeSegments[i], ":")
+			// map the param value in the hashmap
+			params[paramKey] = requestSegments[i]
+		} else if routeSegments[i] != requestSegments[i] {
+			// its not a match
+			return false, nil
+		}
+	}
+
+	return true, params
 }
