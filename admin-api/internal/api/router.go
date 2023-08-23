@@ -15,20 +15,15 @@ import (
 func NewRouter() *mux.Router {
 	log.Info().Msg("Creating Admin Api Router.")
 
-	router := mux.NewRouter()
-	setupMiddleware(router)
 	conn := setupPostgresConn()
-	rproxyService := setupReverseProxyService(conn)
+	reverseProxy := setupReverseProxy(conn)
 
-	router.PathPrefix("/").HandlerFunc(rproxyService.ForwardRequest).Methods("GET", "PUT", "POST", "DELETE")
-	http.Handle("/", router)
+	router := mux.NewRouter()
+	router.Use(analytics.AnalyticsMiddleware)
+	router.Use(reverseProxy.ReverseProxyMiddlware)
 
 	log.Info().Msg("Admin Api Router created successfully.")
 	return router
-}
-
-func setupMiddleware(router *mux.Router) {
-	router.Use(analytics.AnalyticsMiddleware)
 }
 
 func setupPostgresConn() *pgxpool.Pool {
@@ -39,8 +34,8 @@ func setupPostgresConn() *pgxpool.Pool {
 	return conn
 }
 
-func setupReverseProxyService(conn *pgxpool.Pool) *rproxy.ReverseProxyService {
+func setupReverseProxy(conn *pgxpool.Pool) *rproxy.ReverseProxy {
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
-	return rproxy.NewReverseProxyService(pgServiceGateway, http.DefaultTransport)
+	return rproxy.NewReverseProxy(pgServiceGateway, http.DefaultTransport)
 
 }

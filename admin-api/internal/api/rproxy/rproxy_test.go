@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"testing"
 
-	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	gs "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
@@ -50,19 +50,19 @@ func (m *MockServiceGateway) GetAllServices() ([]models.Service, error) {
 
 func TestMatchServiceNotFound(t *testing.T) {
 	mockServiceGateway := new(MockServiceGateway)
-	rps := NewReverseProxyService(mockServiceGateway, &mockTransport{})
+	rps := NewReverseProxy(mockServiceGateway, &mockTransport{})
 
 	// Mocking the service not found error
-	mockServiceGateway.On("GetServiceByPath", "nonexistent").Return(models.Service{}, gatewayService.ErrServiceNotFound)
+	mockServiceGateway.On("GetServiceByPath", "nonexistent").Return(models.Service{}, gs.ErrServiceNotFound)
 
 	service, err := rps.matchService("/nonexistent/path")
-	assert.True(t, errors.Is(err, gatewayService.ErrServiceNotFound))
+	assert.True(t, errors.Is(err, gs.ErrServiceNotFound))
 	assert.Equal(t, models.Service{}, service)
 }
 
-func TestForwardRequest(t *testing.T) {
+func TestReverseProxyMiddleware(t *testing.T) {
 	mockServiceGateway := new(MockServiceGateway)
-	rps := NewReverseProxyService(mockServiceGateway, &mockTransport{})
+	rps := NewReverseProxy(mockServiceGateway, &mockTransport{})
 
 	// Create a test service and route
 	testService := models.Service{
@@ -85,7 +85,10 @@ func TestForwardRequest(t *testing.T) {
 			log.Info().Msgf("Error while proxying request: %v", err)
 			http.Error(w, "Error while proxying request", http.StatusInternalServerError)
 		}
-		rps.ForwardRequest(rr, req)
+
+		// Apply the middleware to a test route and invoke it
+		rps.ReverseProxyMiddlware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, req)
+
 		assert.Equal(t, http.StatusOK, rr.Code)
 	})
 
@@ -93,12 +96,12 @@ func TestForwardRequest(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/invalidservice/testroute", bytes.NewBuffer([]byte{}))
 		rr := httptest.NewRecorder()
 
-		mockServiceGateway.On("GetServiceByPath", "invalidservice").Return(models.Service{}, gatewayService.ErrServiceNotFound)
+		mockServiceGateway.On("GetServiceByPath", "invalidservice").Return(models.Service{}, gs.ErrServiceNotFound)
 
 		origin, _ := url.Parse(testService.TargetUrl)
 		proxy := httputil.NewSingleHostReverseProxy(origin)
 		proxy.Transport = &mockTransport{}
-		rps.ForwardRequest(rr, req)
+		rps.ReverseProxyMiddlware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, req)
 
 		assert.Equal(t, http.StatusNotFound, rr.Code)
 	})

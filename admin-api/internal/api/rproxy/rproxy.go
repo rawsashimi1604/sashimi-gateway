@@ -8,63 +8,65 @@ import (
 	"net/url"
 	"strings"
 
-	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	sg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
 )
 
-type ReverseProxyService struct {
-	serviceGateway gatewayService.ServiceGateway
+func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+
+		// validate validatedService
+		validatedService, err := rps.matchService(req.URL.Path)
+		if err != nil {
+			if err == sg.ErrServiceNotFound {
+				log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
+				http.Error(w, sg.ErrServiceNotFound.Error(), http.StatusNotFound)
+				return
+			}
+			log.Info().Msg("service unable to be validated")
+			http.Error(w, "service unable to be validated", http.StatusBadGateway)
+			return
+		}
+		log.Info().Msg("service: " + utils.JSONStringify(validatedService))
+
+		// validate route
+		validatedRoute, _, err := rps.matchRoute(validatedService, rps.parseRoutePath(req.URL.Path))
+		if err != nil {
+			log.Info().Msg("unable to find route")
+			http.Error(w, "unable to find route", http.StatusNotFound)
+			return
+		}
+		log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
+
+		// create origin url
+		origin, err := url.Parse(validatedService.TargetUrl + validatedRoute.Path)
+		if err != nil {
+			log.Info().Msg("unable to parse upstream service and route url")
+			http.Error(w, "unable to parse upstream service and route url", http.StatusBadRequest)
+			return
+		}
+		log.Info().Msg("origin url: " + validatedService.TargetUrl + req.URL.Path)
+
+		rps.prepareAndServeHttp(w, origin, req)
+	})
+}
+
+type ReverseProxy struct {
+	serviceGateway sg.ServiceGateway
 	transport      http.RoundTripper
 }
 
-func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxyService {
-	return &ReverseProxyService{
+func NewReverseProxy(serviceGateway sg.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxy {
+	return &ReverseProxy{
 		serviceGateway: serviceGateway,
 		transport:      httpTransport,
 	}
 }
 
-func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.Request) {
-
-	// validate validatedService
-	validatedService, err := rps.matchService(req.URL.Path)
-	if err != nil {
-		if err == gatewayService.ErrServiceNotFound {
-			log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
-			http.Error(w, gatewayService.ErrServiceNotFound.Error(), http.StatusNotFound)
-			return
-		}
-		log.Info().Msg("service unable to be validated")
-		http.Error(w, "service unable to be validated", http.StatusBadGateway)
-		return
-	}
-	log.Info().Msg("service: " + utils.JSONStringify(validatedService))
-
-	// validate route
-	validatedRoute, _, err := rps.matchRoute(validatedService, rps.parseRoutePath(req.URL.Path))
-	if err != nil {
-		log.Info().Msg("unable to find route")
-		http.Error(w, "unable to find route", http.StatusNotFound)
-		return
-	}
-	log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
-
-	// create origin url
-	origin, err := url.Parse(validatedService.TargetUrl + validatedRoute.Path)
-	if err != nil {
-		log.Info().Msg("unable to parse upstream service and route url")
-		http.Error(w, "unable to parse upstream service and route url", http.StatusBadRequest)
-		return
-	}
-	log.Info().Msg("origin url: " + validatedService.TargetUrl + req.URL.Path)
-
-	rps.prepareAndServeHttp(w, origin, req)
-}
-
-func (rps *ReverseProxyService) prepareAndServeHttp(w http.ResponseWriter, origin *url.URL, req *http.Request) {
+func (rps *ReverseProxy) prepareAndServeHttp(w http.ResponseWriter, origin *url.URL, req *http.Request) {
 	proxy := httputil.NewSingleHostReverseProxy(origin)
 	proxy.Transport = rps.transport
 	proxy.Director = func(directorReq *http.Request) {
@@ -81,29 +83,29 @@ func (rps *ReverseProxyService) prepareAndServeHttp(w http.ResponseWriter, origi
 	proxy.ServeHTTP(w, req)
 }
 
-func (rps *ReverseProxyService) parseServicePath(path string) string {
+func (rps *ReverseProxy) parseServicePath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	return urlSeperatedStrings[1]
 }
 
-func (rps *ReverseProxyService) parseRoutePath(path string) string {
+func (rps *ReverseProxy) parseRoutePath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	pathUrl := strings.Join(urlSeperatedStrings[2:], "/")
 	return "/" + pathUrl
 }
 
-func (rps *ReverseProxyService) matchService(path string) (models.Service, error) {
+func (rps *ReverseProxy) matchService(path string) (models.Service, error) {
 	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
 	if err != nil {
-		if err == gatewayService.ErrServiceNotFound {
-			return models.Service{}, gatewayService.ErrServiceNotFound
+		if err == sg.ErrServiceNotFound {
+			return models.Service{}, sg.ErrServiceNotFound
 		}
 		return models.Service{}, errors.New("something went wrong")
 	}
 	return service, nil
 }
 
-func (rps *ReverseProxyService) matchRoute(service models.Service, requestPath string) (models.Route, map[string]string, error) {
+func (rps *ReverseProxy) matchRoute(service models.Service, requestPath string) (models.Route, map[string]string, error) {
 	for _, route := range service.Routes {
 		if isMatch, pathParams := rps.isRouteMatch(route.Path, requestPath); isMatch {
 			return route, pathParams, nil
@@ -112,7 +114,7 @@ func (rps *ReverseProxyService) matchRoute(service models.Service, requestPath s
 	return models.Route{}, nil, errors.New("unable to match route from service object")
 }
 
-func (rps *ReverseProxyService) isRouteMatch(routePath string, requestPath string) (bool, map[string]string) {
+func (rps *ReverseProxy) isRouteMatch(routePath string, requestPath string) (bool, map[string]string) {
 	routeSegments := strings.Split(routePath, "/")
 	requestSegments := strings.Split(requestPath, "/")
 
