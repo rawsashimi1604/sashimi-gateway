@@ -51,6 +51,7 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 		log.Info().Msg("origin url: " + validatedService.TargetUrl + req.URL.Path)
 
 		rps.prepareAndServeHttp(w, origin, req)
+		next.ServeHTTP(w, req)
 	})
 }
 

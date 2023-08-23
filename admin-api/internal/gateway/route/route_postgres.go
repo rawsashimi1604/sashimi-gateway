@@ -2,16 +2,18 @@ package route
 
 import (
 	"context"
+	"errors"
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
-	"github.com/rs/zerolog/log"
 )
 
 func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 
 	query := `
-		SELECT id, path, description, created_at, updated_at
-		FROM route
+		SELECT r.id, r.path, r.description, r.created_at, r.updated_at, m.id, m.method
+		FROM route r
+		INNER JOIN api_method a
+		ON r.method_id=m.id
 		ORDER BY id ASC
 	`
 
@@ -21,24 +23,19 @@ func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 	}
 	defer rows.Close()
 
-	var routes []Route_DB
+	var routes []models.Route
 	for rows.Next() {
 		var route Route_DB
-		if err := rows.Scan(&route.Id, &route.Path, &route.Description, &route.CreatedAt, &route.UpdatedAt); err != nil {
-			log.Info().Msg("error retrieving route.")
-			continue
+		var method ApiMethod_DB
+		if err := rows.Scan(&route.Id, &route.Path, &route.Description, &route.CreatedAt, &route.UpdatedAt, &method.Id, &method.Method); err != nil {
+			return nil, errors.New("error retrieving route")
 		}
-		routes = append(routes, route)
+		routes = append(routes, MapRouteDbToDomain(route, method))
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	var mappedDbs []models.Route
-	for _, routeDb := range routes {
-		mapped := MapRouteDbToDomain(routeDb)
-		mappedDbs = append(mappedDbs, mapped)
-	}
-	return mappedDbs, nil
+	return routes, nil
 }

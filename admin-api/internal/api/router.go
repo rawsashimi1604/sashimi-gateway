@@ -22,6 +22,9 @@ func NewRouter() *mux.Router {
 	router.Use(analytics.AnalyticsMiddleware)
 	router.Use(reverseProxy.ReverseProxyMiddlware)
 
+	// Define empty handler to catch all requests.
+	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+
 	log.Info().Msg("Admin Api Router created successfully.")
 	return router
 }

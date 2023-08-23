@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 )
 
@@ -33,15 +32,7 @@ var (
 	ErrServiceNotFound = errors.New("service not found in the database")
 )
 
-func MapServiceDbToDomain(sdb Service_DB, rdb []route.Route_DB) models.Service {
-
-	mappedRoutes := make([]models.Route, 0)
-
-	for _, r := range rdb {
-		mapped := route.MapRouteDbToDomain(r)
-		mappedRoutes = append(mappedRoutes, mapped)
-	}
-
+func MapServiceDbToDomain(sdb Service_DB, r []models.Route) models.Service {
 	return models.Service{
 		Id:          sdb.Id,
 		Name:        sdb.Name,
@@ -50,6 +41,6 @@ func MapServiceDbToDomain(sdb Service_DB, rdb []route.Route_DB) models.Service {
 		Description: sdb.Description,
 		CreatedAt:   sdb.CreatedAt,
 		UpdatedAt:   sdb.UpdatedAt,
-		Routes:      mappedRoutes,
+		Routes:      r,
 	}
 }
