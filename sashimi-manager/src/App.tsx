@@ -1,13 +1,13 @@
+import 'animate.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-import Footer from './components/layout/Footer';
-import Navbar from './components/layout/Navbar';
+import Dashboard from './modules/dashboard';
 
 function App() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <div>Hello world!</div>
+      element: <Dashboard />
     },
     {
       path: '/about',
@@ -17,9 +17,9 @@ function App() {
 
   return (
     <>
-      <Navbar />
-      <RouterProvider router={router} />
-      <Footer />
+      <div className="bg-white font-sans">
+        <RouterProvider router={router} />
+      </div>
     </>
   );
 }
