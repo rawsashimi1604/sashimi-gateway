@@ -24,8 +24,10 @@ func NewRouter() *mux.Router {
 
 	router := mux.NewRouter()
 
-	// This route wont go through the reverse proxy middlewares
-	router.HandleFunc("/api/admin/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
+	// These route wont go through the reverse proxy middlewares
+	adminRouter := router.PathPrefix("/api/admin").Subrouter()
+	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
+	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()

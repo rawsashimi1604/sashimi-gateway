@@ -15,7 +15,7 @@ func main() {
 	// TODO: add authentication (JWT)
 	// TODO: add caching for services and routes (REDIS)
 	// TODO: add rate limiting
-	// TODO: add admin api
+	// TODO: add admin api (ongoing)
 	// TODO: add GUI dashboard
 
 	logger.SetupLogger()
