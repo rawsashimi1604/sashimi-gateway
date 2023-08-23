@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	v_lib "github.com/go-playground/validator/v10"
-	"github.com/rs/zerolog/log"
 )
 
 type Validator struct {
@@ -21,12 +20,13 @@ func NewValidator() *Validator {
 }
 
 func (v *Validator) ValidateStruct(input interface{}) error {
-	log.Info().Msg("hello world from validator struct")
 	err := v.lib.Struct(input)
 
 	errorList := make([]error, 0)
-	for _, err := range err.(v_lib.ValidationErrors) {
-		errorList = append(errorList, formatStructError(err))
+	if err != nil {
+		for _, err := range err.(v_lib.ValidationErrors) {
+			errorList = append(errorList, formatStructError(err))
+		}
 	}
 
 	if len(errorList) > 0 {
