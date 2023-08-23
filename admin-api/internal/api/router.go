@@ -5,9 +5,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
+	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/admin"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
-	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rs/zerolog/log"
