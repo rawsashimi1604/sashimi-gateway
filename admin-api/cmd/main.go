@@ -10,7 +10,6 @@ import (
 
 func main() {
 
-	// TODO: add routing logic ( add the dynamic routes )
 	// TODO: add middleware for analytics
 	// TODO: add health check route
 	// TODO: add authentication (JWT)
@@ -21,7 +20,6 @@ func main() {
 
 	logger.SetupLogger()
 	router := api.NewRouter()
-	http.Handle("/", router)
 
 	log.Info().Msg("starting the admin api.")
 	log.Info().Msg("admin api now listening for requests.")

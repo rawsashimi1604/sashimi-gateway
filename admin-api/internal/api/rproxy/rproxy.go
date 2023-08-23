@@ -10,6 +10,7 @@ import (
 
 	gatewayService "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
 )
@@ -27,11 +28,9 @@ func NewReverseProxyService(serviceGateway gatewayService.ServiceGateway, httpTr
 }
 
 func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.Request) {
-	log.Info().Msg("------------------")
-	log.Info().Msg("Reverse proxy received request: " + req.Host + " for path: " + req.URL.Path)
 
-	// validate service
-	service, err := rps.matchService(req.URL.Path)
+	// validate validatedService
+	validatedService, err := rps.matchService(req.URL.Path)
 	if err != nil {
 		if err == gatewayService.ErrServiceNotFound {
 			log.Info().Msg(fmt.Sprintf("service with path: %v not found.", req.URL.Path))
@@ -42,22 +41,25 @@ func (rps *ReverseProxyService) ForwardRequest(w http.ResponseWriter, req *http.
 		http.Error(w, "service unable to be validated", http.StatusBadGateway)
 		return
 	}
+	log.Info().Msg("service: " + utils.JSONStringify(validatedService))
 
 	// validate route
-	validatedRoute, _, err := rps.matchRoute(service, rps.parseRoutePath(req.URL.Path))
+	validatedRoute, _, err := rps.matchRoute(validatedService, rps.parseRoutePath(req.URL.Path))
 	if err != nil {
 		log.Info().Msg("unable to find route")
 		http.Error(w, "unable to find route", http.StatusNotFound)
 		return
 	}
+	log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
 
 	// create origin url
-	origin, err := url.Parse(service.TargetUrl + validatedRoute.Path)
+	origin, err := url.Parse(validatedService.TargetUrl + validatedRoute.Path)
 	if err != nil {
 		log.Info().Msg("unable to parse upstream service and route url")
 		http.Error(w, "unable to parse upstream service and route url", http.StatusBadRequest)
 		return
 	}
+	log.Info().Msg("origin url: " + validatedService.TargetUrl + req.URL.Path)
 
 	rps.prepareAndServeHttp(w, origin, req)
 }
