@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	sg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
@@ -68,6 +70,18 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// Create the service object
+	service := models.Service{
+		Name:        body.Name,
+		TargetUrl:   body.TargetUrl,
+		Path:        body.Path,
+		Description: body.Description,
+		Routes:      make([]models.Route, 0),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+	log.Info().Msg("service: " + utils.JSONStringify(service))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
