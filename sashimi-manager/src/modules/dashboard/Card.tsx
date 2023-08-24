@@ -13,7 +13,7 @@ function Card({ header, data }: CardProps) {
         <h3 className="font-light tracking-wider text-3xl">{data}</h3>
       </div>
 
-      {/* Insert some logo here */}
+      {/* Insert some icon here */}
     </div>
   );
 }

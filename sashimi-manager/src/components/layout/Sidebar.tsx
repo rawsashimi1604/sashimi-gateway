@@ -9,8 +9,10 @@ function Sidebar() {
       {/* border */}
       <div className="absolute right-0 border-r border-gray-200 h-full w-full -z-10"></div>
       <div>
-        {/* Reverse proxy name */}
-        <GatewayLogo name="Sushi Gateway" />
+        <div className="border-b border-gray-200 pb-5">
+          {/* Reverse proxy name */}
+          <GatewayLogo gateway="Sushi Gateway" user="admin" />
+        </div>
         {/* Services, Routes */}
         <div className="mt-4">
           <h2 className="font-bold text-gray-800 tracking-tighter">gateway</h2>
@@ -24,7 +26,8 @@ function Sidebar() {
         <div className="mt-4">
           <h2 className="font-bold text-gray-800 tracking-tighter">account</h2>
           <ul className="flex flex-col gap-0">
-            <SidebarItem item="Configure Account" />
+            <SidebarItem item="Account" />
+            <SidebarItem item="Settings" />
           </ul>
         </div>
       </div>
