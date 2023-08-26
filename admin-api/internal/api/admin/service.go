@@ -81,9 +81,18 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
+
+	// TODO: add check when service path already exists or is a RESERVED namespace.
+	service, err = sm.serviceGateway.RegisterService(service)
+	if err != nil {
+		log.Info().Msg("something went wrong when creating service")
+		http.Error(w, "something went wrong when creating service", http.StatusBadGateway)
+		return
+	}
+
 	log.Info().Msg("service: " + utils.JSONStringify(service))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(body)
+	json.NewEncoder(w).Encode(service)
 }

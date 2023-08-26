@@ -12,7 +12,7 @@ type ServiceGateway interface {
 	GetServiceByPath(path string) (models.Service, error)
 	GetServiceByTargetUrl(targetUrl string) (models.Service, error)
 	GetAllServices() ([]models.Service, error)
-	RegisterService(models.Service) (models.Service, error)
+	RegisterService(service models.Service) (models.Service, error)
 }
 
 type PostgresServiceGateway struct {

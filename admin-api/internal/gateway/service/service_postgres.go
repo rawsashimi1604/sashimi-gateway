@@ -216,7 +216,9 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 		service.UpdatedAt,
 	)
 
-	createdService := models.Service{}
+	createdService := models.Service{
+		Routes: make([]models.Route, 0),
+	}
 
 	if err := row.Scan(
 		&createdService.Id,
