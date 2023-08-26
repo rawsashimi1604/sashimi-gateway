@@ -60,12 +60,13 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 	validator := validator.NewValidator()
 	err = validator.ValidateStruct(&body)
 	if err != nil {
-		log.Info().Msg(ErrInvalidRouteBody.Error())
-		http.Error(w, ErrInvalidRouteBody.Error(), http.StatusBadRequest)
+		log.Info().Msg(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// TODO: add Method gateway to get all methods and search for id.
+	// TODO: add Method gateway search for id.
+	// TODO: add Service gateway to search for id.
 
 	// route := models.Route{
 	// 	Path:        body.Path,
@@ -76,4 +77,7 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 	// 	Method:      models.ApiMethod{Id: 1, Method: "GET"},
 	// }
 
+	w.Header().Set("Content-Type", "applciation/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(body)
 }
