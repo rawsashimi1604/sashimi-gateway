@@ -48,6 +48,11 @@ func (m *MockServiceGateway) GetAllServices() ([]models.Service, error) {
 	return args.Get(0).([]models.Service), args.Error(1)
 }
 
+func (m *MockServiceGateway) RegisterService(service models.Service) (models.Service, error) {
+	args := m.Called()
+	return args.Get(0).(models.Service), args.Error(1)
+}
+
 func TestMatchServiceNotFound(t *testing.T) {
 	mockServiceGateway := new(MockServiceGateway)
 	rps := NewReverseProxy(mockServiceGateway, &mockTransport{})
