@@ -7,13 +7,13 @@ interface CardProps {
 
 function Card({ header, data }: CardProps) {
   return (
-    <div className="w-full border-gray-200 shadow-md border rounded-lg text-sm p-2 h-24 flex items-center">
+    <div className="w-full border-gray-200 shadow-md border rounded-lg text-sm p-2 h-24 flex flex-col justify-center">
       <div>
-        <h2 className="text-lg tracking-tighter">{header}</h2>
+        <h2 className="text-lg tracking-tighter mb-1">{header}</h2>
         <h3 className="font-light tracking-wider text-3xl">{data}</h3>
       </div>
 
-      {/* Insert some logo here */}
+      {/* Insert some icon here */}
     </div>
   );
 }

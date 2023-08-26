@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import Footer from './Footer';
+import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
 interface ContainerProps {
@@ -14,6 +15,7 @@ function Container({ children }: ContainerProps) {
         <Sidebar />
       </div>
       <main className="flex-grow p-6">
+        <Navbar />
         {children}
         {/* <Footer /> */}
       </main>
