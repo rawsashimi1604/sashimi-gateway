@@ -44,7 +44,7 @@ func NewRouter() *mux.Router {
 func setupPostgresConn() *pgxpool.Pool {
 	conn, err := db.CreatePostgresConnection()
 	if err != nil {
-		log.Fatal().Msg("Unable to create postgres connection.")
+		log.Fatal().Msg(err.Error())
 	}
 	return conn
 }

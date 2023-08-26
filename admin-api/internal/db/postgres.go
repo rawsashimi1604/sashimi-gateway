@@ -11,6 +11,7 @@ import (
 
 var (
 	ErrCreatePGConnection = errors.New("something went wrong connecting to postgres, please check your connection string")
+	ErrPingPG             = errors.New("something went wrong connecting to postgres, unable to ping database")
 )
 
 func CreatePostgresConnection() (*pgxpool.Pool, error) {
@@ -19,6 +20,10 @@ func CreatePostgresConnection() (*pgxpool.Pool, error) {
 	conn, err := pgxpool.New(context.Background(), env.POSTGRES_URL)
 	if err != nil {
 		return nil, ErrCreatePGConnection
+	}
+
+	if err = conn.Ping(context.Background()); err != nil {
+		return nil, ErrPingPG
 	}
 	log.Info().Msg("Postgres connected successfully.")
 	return conn, nil
