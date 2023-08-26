@@ -15,7 +15,7 @@ func NewPostgresRouteGateway(conn *pgxpool.Pool) *PostgresRouteGateway {
 func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 
 	query := `
-		SELECT r.id, r.path, r.description, r.created_at, r.updated_at, m.id, m.method
+		SELECT r.id, r.service_id, r.path, r.description, r.created_at, r.updated_at, m.id, m.method
 		FROM route r
 		LEFT JOIN api_method m
 		ON r.method_id=m.id
@@ -33,7 +33,7 @@ func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 		var route Route_DB
 		var method ApiMethod_DB
 
-		if err := rows.Scan(&route.Id, &route.Path, &route.Description, &route.CreatedAt, &route.UpdatedAt, &method.Id, &method.Method); err != nil {
+		if err := rows.Scan(&route.Id, &route.ServiceId, &route.Path, &route.Description, &route.CreatedAt, &route.UpdatedAt, &method.Id, &method.Method); err != nil {
 			return nil, errors.New("error retrieving route")
 		}
 
@@ -45,4 +45,16 @@ func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 	}
 
 	return routes, nil
+}
+
+func (s *PostgresRouteGateway) RegisterRoute(route models.Route) (models.Route, error) {
+	// query = `
+	// 	INSERT INTO route
+	// 		(service_id, method_id, path, description, created_at, updated_at)
+	// 	VALUES
+	// 		($1, $2, $3, $4, $5, $6)
+	// 	RETURNING id, service_id, method_id, path, description, created_at, updated_at;
+	// `
+
+	return models.Route{}, nil
 }

@@ -142,6 +142,7 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 
 		if routeID.Valid {
 			route.Id = int(routeID.Int64)
+			route.ServiceId = service.Id
 			route.Path = routePath.String
 			route.Description = routeDescription.String
 			route.CreatedAt = routeCreatedAt.Time
@@ -219,6 +220,7 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 
 		if routeID.Valid {
 			route.Id = int(routeID.Int64)
+			route.ServiceId = service.Id
 			route.Path = routePath.String
 			route.Description = routeDescription.String
 			route.CreatedAt = routeCreatedAt.Time

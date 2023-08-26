@@ -10,6 +10,7 @@ import (
 
 type RouteGateway interface {
 	GetAllRoutes() ([]models.Route, error)
+	RegisterRoute(route models.Route) (models.Route, error)
 }
 
 type PostgresRouteGateway struct {
@@ -18,6 +19,7 @@ type PostgresRouteGateway struct {
 
 type Route_DB struct {
 	Id          int       `json:"id"`
+	ServiceId   int       `json:"serviceId"`
 	Path        string    `json:"path"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
@@ -43,6 +45,7 @@ func MapApiMethodDbToDomain(m ApiMethod_DB) models.ApiMethod {
 func MapRouteDbToDomain(rdb Route_DB, m ApiMethod_DB) models.Route {
 	return models.Route{
 		Id:          rdb.Id,
+		ServiceId:   rdb.ServiceId,
 		Path:        rdb.Path,
 		Description: rdb.Description,
 		CreatedAt:   rdb.CreatedAt,

@@ -43,7 +43,6 @@ func (sm *ServiceManager) GetAllServicesHandler(w http.ResponseWriter, req *http
 
 func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *http.Request) {
 
-	// Error with pointers
 	type RegisterServiceRequest struct {
 		Name        string `json:"name" validate:"required"`
 		TargetUrl   string `json:"targetUrl" validate:"required"`
@@ -55,7 +54,6 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		log.Info().Msg(err.Error())
 		log.Info().Msg(ErrInvalidServiceBody.Error())
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
@@ -71,7 +69,6 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		return
 	}
 
-	// Create the service object
 	service := models.Service{
 		Name:        body.Name,
 		TargetUrl:   body.TargetUrl,
