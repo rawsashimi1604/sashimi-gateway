@@ -7,6 +7,9 @@
     - load sql files
 
 ## Environment file
+
+put `.env` into root directory of `admin-api`
+
 ```
 POSTGRES_URL=postgresql://postgres:password123@localhost:5432/admin-api
 ```
