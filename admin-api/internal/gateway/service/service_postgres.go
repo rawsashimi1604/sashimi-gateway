@@ -195,7 +195,41 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 	return mappedDbs, nil
 }
 
-func (s *PostgresServiceGateway) RegisterService(models.Service) (models.Service, error) {
+func (s *PostgresServiceGateway) RegisterService(service models.Service) (models.Service, error) {
 	// To be completed.
-	return models.Service{}, nil
+	query := `
+		INSERT INTO service 
+			(name, target_url, path, description, created_at, updated_at) 
+		VALUES
+			($1, $2, $3, $4, $5, $6)
+		RETURNING id, name, target_url, path, description, created_at, updated_at;
+	`
+
+	row := s.Conn.QueryRow(
+		context.Background(),
+		query,
+		service.Name,
+		service.TargetUrl,
+		service.Path,
+		service.Description,
+		service.CreatedAt,
+		service.UpdatedAt,
+	)
+
+	createdService := models.Service{}
+
+	if err := row.Scan(
+		&createdService.Id,
+		&createdService.Name,
+		&createdService.TargetUrl,
+		&createdService.Path,
+		&createdService.Description,
+		&createdService.CreatedAt,
+		&createdService.UpdatedAt,
+	); err != nil {
+		log.Info().Msg(err.Error())
+		return models.Service{}, err
+	}
+
+	return createdService, nil
 }

@@ -21,6 +21,9 @@ func main() {
 	logger.SetupLogger()
 	router := api.NewRouter()
 
+	a := "hello world"
+	log.Info().Msg(a)
+
 	log.Info().Msg("starting the admin api.")
 	log.Info().Msg("admin api now listening for requests.")
 

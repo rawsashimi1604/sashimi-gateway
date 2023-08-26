@@ -97,6 +97,7 @@ func (rps *ReverseProxy) parseRoutePath(path string) string {
 
 func (rps *ReverseProxy) matchService(path string) (models.Service, error) {
 	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
+	log.Info().Msg(utils.JSONStringify(service))
 	if err != nil {
 		if err == sg.ErrServiceNotFound {
 			return models.Service{}, sg.ErrServiceNotFound
