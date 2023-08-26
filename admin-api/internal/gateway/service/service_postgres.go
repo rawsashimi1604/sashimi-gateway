@@ -194,3 +194,8 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 
 	return mappedDbs, nil
 }
+
+func (s *PostgresServiceGateway) RegisterService(models.Service) (models.Service, error) {
+	// To be completed.
+	return models.Service{}, nil
+}
