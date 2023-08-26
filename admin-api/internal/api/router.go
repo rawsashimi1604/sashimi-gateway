@@ -9,6 +9,7 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rs/zerolog/log"
 )
@@ -19,8 +20,10 @@ func NewRouter() *mux.Router {
 	// Setup dependencies
 	conn := setupPostgresConn()
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
+	pgRouteGateway := route.NewPostgresRouteGateway(conn)
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, http.DefaultTransport)
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
+	routeManager := admin.NewRouteManager(pgRouteGateway)
 
 	router := mux.NewRouter()
 
@@ -28,6 +31,7 @@ func NewRouter() *mux.Router {
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")
+	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()
