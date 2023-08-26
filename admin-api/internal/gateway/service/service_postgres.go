@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	r "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
@@ -19,7 +20,7 @@ func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, 
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
-		INNER JOIN api_method am
+		LEFT JOIN api_method am
 		ON r.method_id=am.id
 		WHERE s.path=$1
 	`
@@ -39,6 +40,13 @@ func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, 
 		var route r.Route_DB
 		var apiMethod r.ApiMethod_DB
 
+		var routeID sql.NullInt64
+		var routePath sql.NullString
+		var routeDescription sql.NullString
+		var routeCreatedAt, routeUpdatedAt sql.NullTime
+		var apiMethodId sql.NullInt64
+		var apiMethodMethod sql.NullString
+
 		if err := rows.Scan(
 			&service.Id,
 			&service.Name,
@@ -47,19 +55,28 @@ func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, 
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
-			&route.Id,
-			&route.Path,
-			&route.Description,
-			&route.CreatedAt,
-			&route.UpdatedAt,
-			&apiMethod.Id,
-			&apiMethod.Method,
+			&routeID,
+			&routePath,
+			&routeDescription,
+			&routeCreatedAt,
+			&routeUpdatedAt,
+			&apiMethodId,
+			&apiMethodMethod,
 		); err != nil {
 			log.Info().Msg(err.Error())
 			return models.Service{}, err
 		}
 
-		routes = append(routes, r.MapRouteDbToDomain(route, apiMethod))
+		if routeID.Valid {
+			route.Id = int(routeID.Int64)
+			route.Path = routePath.String
+			route.Description = routeDescription.String
+			route.CreatedAt = routeCreatedAt.Time
+			route.UpdatedAt = routeUpdatedAt.Time
+			apiMethod.Id = int(apiMethodId.Int64)
+			apiMethod.Method = apiMethodMethod.String
+			routes = append(routes, r.MapRouteDbToDomain(route, apiMethod))
+		}
 	}
 
 	if !serviceExists {
@@ -75,7 +92,7 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
-		INNER JOIN api_method am
+		LEFT JOIN api_method am
 		ON r.method_id=am.id
 		WHERE s.target_url=$1
 	`
@@ -96,6 +113,13 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 		var route r.Route_DB
 		var apiMethod r.ApiMethod_DB
 
+		var routeID sql.NullInt64
+		var routePath sql.NullString
+		var routeDescription sql.NullString
+		var routeCreatedAt, routeUpdatedAt sql.NullTime
+		var apiMethodId sql.NullInt64
+		var apiMethodMethod sql.NullString
+
 		if err := rows.Scan(
 			&service.Id,
 			&service.Name,
@@ -104,19 +128,28 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
-			&route.Id,
-			&route.Path,
-			&route.Description,
-			&route.CreatedAt,
-			&route.UpdatedAt,
-			&apiMethod.Id,
-			&apiMethod.Method,
+			&routeID,
+			&routePath,
+			&routeDescription,
+			&routeCreatedAt,
+			&routeUpdatedAt,
+			&apiMethodId,
+			&apiMethodMethod,
 		); err != nil {
 			log.Info().Msg(err.Error())
 			return models.Service{}, err
 		}
 
-		routes = append(routes, r.MapRouteDbToDomain(route, apiMethod))
+		if routeID.Valid {
+			route.Id = int(routeID.Int64)
+			route.Path = routePath.String
+			route.Description = routeDescription.String
+			route.CreatedAt = routeCreatedAt.Time
+			route.UpdatedAt = routeUpdatedAt.Time
+			apiMethod.Id = int(apiMethodId.Int64)
+			apiMethod.Method = apiMethodMethod.String
+			routes = append(routes, r.MapRouteDbToDomain(route, apiMethod))
+		}
 	}
 
 	if !serviceExists {
@@ -132,7 +165,7 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
-		INNER JOIN api_method am
+		LEFT JOIN api_method am
 		ON r.method_id=am.id
 		ORDER BY s.id
 	`
@@ -152,6 +185,13 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 		var route r.Route_DB
 		var apiMethod r.ApiMethod_DB
 
+		var routeID sql.NullInt64
+		var routePath sql.NullString
+		var routeDescription sql.NullString
+		var routeCreatedAt, routeUpdatedAt sql.NullTime
+		var apiMethodId sql.NullInt64
+		var apiMethodMethod sql.NullString
+
 		if err := rows.Scan(
 			&service.Id,
 			&service.Name,
@@ -160,13 +200,13 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
-			&route.Id,
-			&route.Path,
-			&route.Description,
-			&route.CreatedAt,
-			&route.UpdatedAt,
-			&apiMethod.Id,
-			&apiMethod.Method,
+			&routeID,
+			&routePath,
+			&routeDescription,
+			&routeCreatedAt,
+			&routeUpdatedAt,
+			&apiMethodId,
+			&apiMethodMethod,
 		); err != nil {
 			log.Info().Msg("error retrieving service and route.")
 			continue
@@ -177,8 +217,18 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 			serviceMap[service.Id] = service
 		}
 
-		// Append the route to the service's routes in the map
-		serviceRoutesMap[service.Id] = append(serviceRoutesMap[service.Id], r.MapRouteDbToDomain(route, apiMethod))
+		if routeID.Valid {
+			route.Id = int(routeID.Int64)
+			route.Path = routePath.String
+			route.Description = routeDescription.String
+			route.CreatedAt = routeCreatedAt.Time
+			route.UpdatedAt = routeUpdatedAt.Time
+			apiMethod.Id = int(apiMethodId.Int64)
+			apiMethod.Method = apiMethodMethod.String
+
+			// Append the route to the service's routes in the map
+			serviceRoutesMap[service.Id] = append(serviceRoutesMap[service.Id], r.MapRouteDbToDomain(route, apiMethod))
+		}
 	}
 
 	if err := rows.Err(); err != nil {
@@ -188,6 +238,9 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 	var mappedDbs []models.Service
 	for _, serviceDb := range serviceMap {
 		routes := serviceRoutesMap[serviceDb.Id]
+		if routes == nil {
+			routes = make([]models.Route, 0)
+		}
 		mapped := MapServiceDbToDomain(serviceDb, routes)
 		mappedDbs = append(mappedDbs, mapped)
 	}
@@ -216,9 +269,7 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 		service.UpdatedAt,
 	)
 
-	createdService := models.Service{
-		Routes: make([]models.Route, 0),
-	}
+	createdService := Service_DB{}
 
 	if err := row.Scan(
 		&createdService.Id,
@@ -233,5 +284,5 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 		return models.Service{}, err
 	}
 
-	return createdService, nil
+	return MapServiceDbToDomain(createdService, make([]models.Route, 0)), nil
 }
