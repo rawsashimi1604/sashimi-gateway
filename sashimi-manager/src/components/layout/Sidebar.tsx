@@ -24,8 +24,8 @@ function Sidebar() {
           <ul className="flex flex-col gap-0">
             <SidebarItem item="Home" isSelected={true} href="/" />
             <SidebarItem item="Services" href="/services" />
-            <SidebarItem item="Routes" />
-            <SidebarItem item="Logs" />
+            <SidebarItem item="Routes" href="/routes" />
+            <SidebarItem item="Logs" href="/logs" />
           </ul>
         </div>
         {/* Settings , Logout */}

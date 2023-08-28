@@ -2,6 +2,8 @@ import 'animate.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import Dashboard from './modules/dashboard';
+import Logs from './modules/logs';
+import Routes from './modules/routes';
 import Services from './modules/services';
 
 function App() {
@@ -13,6 +15,14 @@ function App() {
     {
       path: '/services',
       element: <Services />
+    },
+    {
+      path: '/routes',
+      element: <Routes />
+    },
+    {
+      path: '/logs',
+      element: <Logs />
     }
   ]);
 
