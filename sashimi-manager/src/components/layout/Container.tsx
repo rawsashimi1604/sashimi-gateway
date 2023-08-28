@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 
 import Footer from './Footer';
 import Navbar from './Navbar';
+import Notifcations from './Notifcations';
 import Sidebar from './Sidebar';
 
 interface ContainerProps {
@@ -19,6 +20,9 @@ function Container({ children }: ContainerProps) {
         {children}
         {/* <Footer /> */}
       </main>
+      <div className="min-w-[250px]">
+        <Notifcations />
+      </div>
     </div>
   );
 }
