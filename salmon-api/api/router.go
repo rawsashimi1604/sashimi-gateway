@@ -11,5 +11,6 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/", AddDishHandler).Methods("POST")
 	r.HandleFunc("/{id:[0-9]+}", GetDishByIdHandler).Methods("GET")
 	r.HandleFunc("/test", TestDish).Methods("GET")
+	r.HandleFunc("/test-salmon", TestDish).Methods("GET")
 	return r
 }

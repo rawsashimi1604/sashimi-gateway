@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	rg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
@@ -51,6 +53,7 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
+		log.Info().Msg(err.Error())
 		log.Info().Msg(ErrInvalidRouteBody.Error())
 		http.Error(w, ErrInvalidRouteBody.Error(), http.StatusBadRequest)
 		return
@@ -68,16 +71,23 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 	// TODO: add Method gateway search for id.
 	// TODO: add Service gateway to search for id.
 
-	// route := models.Route{
-	// 	Path:        body.Path,
-	// 	ServiceId:   body.ServiceId,
-	// 	Description: body.Description,
-	// 	CreatedAt:   time.Now(),
-	// 	UpdatedAt:   time.Now(),
-	// 	Method:      models.ApiMethod{Id: 1, Method: "GET"},
-	// }
+	route := models.Route{
+		Path:        body.Path,
+		ServiceId:   body.ServiceId,
+		Description: body.Description,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Method:      models.ApiMethod{Id: 1, Method: "GET"},
+	}
+
+	registeredRoute, err := rm.routeGateway.RegisterRoute(route)
+	if err != nil {
+		log.Info().Msg(ErrBadServer.Error())
+		http.Error(w, ErrBadServer.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "applciation/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(body)
+	json.NewEncoder(w).Encode(registeredRoute)
 }

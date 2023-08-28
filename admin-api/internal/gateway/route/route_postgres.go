@@ -6,13 +6,14 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rs/zerolog/log"
 )
 
 func NewPostgresRouteGateway(conn *pgxpool.Pool) *PostgresRouteGateway {
 	return &PostgresRouteGateway{Conn: conn}
 }
 
-func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
+func (rg *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 
 	query := `
 		SELECT r.id, r.service_id, r.path, r.description, r.created_at, r.updated_at, m.id, m.method
@@ -22,7 +23,7 @@ func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 		ORDER BY r.id ASC
 	`
 
-	rows, err := s.Conn.Query(context.Background(), query)
+	rows, err := rg.Conn.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -47,14 +48,47 @@ func (s *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 	return routes, nil
 }
 
-func (s *PostgresRouteGateway) RegisterRoute(route models.Route) (models.Route, error) {
-	// query = `
-	// 	INSERT INTO route
-	// 		(service_id, method_id, path, description, created_at, updated_at)
-	// 	VALUES
-	// 		($1, $2, $3, $4, $5, $6)
-	// 	RETURNING id, service_id, method_id, path, description, created_at, updated_at;
-	// `
+func (rg *PostgresRouteGateway) RegisterRoute(route models.Route) (models.Route, error) {
+	query := `
+	WITH inserted AS (
+		INSERT INTO route
+			(service_id, method_id, path, description, created_at, updated_at)
+		VALUES 
+			($1, $2, $3, $4, $5, $6)
+		RETURNING *
+	)
+	SELECT inserted.id, service_id, method_id, method, path, description, created_at, updated_at
+	FROM inserted
+	INNER JOIN api_method ON inserted.method_id = api_method.id
+	`
 
-	return models.Route{}, nil
+	row := rg.Conn.QueryRow(
+		context.Background(),
+		query,
+		route.ServiceId,
+		route.Method.Id,
+		route.Path,
+		route.Description,
+		route.CreatedAt,
+		route.UpdatedAt,
+	)
+
+	createdRoute := Route_DB{}
+	apiMethodDb := ApiMethod_DB{}
+
+	if err := row.Scan(
+		&createdRoute.Id,
+		&createdRoute.ServiceId,
+		&apiMethodDb.Id,
+		&apiMethodDb.Method,
+		&createdRoute.Path,
+		&createdRoute.Description,
+		&createdRoute.CreatedAt,
+		&createdRoute.UpdatedAt,
+	); err != nil {
+		log.Info().Msg(err.Error())
+		return models.Route{}, err
+	}
+
+	return MapRouteDbToDomain(createdRoute, apiMethodDb), nil
 }

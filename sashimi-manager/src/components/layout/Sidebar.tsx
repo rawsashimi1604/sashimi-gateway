@@ -20,6 +20,7 @@ function Sidebar() {
             <SidebarItem item="Home" isSelected={true} />
             <SidebarItem item="Services" />
             <SidebarItem item="Routes" />
+            <SidebarItem item="Logs" />
           </ul>
         </div>
         {/* Settings , Logout */}
