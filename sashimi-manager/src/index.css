@@ -1,6 +1,17 @@
-@import "c3/c3.min.css";
+@import 'c3/c3.min.css';
 @import '@fontsource-variable/cabin';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* C3 chart font configs */
+.c3-axis-y text {
+  font-family: 'cabin, serif';
+  font-size: 14px;
+}
+
+.c3-axis-x text {
+  font-family: 'cabin, serif';
+  font-size: 14px;
+}

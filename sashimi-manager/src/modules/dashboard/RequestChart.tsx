@@ -58,9 +58,7 @@ function RequestChart() {
         type: 'timeseries',
         tick: {
           format: format,
-          culling: {
-            max: 6
-          }
+          culling: false
         }
       }
     }
@@ -68,7 +66,13 @@ function RequestChart() {
 
   return (
     <React.Fragment>
-      <div className="text-xs">
+      <div className="text-xs flex items-center justify-end">
+        <span className="mr-2 font-md border-r pr-2 border-sashimi-deepgray">
+          Error rate (4xx and 5xx Status):{' '}
+          <b className="text-sashimi-deeppink font-bold tracking-tighter">
+            35.06%
+          </b>
+        </span>
         <span className="mr-2">select timeframe</span>
         <SelectInput
           options={['1h', '15m', '5m', '1m']}

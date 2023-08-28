@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        cabin: 'cabin, Times New Roman, serif'
+        cabin: 'cabin, serif'
       },
       colors: {
         'sashimi-blue': '#E3F5FF',
