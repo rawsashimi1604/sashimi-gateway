@@ -22,7 +22,7 @@ function Sidebar() {
         <div className="mt-4">
           <h2 className="font-bold text-gray-800 tracking-tighter">gateway</h2>
           <ul className="flex flex-col gap-0">
-            <SidebarItem item="Home" isSelected={true} href="/" />
+            <SidebarItem item="Home" href="/" />
             <SidebarItem item="Services" href="/services" />
             <SidebarItem item="Routes" href="/routes" />
             <SidebarItem item="Logs" href="/logs" />
@@ -32,8 +32,8 @@ function Sidebar() {
         <div className="mt-4">
           <h2 className="font-bold text-gray-800 tracking-tighter">account</h2>
           <ul className="flex flex-col gap-0">
-            <SidebarItem item="Account" />
-            <SidebarItem item="Settings" />
+            <SidebarItem item="Account" href="/account" />
+            <SidebarItem item="Settings" href="/settings" />
           </ul>
         </div>
       </div>

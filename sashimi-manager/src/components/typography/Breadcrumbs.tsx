@@ -9,7 +9,7 @@ function Breadcrumbs() {
 
   return (
     <div className="flex flex-row items-center text-sm gap-1">
-      <span className="text-gray-500">manager {'>'}</span>
+      <span className="text-gray-500">gateway {'>'}</span>
       {breadcrumbs.map((breadcrumb, i) => {
         return (
           <span
@@ -19,7 +19,7 @@ function Breadcrumbs() {
                 : 'text-gray-500'
             }`}
           >
-            {breadcrumb.key === '/' ? 'home' : breadcrumb.key.slice(1)}{' '}
+            {breadcrumb.key === '/' ? 'manager' : breadcrumb.key.slice(1)}{' '}
             {i + 2 == breadcrumbs.length && '>'}
           </span>
         );

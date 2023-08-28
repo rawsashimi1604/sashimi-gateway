@@ -1,10 +1,12 @@
 import 'animate.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
+import Account from './modules/account';
 import Dashboard from './modules/dashboard';
 import Logs from './modules/logs';
 import Routes from './modules/routes';
 import Services from './modules/services';
+import Settings from './modules/settings';
 
 function App() {
   const router = createBrowserRouter([
@@ -23,6 +25,14 @@ function App() {
     {
       path: '/logs',
       element: <Logs />
+    },
+    {
+      path: '/account',
+      element: <Account />
+    },
+    {
+      path: '/settings',
+      element: <Settings />
     }
   ]);
 

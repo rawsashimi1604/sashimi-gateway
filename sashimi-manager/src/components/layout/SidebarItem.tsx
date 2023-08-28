@@ -1,17 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarItemProps {
   item: string;
-  isSelected?: boolean;
   href?: string;
 }
 
-function SidebarItem({
-  item,
-  isSelected = false,
-  href = '/'
-}: SidebarItemProps) {
+function SidebarItem({ item, href = '/' }: SidebarItemProps) {
+  const location = useLocation();
+  const isSelected = location.pathname == href;
+
   return (
     <li
       className={`${
