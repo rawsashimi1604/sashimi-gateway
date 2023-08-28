@@ -10,7 +10,7 @@ function Sidebar() {
       {/* border */}
       <div className="absolute right-0 border-r border-gray-200 h-full w-full -z-10"></div>
       <div>
-        <div className="mb-8">
+        <div className="mb-10">
           <Logo />
         </div>
 

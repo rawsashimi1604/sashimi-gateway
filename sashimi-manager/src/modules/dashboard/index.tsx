@@ -13,7 +13,7 @@ function Dashboard() {
       </h3>
 
       {/* Analytics (Requests, Services, Routes, Data transmitted) */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card header="total requests" data="30" />
         <Card header="services" data="4" />
         <Card header="routes" data="32" />

@@ -5,6 +5,10 @@ export default {
     extend: {
       fontFamily: {
         cabin: 'cabin, Times New Roman, serif'
+      },
+      colors: {
+        'sashimi-blue': '#E3F5FF',
+        'sashimi-gray': '#E5ECF6'
       }
     }
   },
