@@ -22,8 +22,8 @@ function Sidebar() {
         <div className="mt-4">
           <h2 className="font-bold text-gray-800 tracking-tighter">gateway</h2>
           <ul className="flex flex-col gap-0">
-            <SidebarItem item="Home" isSelected={true} />
-            <SidebarItem item="Services" />
+            <SidebarItem item="Home" isSelected={true} href="/" />
+            <SidebarItem item="Services" href="/services" />
             <SidebarItem item="Routes" />
             <SidebarItem item="Logs" />
           </ul>

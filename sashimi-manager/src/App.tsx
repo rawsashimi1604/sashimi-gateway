@@ -2,6 +2,7 @@ import 'animate.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import Dashboard from './modules/dashboard';
+import Services from './modules/services';
 
 function App() {
   const router = createBrowserRouter([
@@ -10,8 +11,8 @@ function App() {
       element: <Dashboard />
     },
     {
-      path: '/about',
-      element: <div>About</div>
+      path: '/services',
+      element: <Services />
     }
   ]);
 
