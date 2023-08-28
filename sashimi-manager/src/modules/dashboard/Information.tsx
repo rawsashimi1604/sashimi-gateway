@@ -1,18 +1,15 @@
-import c3 from 'c3';
 import React from 'react';
 
-function Information() {
-  var chart = c3.generate({
-    bindto: '#chart',
-    data: {
-      columns: [
-        ['data1', 30, 200, 100, 400, 150, 250],
-        ['data2', 50, 20, 10, 40, 15, 25]
-      ]
-    }
-  });
+import Header from '../../components/typography/Header';
+import RequestChart from './RequestChart';
 
-  return <div>Information</div>;
+function Information() {
+  return (
+    <div className="mt-6">
+      <Header text="api requests" size="sm" align="left" />
+      <RequestChart />
+    </div>
+  );
 }
 
 export default Information;

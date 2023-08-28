@@ -3,6 +3,7 @@ import React from 'react';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
 import Card from './Card';
+import Information from './Information';
 
 function Dashboard() {
   return (
@@ -20,7 +21,8 @@ function Dashboard() {
         <Card header="data transmitted" data="4,096MB" />
       </section>
 
-      {/* Grpah */}
+      {/* Graph */}
+      <Information />
     </Container>
   );
 }

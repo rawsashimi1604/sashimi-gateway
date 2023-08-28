@@ -16,7 +16,7 @@ func main() {
 	// TODO: add caching for services and routes (REDIS)
 	// TODO: add rate limiting
 	// TODO: add admin api (ongoing)
-	// TODO: add GUI dashboard
+	// TODO: add GUI dashboard (ongoing)
 
 	logger.SetupLogger()
 	router := api.NewRouter()
