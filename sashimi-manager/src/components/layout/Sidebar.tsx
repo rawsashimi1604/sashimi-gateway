@@ -1,6 +1,7 @@
 import React from 'react';
 
 import GatewayLogo from '../sashimi-gateway/GatewayLogo';
+import Logo from '../sashimi-gateway/Logo';
 import SidebarItem from './SidebarItem';
 
 function Sidebar() {
@@ -9,6 +10,10 @@ function Sidebar() {
       {/* border */}
       <div className="absolute right-0 border-r border-gray-200 h-full w-full -z-10"></div>
       <div>
+        <div className="mb-8">
+          <Logo />
+        </div>
+
         <div className="border-b border-gray-200 pb-5">
           {/* Reverse proxy name */}
           <GatewayLogo gateway="Sushi Gateway" user="admin" />
