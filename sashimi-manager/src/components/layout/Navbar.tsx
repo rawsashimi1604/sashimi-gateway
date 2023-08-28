@@ -1,13 +1,17 @@
 import React from 'react';
+import { BsBrightnessHighFill } from 'react-icons/bs';
+import { RxDashboard } from 'react-icons/rx';
 
 import Breadcrumbs from '../typography/Breadcrumbs';
 
 function Navbar() {
   return (
-    <nav>
+    <nav className="w-full flex flex-row items-center gap-1.5">
+      <RxDashboard className="w-4 h-4" />
       <Breadcrumbs />
-      Navbar
-      <span>hello world</span>
+      <div className="grow justify-self-end flex justify-end">
+        <BsBrightnessHighFill className="w-4 h-4 text-black hover:cursor-pointer hover:shadow-lg transition-all duration-150 hover:text-gray-500" />
+      </div>
     </nav>
   );
 }
