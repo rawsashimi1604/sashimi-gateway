@@ -19,6 +19,8 @@ function Dashboard() {
         <Card header="routes" data="32" />
         <Card header="data transmitted" data="4,096MB" />
       </section>
+
+      {/* Grpah */}
     </Container>
   );
 }
