@@ -3,7 +3,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 function Notifcations() {
   return (
-    <div className="p-4 pt-8 flex flex-col relative z-0 w-full h-full">
+    <div className="p-4 pt-5 flex flex-col relative z-0 w-full h-full">
       {/* border */}
       <div className="absolute left-0 border-l border-gray-200 h-full w-full -z-10"></div>
       <div className="flex flex-row items-center justify-between">

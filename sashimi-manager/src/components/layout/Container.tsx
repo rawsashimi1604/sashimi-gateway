@@ -17,7 +17,7 @@ function Container({ children }: ContainerProps) {
       </div>
       <main className="flex-grow p-6">
         <Navbar />
-        {children}
+        <div className="mt-2">{children}</div>
         {/* <Footer /> */}
       </main>
       <div className="min-w-[250px]">

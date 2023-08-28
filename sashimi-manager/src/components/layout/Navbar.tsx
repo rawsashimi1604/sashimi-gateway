@@ -6,7 +6,7 @@ import Breadcrumbs from '../typography/Breadcrumbs';
 
 function Navbar() {
   return (
-    <nav className="w-full flex flex-row items-center gap-1.5">
+    <nav className="w-full flex flex-row items-center gap-1.5 pb-2 border-b">
       <RxDashboard className="w-4 h-4" />
       <Breadcrumbs />
       <div className="grow justify-self-end flex justify-end">

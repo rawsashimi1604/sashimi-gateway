@@ -12,7 +12,7 @@ function Header({
   text,
   align = 'center',
   className,
-  hasTextDecoration = true,
+  hasTextDecoration = false,
   size = 'lg'
 }: HeaderProps) {
   const sizeMap = {
@@ -29,7 +29,7 @@ function Header({
 
   return (
     <h1
-      className={`${sizeMap[size]} mb-4 font-sans tracking-wide font-light ${
+      className={`${sizeMap[size]} mb-2 tracking-wide font-cabin font-light ${
         hasTextDecoration &&
         'underline decoration-gray-200 underline-offset-[6px] '
       }  
