@@ -19,9 +19,13 @@ func NewRouter() *mux.Router {
 
 	// Setup dependencies
 	conn := setupPostgresConn()
+
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
+
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, http.DefaultTransport)
+
+	gatewayManager := admin.NewGatewayManager()
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 
@@ -29,6 +33,7 @@ func NewRouter() *mux.Router {
 
 	// These route wont go through the reverse proxy middlewares
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
+	adminRouter.HandleFunc("/general", gatewayManager.GetGatewayInformationHandler).Methods("GET")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")
 	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET")
