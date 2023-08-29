@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/admin"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/headers"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
@@ -33,6 +34,8 @@ func NewRouter() *mux.Router {
 
 	// These route wont go through the reverse proxy middlewares
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
+	// Set CORS policy for admin Router
+	adminRouter.Use(headers.SetAdminHeadersMiddleware)
 	adminRouter.HandleFunc("/general", gatewayManager.GetGatewayInformationHandler).Methods("GET")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")

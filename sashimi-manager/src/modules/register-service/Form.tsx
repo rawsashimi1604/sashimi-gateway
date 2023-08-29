@@ -4,13 +4,22 @@ import * as yup from 'yup';
 
 import TextInput from '../../components/input/TextInput';
 
+const isValidUrl = (value: string) => {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol);
+  } catch (_) {
+    return false;
+  }
+};
+
 // Define validation schema using yup
 const validationSchema = yup.object().shape({
   formName: yup.string().required('Service name is required.'),
   formTargetUrl: yup
     .string()
     .required('Target URL is required.')
-    .url('Must be a valid URL.'),
+    .test('is-valid-url', 'Must be a valid URL.', isValidUrl),
   formPath: yup.string().required('Gateway path is required.'),
   formDescription: yup.string().required('Service description is required.')
 });
@@ -23,8 +32,10 @@ function Form() {
     formPath: '',
     formDescription: ''
   });
-
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
+  const [apiRequestError, setApiRequestError] = useState('');
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -36,14 +47,16 @@ function Form() {
     try {
       await validationSchema.validate(formData, { abortEarly: false });
       console.log('Form is valid. Submitting:', formData);
-      // Proceed to submit your form data to your backend or handle accordingly
+      setValidationErrors({});
+      setApiRequestError('');
+      // Submit the form
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         const errorObj: { [key: string]: string } = {};
         for (let error of err.inner) {
           errorObj[error.path as string] = error.message;
         }
-        setErrors(errorObj);
+        setValidationErrors(errorObj);
       }
     }
   };
@@ -67,7 +80,7 @@ function Form() {
               value={formData.formName}
               onChange={(e) => handleChange('formName', e.target.value)}
               // Add error prop to display error message, assuming your TextInput component supports it
-              error={errors.formName}
+              error={validationErrors.formName}
             />
           </div>
         </div>
@@ -88,7 +101,7 @@ function Form() {
               value={formData.formTargetUrl}
               onChange={(e) => handleChange('formTargetUrl', e.target.value)}
               // Add error prop to display error message, assuming your TextInput component supports it
-              error={errors.formTargetUrl}
+              error={validationErrors.formTargetUrl}
             />
           </div>
         </div>
@@ -109,7 +122,7 @@ function Form() {
               value={formData.formPath}
               onChange={(e) => handleChange('formPath', e.target.value)}
               // Add error prop to display error message, assuming your TextInput component supports it
-              error={errors.formPath}
+              error={validationErrors.formPath}
             />
           </div>
         </div>
@@ -130,7 +143,7 @@ function Form() {
               value={formData.formDescription}
               onChange={(e) => handleChange('formDescription', e.target.value)}
               // Add error prop to display error message, assuming your TextInput component supports it
-              error={errors.formDescription}
+              error={validationErrors.formDescription}
             />
           </div>
         </div>

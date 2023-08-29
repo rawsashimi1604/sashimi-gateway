@@ -7,7 +7,7 @@ const instance = axios.create();
 // Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
-    config.baseURL = `${import.meta.env.VITE_BACKEND_URL}/${
+    config.baseURL = `${import.meta.env.VITE_BACKEND_URL}${
       import.meta.env.VITE_ADMIN_API_PATH
     }`;
     return config;

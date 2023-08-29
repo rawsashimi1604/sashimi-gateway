@@ -12,6 +12,7 @@ function Breadcrumbs() {
       {breadcrumbs.map((breadcrumb, i) => {
         return (
           <span
+            key={i + (breadcrumb.breadcrumb?.toString() as string)}
             className={`${
               breadcrumb.key === location.pathname
                 ? 'font-semibold'
