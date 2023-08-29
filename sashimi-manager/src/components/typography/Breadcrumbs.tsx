@@ -19,7 +19,7 @@ function Breadcrumbs() {
             }`}
           >
             {breadcrumb.key === '/' ? 'manager' : breadcrumb.key.slice(1)}{' '}
-            {i + 2 == breadcrumbs.length && '>'}
+            {i + 1 !== breadcrumbs.length && '>'}
           </span>
         );
       })}

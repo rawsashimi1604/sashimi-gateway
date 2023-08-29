@@ -4,6 +4,8 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Account from './modules/account';
 import Dashboard from './modules/dashboard';
 import Logs from './modules/gateway-logs';
+import RegisterRoute from './modules/register-route';
+import RegisterService from './modules/register-service';
 import Routes from './modules/routes';
 import Services from './modules/services';
 import Settings from './modules/settings';
@@ -19,8 +21,16 @@ function App() {
       element: <Services />
     },
     {
+      path: '/services/register',
+      element: <RegisterService />
+    },
+    {
       path: '/routes',
       element: <Routes />
+    },
+    {
+      path: '/routes/register',
+      element: <RegisterRoute />
     },
     {
       path: '/logs',
