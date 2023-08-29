@@ -15,6 +15,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+type ReverseProxy struct {
+	serviceGateway sg.ServiceGateway
+	transport      http.RoundTripper
+}
+
 func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 
@@ -53,11 +58,6 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 		rps.prepareAndServeHttp(w, origin, req)
 		next.ServeHTTP(w, req)
 	})
-}
-
-type ReverseProxy struct {
-	serviceGateway sg.ServiceGateway
-	transport      http.RoundTripper
 }
 
 func NewReverseProxy(serviceGateway sg.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxy {
