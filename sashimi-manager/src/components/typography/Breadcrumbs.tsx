@@ -5,7 +5,6 @@ import useBreadcrumbs from 'use-react-router-breadcrumbs';
 function Breadcrumbs() {
   const location = useLocation();
   const breadcrumbs = useBreadcrumbs();
-  console.log(breadcrumbs);
 
   return (
     <div className="flex flex-row items-center text-sm gap-1">

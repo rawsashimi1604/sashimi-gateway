@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
+import AdminService from '../../api/services/admin/AdminService';
+import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
 import Card from './Card';
 import Information from './Information';
 
 function Dashboard() {
+  async function loadApiRequest() {
+    const data = await AdminService.getAllServices();
+    console.log(data);
+  }
+
+  useEffect(() => {
+    loadApiRequest();
+  }, []);
+
   return (
     <Container>
       <Header text="welcome to sashimi gateway" align="left" size="sm" />
