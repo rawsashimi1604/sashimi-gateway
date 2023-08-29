@@ -23,7 +23,8 @@
     "react-icons": "^4.8.0",
     "react-router-dom": "^6.15.0",
     "use-react-router-breadcrumbs": "^4.0.1",
-    "vite-plugin-svgr": "^3.2.0"
+    "vite-plugin-svgr": "^3.2.0",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@svgr/rollup": "^8.1.0",

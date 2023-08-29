@@ -8,7 +8,7 @@ interface SelectInputProps {
 function SelectInput({ options, onChange }: SelectInputProps) {
   return (
     <select
-      className="rounded-lg border border-sashimi-deepgray px-1 py-0.5 text-xs focus:outline-none"
+      className="rounded-lg border bg-sashimi-gray border-sashimi-deepgray px-1 py-0.5 text-xs focus:outline-none"
       onChange={(e) => onChange && onChange(e.target.value)}
     >
       {options?.map((option) => {
