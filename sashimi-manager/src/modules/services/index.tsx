@@ -1,5 +1,4 @@
 import React from 'react';
-import { GrServices } from 'react-icons/gr';
 
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';

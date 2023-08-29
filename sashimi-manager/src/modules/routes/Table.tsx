@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ApiMethodTag from '../../components/tags/ApiMethodTag';
+
 function Table() {
   return (
     <div>
@@ -11,13 +13,13 @@ function Table() {
                 Id
               </th>
               <th scope="col" className="px-2 py-1.5">
-                Name
+                Service
+              </th>
+              <th scope="col" className="px-2 py-1.5">
+                Method
               </th>
               <th scope="col" className="px-2 py-1.5">
                 Path
-              </th>
-              <th scope="col" className="px-2 py-1.5">
-                Target URL
               </th>
               <th scope="col" className="px-2 py-1.5">
                 Description
@@ -28,22 +30,20 @@ function Table() {
             <tr className="bg-white border-b hover:bg-sashimi-gray/50 cursor-pointer">
               <td className="px-2 py-1.5">1</td>
               <td className="px-2 py-1.5">Salmon</td>
-              <td className="px-2 py-1.5 italic">/salmon</td>
-              <td className="px-2 py-1.5">http://localhost:8081</td>
               <td className="px-2 py-1.5">
-                The salmon microservice used to learn how to create a golang api
-                gateway infrastructure.
+                <ApiMethodTag method="GET" />
               </td>
+              <td className="px-2 py-1.5 italic">/</td>
+              <td className="px-2 py-1.5">Get all salmon dishes</td>
             </tr>
             <tr className="bg-white border-b hover:bg-sashimi-gray/50 cursor-pointer">
               <td className="px-2 py-1.5">2</td>
-              <td className="px-2 py-1.5">Tuna</td>
-              <td className="px-2 py-1.5 italic">/tuna</td>
-              <td className="px-2 py-1.5">http://localhost:8082</td>
+              <td className="px-2 py-1.5">Salmon</td>
               <td className="px-2 py-1.5">
-                The tuna microservice used to learn how to create a golang api
-                gateway infrastructure.
+                <ApiMethodTag method="GET" />
               </td>
+              <td className="px-2 py-1.5 italic">/:id</td>
+              <td className="px-2 py-1.5">Get all salmon dishes</td>
             </tr>
           </tbody>
         </table>
