@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Add one more middleware to track websockets to manager
+// TODO: Add one more middleware to track websockets to manager
 func AnalyticsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		log.Info().Msg("------------------")

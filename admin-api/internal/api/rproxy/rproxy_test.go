@@ -17,6 +17,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// TODO: update tests for mock analytics tracker.
+
 // mockTransport is a mocked object that mocks the http.RoundTripper, an interface http.Client uses to send the requests.
 type mockTransport struct{}
 
@@ -92,7 +94,7 @@ func TestReverseProxyMiddleware(t *testing.T) {
 		}
 
 		// Apply the middleware to a test route and invoke it
-		rps.ReverseProxyMiddlware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, req)
+		rps.ReverseProxyMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, req)
 
 		assert.Equal(t, http.StatusOK, rr.Code)
 	})
@@ -106,7 +108,7 @@ func TestReverseProxyMiddleware(t *testing.T) {
 		origin, _ := url.Parse(testService.TargetUrl)
 		proxy := httputil.NewSingleHostReverseProxy(origin)
 		proxy.Transport = &mockTransport{}
-		rps.ReverseProxyMiddlware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, req)
+		rps.ReverseProxyMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})).ServeHTTP(rr, req)
 
 		assert.Equal(t, http.StatusNotFound, rr.Code)
 	})

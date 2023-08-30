@@ -22,33 +22,28 @@ func NewAnalyticsTracker() *AnalyticsTracker {
 	}
 }
 
-func (rt *AnalyticsTracker) Add(request models.ApiRequest) {
-	rt.mutex.Lock()
-	defer rt.mutex.Unlock()
-	rt.requests = append(rt.requests, request)
+func (at *AnalyticsTracker) Add(request models.ApiRequest) {
+	at.mutex.Lock()
+	defer at.mutex.Unlock()
+	at.requests = append(at.requests, request)
 }
 
-func (rt *AnalyticsTracker) GetAndReset() []models.ApiRequest {
-	rt.mutex.Lock()
-	defer rt.mutex.Unlock()
+func (at *AnalyticsTracker) GetAndReset() []models.ApiRequest {
+	at.mutex.Lock()
+	defer at.mutex.Unlock()
 
-	currentRequests := rt.requests
-	rt.requests = make([]models.ApiRequest, 0)
+	currentRequests := at.requests
+	at.requests = make([]models.ApiRequest, 0)
 	return currentRequests
 }
 
-func CaptureRequestMiddleware(rt *AnalyticsTracker) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestData := models.ApiRequest{
-				Path:   r.URL.Path,
-				Method: r.Method,
-				Time:   time.Now(),
-			}
-			// Store the request data safely using mutex locks, serve http
-			rt.Add(requestData)
-			log.Info().Msg("rt slice: " + utils.JSONStringify(rt.requests))
-			next.ServeHTTP(w, r)
-		})
+func (at *AnalyticsTracker) CaptureRequest(req *http.Request) {
+	requestData := models.ApiRequest{
+		Path:   req.URL.Path,
+		Method: req.Method,
+		Time:   time.Now(),
 	}
+	// Store the request data safely using mutex locks, serve http
+	at.Add(requestData)
+	log.Info().Msg("rt slice: " + utils.JSONStringify(at.requests))
 }

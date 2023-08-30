@@ -12,6 +12,7 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/middleware"
 	"github.com/rs/zerolog/log"
 )
 
@@ -25,8 +26,8 @@ func NewRouter() *mux.Router {
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
 
 	// Other services
-	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, http.DefaultTransport)
 	analyticsTracker := analytics.NewAnalyticsTracker()
+	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
 	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager()
@@ -34,6 +35,8 @@ func NewRouter() *mux.Router {
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 
 	router := mux.NewRouter()
+	// Create context middlware to pass to following req/res lifecycle.
+	router.Use(middleware.CreateContextMiddlware)
 
 	// These route wont go through the reverse proxy middlewares
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
@@ -48,8 +51,7 @@ func NewRouter() *mux.Router {
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()
 	reverseProxyRouter.Use(analytics.AnalyticsMiddleware)
-	reverseProxyRouter.Use(reverseProxy.ReverseProxyMiddlware)
-	reverseProxyRouter.Use(analytics.CaptureRequestMiddleware(analyticsTracker))
+	reverseProxyRouter.Use(reverseProxy.ReverseProxyMiddleware) // Add the data to responses... use context
 
 	// Define empty handler to catch all requests.
 	reverseProxyRouter.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})

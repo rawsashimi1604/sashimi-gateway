@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	sg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
@@ -18,18 +19,20 @@ import (
 )
 
 type ReverseProxy struct {
-	serviceGateway sg.ServiceGateway
-	transport      http.RoundTripper
+	serviceGateway   sg.ServiceGateway
+	analyticsTracker *analytics.AnalyticsTracker
+	transport        http.RoundTripper
 }
 
-func NewReverseProxy(serviceGateway sg.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxy {
+func NewReverseProxy(serviceGateway sg.ServiceGateway, analyticsTracker *analytics.AnalyticsTracker, httpTransport http.RoundTripper) *ReverseProxy {
 	return &ReverseProxy{
-		serviceGateway: serviceGateway,
-		transport:      httpTransport,
+		serviceGateway:   serviceGateway,
+		analyticsTracker: analyticsTracker,
+		transport:        httpTransport,
 	}
 }
 
-func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
+func (rps *ReverseProxy) ReverseProxyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 
 		// validate validatedService
@@ -44,7 +47,7 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 			http.Error(w, "service unable to be validated", http.StatusBadGateway)
 			return
 		}
-		// log.Info().Msg("service: " + utils.JSONStringify(validatedService))
+		log.Info().Msg("service: " + utils.JSONStringify(validatedService))
 
 		// validate route
 		validatedRoute, _, err := rps.matchRoute(validatedService, rps.parseRoutePath(req.URL.Path))
@@ -53,7 +56,7 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 			http.Error(w, "unable to find route", http.StatusNotFound)
 			return
 		}
-		// log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
+		log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
 
 		// create origin url
 		origin, err := url.Parse(validatedService.TargetUrl + validatedRoute.Path)
@@ -64,12 +67,12 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 		}
 		log.Info().Msg("origin url: " + validatedService.TargetUrl + req.URL.Path)
 
-		rps.prepareAndServeHttp(w, origin, req)
+		rps.prepareAndServeHttp(validatedService, validatedRoute, w, origin, req)
 		next.ServeHTTP(w, req)
 	})
 }
 
-func (rps *ReverseProxy) prepareAndServeHttp(w http.ResponseWriter, origin *url.URL, req *http.Request) {
+func (rps *ReverseProxy) prepareAndServeHttp(service models.Service, route models.Route, w http.ResponseWriter, origin *url.URL, req *http.Request) {
 	proxy := httputil.NewSingleHostReverseProxy(origin)
 	proxy.Transport = rps.transport
 	proxy.Director = func(directorReq *http.Request) {
@@ -95,7 +98,14 @@ func (rps *ReverseProxy) prepareAndServeHttp(w http.ResponseWriter, origin *url.
 		resp.Body = io.NopCloser(bytes.NewBuffer(originalBody))
 
 		// Now you can inspect (or modify) the original body data
-		log.Info().Msg("Origin Response Body:" + string(originalBody))
+		// log.Info().Msg("Origin Response Body:" + string(originalBody))
+		rps.analyticsTracker.CaptureRequest(req)
+		// log.Info().Msg("req info: " + utils.JSONStringify(middleware.MiddlewareValues{
+		// 	StatusCode: resp.StatusCode,
+		// 	Data:       string(originalBody),
+		// 	ServiceId:  service.Id,
+		// 	RouteId:    route.Id,
+		// }))
 
 		// Return nil to indicate success
 		return nil
@@ -112,6 +122,10 @@ func (rps *ReverseProxy) parseRoutePath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	pathUrl := strings.Join(urlSeperatedStrings[2:], "/")
 	return "/" + pathUrl
+}
+
+func (rps *ReverseProxy) trackRequestData(res *http.Response) {
+	log.Info().Msg("hello world from track request data")
 }
 
 func (rps *ReverseProxy) matchService(path string) (models.Service, error) {
