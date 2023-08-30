@@ -1,8 +1,10 @@
 package rproxy
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -20,6 +22,13 @@ type ReverseProxy struct {
 	transport      http.RoundTripper
 }
 
+func NewReverseProxy(serviceGateway sg.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxy {
+	return &ReverseProxy{
+		serviceGateway: serviceGateway,
+		transport:      httpTransport,
+	}
+}
+
 func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 
@@ -35,7 +44,7 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 			http.Error(w, "service unable to be validated", http.StatusBadGateway)
 			return
 		}
-		log.Info().Msg("service: " + utils.JSONStringify(validatedService))
+		// log.Info().Msg("service: " + utils.JSONStringify(validatedService))
 
 		// validate route
 		validatedRoute, _, err := rps.matchRoute(validatedService, rps.parseRoutePath(req.URL.Path))
@@ -44,7 +53,7 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 			http.Error(w, "unable to find route", http.StatusNotFound)
 			return
 		}
-		log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
+		// log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
 
 		// create origin url
 		origin, err := url.Parse(validatedService.TargetUrl + validatedRoute.Path)
@@ -60,13 +69,6 @@ func (rps *ReverseProxy) ReverseProxyMiddlware(next http.Handler) http.Handler {
 	})
 }
 
-func NewReverseProxy(serviceGateway sg.ServiceGateway, httpTransport http.RoundTripper) *ReverseProxy {
-	return &ReverseProxy{
-		serviceGateway: serviceGateway,
-		transport:      httpTransport,
-	}
-}
-
 func (rps *ReverseProxy) prepareAndServeHttp(w http.ResponseWriter, origin *url.URL, req *http.Request) {
 	proxy := httputil.NewSingleHostReverseProxy(origin)
 	proxy.Transport = rps.transport
@@ -80,6 +82,23 @@ func (rps *ReverseProxy) prepareAndServeHttp(w http.ResponseWriter, origin *url.
 	proxy.ErrorHandler = func(w http.ResponseWriter, req *http.Request, err error) {
 		log.Info().Msgf("Error while proxying request: %v", err)
 		http.Error(w, "Error while proxying request", http.StatusInternalServerError)
+	}
+	proxy.ModifyResponse = func(resp *http.Response) error {
+		// Read the body data (and handle any errors)
+		originalBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		// Close and replace the resp.Body, after reading the stream, stream will be at end, you must replace the data.
+		resp.Body.Close()
+		resp.Body = io.NopCloser(bytes.NewBuffer(originalBody))
+
+		// Now you can inspect (or modify) the original body data
+		log.Info().Msg("Origin Response Body:" + string(originalBody))
+
+		// Return nil to indicate success
+		return nil
 	}
 	proxy.ServeHTTP(w, req)
 }

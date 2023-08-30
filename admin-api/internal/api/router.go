@@ -48,8 +48,8 @@ func NewRouter() *mux.Router {
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()
 	reverseProxyRouter.Use(analytics.AnalyticsMiddleware)
-	reverseProxyRouter.Use(analytics.CaptureRequestMiddleware(analyticsTracker))
 	reverseProxyRouter.Use(reverseProxy.ReverseProxyMiddlware)
+	reverseProxyRouter.Use(analytics.CaptureRequestMiddleware(analyticsTracker))
 
 	// Define empty handler to catch all requests.
 	reverseProxyRouter.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
