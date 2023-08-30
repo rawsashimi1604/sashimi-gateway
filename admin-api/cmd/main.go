@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	// TODO: add middleware for analytics
+	// TODO: add middleware for analytics (ongoing)
 	// TODO: add health check route
 	// TODO: add authentication (JWT)
 	// TODO: add caching for services and routes (REDIS)

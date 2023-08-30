@@ -24,8 +24,11 @@ func NewRouter() *mux.Router {
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
 
+	// Other services
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, http.DefaultTransport)
+	analyticsTracker := analytics.NewAnalyticsTracker()
 
+	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager()
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
@@ -45,6 +48,7 @@ func NewRouter() *mux.Router {
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()
 	reverseProxyRouter.Use(analytics.AnalyticsMiddleware)
+	reverseProxyRouter.Use(analytics.CaptureRequestMiddleware(analyticsTracker))
 	reverseProxyRouter.Use(reverseProxy.ReverseProxyMiddlware)
 
 	// Define empty handler to catch all requests.
