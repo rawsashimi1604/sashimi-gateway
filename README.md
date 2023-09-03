@@ -1,5 +1,7 @@
 # Sashimi API Gateway
 
+## WORK IN PROGRESS
+
 <p>A Lightweight API Gateway built in Golang to learn more about API infrastructure and microservices</p>
 
 ## Features 
