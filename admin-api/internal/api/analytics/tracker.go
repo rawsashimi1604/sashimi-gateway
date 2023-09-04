@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rs/zerolog/log"
@@ -39,6 +40,7 @@ func (at *AnalyticsTracker) GetAndReset() []models.ApiRequest {
 
 func (at *AnalyticsTracker) CaptureRequest(serviceId int, routeId int, req *http.Request, statusCode int) {
 	requestData := models.ApiRequest{
+		Id:        uuid.New(),
 		ServiceId: serviceId,
 		RouteId:   routeId,
 		Path:      req.URL.Path,

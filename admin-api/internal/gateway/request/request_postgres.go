@@ -22,7 +22,7 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 	// Bulk insert using COPY command from Buffer
 	var byteBuffer bytes.Buffer
 	for _, request := range requests {
-		fmt.Fprintf(&byteBuffer, "%d\t%d\t%d\t%s\t%s\t%s\n", request.Id, request.ServiceId, request.RouteId, request.Path, request.Method, request.Time.Format(time.RFC3339))
+		fmt.Fprintf(&byteBuffer, "%s\t%d\t%d\t%s\t%s\t%s\n", request.Id, request.ServiceId, request.RouteId, request.Path, request.Method, request.Time.Format(time.RFC3339))
 	}
 
 	copyBuffer := utils.NewCopyBuffer(&byteBuffer)
@@ -34,6 +34,8 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 
 	if err != nil {
 		log.Info().Msg("something went wrong when adding bulk requests")
+		return nil, err
 	}
 
+	return requests, nil
 }
