@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// TODO: refactor ApiRequest to use UUID.
 type ApiRequest struct {
 	Id        int
 	ServiceId int
@@ -11,4 +12,5 @@ type ApiRequest struct {
 	Path      string
 	Method    string
 	Time      time.Time
+	Code      int
 }

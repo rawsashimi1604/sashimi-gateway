@@ -96,7 +96,7 @@ func (rps *ReverseProxy) prepareAndServeHttp(service models.Service, route model
 		// Close and replace the resp.Body, after reading the stream, stream will be at end, you must replace the data.
 		resp.Body.Close()
 		resp.Body = io.NopCloser(bytes.NewBuffer(originalBody))
-		rps.analyticsTracker.CaptureRequest(service.Id, route.Id, req)
+		rps.analyticsTracker.CaptureRequest(service.Id, route.Id, req, resp.StatusCode)
 
 		// Return nil to indicate success
 		return nil

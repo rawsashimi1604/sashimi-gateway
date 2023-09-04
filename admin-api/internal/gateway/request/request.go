@@ -20,6 +20,6 @@ type Request_DB struct {
 	ServiceId int    `json:"serviceId"`
 	RouteId   int    `json:"routeId"`
 	Path      string `json:"path"`
-	MethodId  string `json:"methodId"`
+	Method    string `json:"method"`
 	Time      time.Time
 }

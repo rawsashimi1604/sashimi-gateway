@@ -22,6 +22,16 @@ CREATE TABLE route (
     updated_at TIMESTAMP NOT NULL
 );
 
+CREATE TABLE api_request (
+    id TEXT PRIMARY KEY,
+    service_id INT REFERENCES service(id) NOT NULL,
+    route_id INT REFERENCES route(id) NOT NULL,
+    path TEXT NOT NULL,
+    method TEXT NOT NULL,
+    time TIMESTAMP NOT NULL,
+    code INT NOT NULL
+);
+
 INSERT INTO service(name, target_url, path, description, created_at, updated_at)
 VALUES 
     ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp),
@@ -34,3 +44,8 @@ VALUES
     (2, 'GET', '/', 'Get all tuna dishes', current_timestamp, current_timestamp),
     (1, 'GET', '/test', 'Test salmon service', current_timestamp, current_timestamp),
     (1, 'GET', '/:id', 'Get salmon dish by id', current_timestamp, current_timestamp);
+
+INSERT INTO api_request(id, service_id, route_id, path, method, time, code)
+VALUES 
+    ('someRandomUUID', 1, 1, 'http://localhost:8080/salmon', 'GET', current_timestamp, 200),
+    ('someRandomUUID2', 2, 3, 'http://localhost:8080/tuna', 'GET', current_timestamp, 200);
