@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -10,8 +11,10 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/headers"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/request"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/jobs"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/middleware"
 	"github.com/rs/zerolog/log"
 )
@@ -24,17 +27,20 @@ func NewRouter() *mux.Router {
 
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
-
-	// Other services
-	analyticsTracker := analytics.NewAnalyticsTracker()
-	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
-
-	// Run cron job to periodically add requests to the database.
+	pgRequestGateway := request.NewPostgresRequestGatweay(conn)
 
 	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager()
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
+
+	// Other services
+	analyticsTracker := analytics.NewAnalyticsTracker()
+	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
+
+	// Cron job to periodically add requests to the database.
+	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, pgRequestGateway, 1*time.Second)
+	requestCronJob.Start()
 
 	router := mux.NewRouter()
 	// Create context middlware to pass to following req/res lifecycle.

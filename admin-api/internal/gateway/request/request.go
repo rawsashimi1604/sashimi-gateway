@@ -8,7 +8,7 @@ import (
 )
 
 type RequestGateway interface {
-	AddBulkRequests([]models.ApiRequest) ([]models.ApiRequest, error)
+	AddBulkRequests(requests []models.ApiRequest) ([]models.ApiRequest, error)
 }
 
 type PostgresRequestGateway struct {

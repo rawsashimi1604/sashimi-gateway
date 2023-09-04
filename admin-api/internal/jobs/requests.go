@@ -12,12 +12,12 @@ import (
 // TODO: create gateway for adding requests.
 type RequestCronJob struct {
 	AnalyticsTracker *analytics.AnalyticsTracker
-	RequestGateway   *request.RequestGateway
+	RequestGateway   request.RequestGateway
 	Cron             *cron.Cron
 	Interval         time.Duration
 }
 
-func NewRequestCronJob(at *analytics.AnalyticsTracker, rg *request.RequestGateway, interval time.Duration) *RequestCronJob {
+func NewRequestCronJob(at *analytics.AnalyticsTracker, rg request.RequestGateway, interval time.Duration) *RequestCronJob {
 	return &RequestCronJob{
 		AnalyticsTracker: at,
 		RequestGateway:   rg,
@@ -28,11 +28,11 @@ func NewRequestCronJob(at *analytics.AnalyticsTracker, rg *request.RequestGatewa
 
 func (rcj *RequestCronJob) Start() {
 	rcj.Cron.AddFunc("@every "+rcj.Interval.String(), func() {
-		rcj.Run()
+		rcj.run()
 	})
 	rcj.Cron.Start()
 }
 
-func (rcj *RequestCronJob) Run() {
+func (rcj *RequestCronJob) run() {
 	log.Info().Msg("Ran the cron job!")
 }
