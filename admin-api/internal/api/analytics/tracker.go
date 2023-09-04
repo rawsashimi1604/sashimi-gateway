@@ -57,5 +57,12 @@ func (at *AnalyticsTracker) CaptureRequest(serviceId int, routeId int, req *http
 }
 
 func (at *AnalyticsTracker) StoreRequests() {
-
+	// Get the requests safely using mutexes lock and unlock mechanism
+	requests := at.GetAndReset()
+	_, err := at.requestGateway.AddBulkRequests(requests)
+	log.Info().Msg("added the following requests to db: " + utils.JSONStringify(requests))
+	if err != nil {
+		log.Info().Msg(err.Error())
+		log.Info().Msg("something went wrong when storing requests")
+	}
 }

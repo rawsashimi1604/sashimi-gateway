@@ -5,8 +5,6 @@ import (
 	"context"
 	"fmt"
 
-	"time"
-
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
@@ -22,7 +20,16 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 	// Bulk insert using COPY command from Buffer
 	var byteBuffer bytes.Buffer
 	for _, request := range requests {
-		fmt.Fprintf(&byteBuffer, "%s\t%d\t%d\t%s\t%s\t%s\n", request.Id, request.ServiceId, request.RouteId, request.Path, request.Method, request.Time.Format(time.RFC3339))
+		fmt.Fprintf(
+			&byteBuffer,
+			"%s\t%d\t%d\t%s\t%s\t%s",
+			request.Id,
+			request.ServiceId,
+			request.RouteId,
+			request.Path,
+			request.Method,
+			request.Time,
+		)
 	}
 
 	copyBuffer := utils.NewCopyBuffer(&byteBuffer)

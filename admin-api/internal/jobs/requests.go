@@ -32,4 +32,6 @@ func (rcj *RequestCronJob) Start() {
 
 func (rcj *RequestCronJob) run() {
 	log.Info().Msg("Ran the cron job!")
+	rcj.AnalyticsTracker.StoreRequests()
+	log.Info().Msg("End of cron job!")
 }

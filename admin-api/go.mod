@@ -6,6 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.15.1
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
+	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/joho/godotenv v1.5.1
 	github.com/robfig/cron/v3 v3.0.1
@@ -23,8 +24,10 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect

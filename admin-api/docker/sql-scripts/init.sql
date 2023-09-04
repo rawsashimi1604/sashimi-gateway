@@ -8,8 +8,8 @@ CREATE TABLE service (
     target_url TEXT UNIQUE NOT NULL,
     path TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE route (
@@ -18,8 +18,8 @@ CREATE TABLE route (
     method TEXT NOT NULL,
     path TEXT NOT NULL,
     description TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE api_request (
@@ -28,7 +28,7 @@ CREATE TABLE api_request (
     route_id INT REFERENCES route(id) NOT NULL,
     path TEXT NOT NULL,
     method TEXT NOT NULL,
-    time TIMESTAMP NOT NULL,
+    time TIMESTAMPTZ NOT NULL,
     code INT NOT NULL
 );
 
