@@ -16,10 +16,8 @@ func NewPostgresRouteGateway(conn *pgxpool.Pool) *PostgresRouteGateway {
 func (rg *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 
 	query := `
-		SELECT r.id, r.service_id, r.path, r.description, r.created_at, r.updated_at, m.id, m.method
+		SELECT r.id, r.service_id, r.path, r.description, r.created_at, r.updated_at, r.method
 		FROM route r
-		LEFT JOIN api_method m
-		ON r.method_id=m.id
 		ORDER BY r.id ASC
 	`
 
@@ -32,13 +30,12 @@ func (rg *PostgresRouteGateway) GetAllRoutes() ([]models.Route, error) {
 	var routes []models.Route
 	for rows.Next() {
 		var route Route_DB
-		var method ApiMethod_DB
 
-		if err := rows.Scan(&route.Id, &route.ServiceId, &route.Path, &route.Description, &route.CreatedAt, &route.UpdatedAt, &method.Id, &method.Method); err != nil {
+		if err := rows.Scan(&route.Id, &route.ServiceId, &route.Path, &route.Description, &route.CreatedAt, &route.UpdatedAt, &route.Method); err != nil {
 			return nil, errors.New("error retrieving route")
 		}
 
-		routes = append(routes, MapRouteDbToDomain(route, method))
+		routes = append(routes, MapRouteDbToDomain(route))
 	}
 
 	if err := rows.Err(); err != nil {
@@ -52,21 +49,20 @@ func (rg *PostgresRouteGateway) RegisterRoute(route models.Route) (models.Route,
 	query := `
 	WITH inserted AS (
 		INSERT INTO route
-			(service_id, method_id, path, description, created_at, updated_at)
+			(service_id, method, path, description, created_at, updated_at)
 		VALUES 
 			($1, $2, $3, $4, $5, $6)
 		RETURNING *
 	)
-	SELECT inserted.id, service_id, method_id, method, path, description, created_at, updated_at
+	SELECT inserted.id, service_id, method, path, description, created_at, updated_at
 	FROM inserted
-	INNER JOIN api_method ON inserted.method_id = api_method.id
 	`
 
 	row := rg.Conn.QueryRow(
 		context.Background(),
 		query,
 		route.ServiceId,
-		route.Method.Id,
+		route.Method,
 		route.Path,
 		route.Description,
 		route.CreatedAt,
@@ -74,13 +70,11 @@ func (rg *PostgresRouteGateway) RegisterRoute(route models.Route) (models.Route,
 	)
 
 	createdRoute := Route_DB{}
-	apiMethodDb := ApiMethod_DB{}
 
 	if err := row.Scan(
 		&createdRoute.Id,
 		&createdRoute.ServiceId,
-		&apiMethodDb.Id,
-		&apiMethodDb.Method,
+		&createdRoute.Method,
 		&createdRoute.Path,
 		&createdRoute.Description,
 		&createdRoute.CreatedAt,
@@ -90,5 +84,5 @@ func (rg *PostgresRouteGateway) RegisterRoute(route models.Route) (models.Route,
 		return models.Route{}, err
 	}
 
-	return MapRouteDbToDomain(createdRoute, apiMethodDb), nil
+	return MapRouteDbToDomain(createdRoute), nil
 }

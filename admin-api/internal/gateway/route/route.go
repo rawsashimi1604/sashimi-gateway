@@ -24,25 +24,14 @@ type Route_DB struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
-}
-
-type ApiMethod_DB struct {
-	Id     int    `json:"id"`
-	Method string `json:"method"`
+	Method      string    `json:"method"`
 }
 
 var (
 	ErrRouteNotFound = errors.New("route not found in the database")
 )
 
-func MapApiMethodDbToDomain(m ApiMethod_DB) models.ApiMethod {
-	return models.ApiMethod{
-		Id:     m.Id,
-		Method: m.Method,
-	}
-}
-
-func MapRouteDbToDomain(rdb Route_DB, m ApiMethod_DB) models.Route {
+func MapRouteDbToDomain(rdb Route_DB) models.Route {
 	return models.Route{
 		Id:          rdb.Id,
 		ServiceId:   rdb.ServiceId,
@@ -50,7 +39,7 @@ func MapRouteDbToDomain(rdb Route_DB, m ApiMethod_DB) models.Route {
 		Description: rdb.Description,
 		CreatedAt:   rdb.CreatedAt,
 		UpdatedAt:   rdb.UpdatedAt,
-		Method:      MapApiMethodDbToDomain(m),
+		Method:      rdb.Method,
 	}
 }
 

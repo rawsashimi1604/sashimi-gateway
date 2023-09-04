@@ -9,5 +9,5 @@ type Route struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
-	Method      ApiMethod `json:"method"`
+	Method      string    `json:"method"`
 }

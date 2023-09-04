@@ -46,7 +46,7 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 		ServiceId   int    `json:"serviceId" validate:"required"`
 		Path        string `json:"path" validate:"required"`
 		Description string `json:"description" validate:"required"`
-		MethodId    int    `json:"methodId" validate:"required"`
+		Method      string `json:"method" validate:"required"`
 	}
 
 	var body = RegisterRouteRequest{}
@@ -77,7 +77,7 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 		Description: body.Description,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-		Method:      models.ApiMethod{Id: 1, Method: "GET"},
+		Method:      body.Method,
 	}
 
 	registeredRoute, err := rm.routeGateway.RegisterRoute(route)
