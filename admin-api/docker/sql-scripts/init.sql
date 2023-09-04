@@ -8,8 +8,8 @@ CREATE TABLE service (
     target_url TEXT UNIQUE NOT NULL,
     path TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE route (
@@ -18,8 +18,8 @@ CREATE TABLE route (
     method TEXT NOT NULL,
     path TEXT NOT NULL,
     description TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE api_request (
@@ -28,7 +28,7 @@ CREATE TABLE api_request (
     route_id INT REFERENCES route(id) NOT NULL,
     path TEXT NOT NULL,
     method TEXT NOT NULL,
-    time TIMESTAMPTZ NOT NULL,
+    time TIMESTAMP NOT NULL,
     code INT NOT NULL
 );
 
@@ -47,5 +47,5 @@ VALUES
 
 INSERT INTO api_request(id, service_id, route_id, path, method, time, code)
 VALUES 
-    ('someRandomUUID', 1, 1, 'http://localhost:8080/salmon', 'GET', current_timestamp, 200),
-    ('someRandomUUID2', 2, 3, 'http://localhost:8080/tuna', 'GET', current_timestamp, 200);
+    ('someRandomUUID', 1, 1, '/salmon', 'GET', current_timestamp, 200),
+    ('someRandomUUID2', 2, 3, '/tuna', 'GET', current_timestamp, 200);

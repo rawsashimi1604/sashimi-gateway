@@ -22,20 +22,21 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 	for _, request := range requests {
 		fmt.Fprintf(
 			&byteBuffer,
-			"%s\t%d\t%d\t%s\t%s\t%s",
+			"%s\t%d\t%d\t%s\t%s\t%s\t%d",
 			request.Id,
 			request.ServiceId,
 			request.RouteId,
 			request.Path,
 			request.Method,
-			request.Time,
+			request.Time.UTC().Format("2006-01-02 15:04:05"),
+			request.Code,
 		)
 	}
 
 	copyBuffer := utils.NewCopyBuffer(&byteBuffer)
 	_, err := rg.Conn.CopyFrom(context.Background(),
 		pgx.Identifier{"api_request"},
-		[]string{"id", "service_id", "route_id", "path", "method", "time"},
+		[]string{"id", "service_id", "route_id", "path", "method", "time", "code"},
 		copyBuffer,
 	)
 

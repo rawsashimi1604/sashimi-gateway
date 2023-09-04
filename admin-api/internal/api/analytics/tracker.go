@@ -41,11 +41,11 @@ func (at *AnalyticsTracker) GetAndReset() []models.ApiRequest {
 	return currentRequests
 }
 
-func (at *AnalyticsTracker) CaptureRequest(serviceId int, routeId int, req *http.Request, statusCode int) {
+func (at *AnalyticsTracker) CaptureRequest(service models.Service, route models.Route, req *http.Request, statusCode int) {
 	requestData := models.ApiRequest{
 		Id:        uuid.New(),
-		ServiceId: serviceId,
-		RouteId:   routeId,
+		ServiceId: service.Id,
+		RouteId:   route.Id,
 		Path:      req.URL.Path,
 		Method:    req.Method,
 		Time:      time.Now(),
