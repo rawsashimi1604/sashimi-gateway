@@ -38,7 +38,9 @@ func (sm *ServiceManager) GetAllServicesHandler(w http.ResponseWriter, req *http
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(services)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"services": services,
+	})
 }
 
 func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *http.Request) {
