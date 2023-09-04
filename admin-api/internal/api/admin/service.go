@@ -93,5 +93,7 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(service)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"service": service,
+	})
 }

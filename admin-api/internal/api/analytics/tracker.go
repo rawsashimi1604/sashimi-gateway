@@ -37,13 +37,15 @@ func (at *AnalyticsTracker) GetAndReset() []models.ApiRequest {
 	return currentRequests
 }
 
-func (at *AnalyticsTracker) CaptureRequest(req *http.Request) {
+func (at *AnalyticsTracker) CaptureRequest(serviceId int, routeId int, req *http.Request) {
 	requestData := models.ApiRequest{
-		Path:   req.URL.Path,
-		Method: req.Method,
-		Time:   time.Now(),
+		ServiceId: serviceId,
+		RouteId:   routeId,
+		Path:      req.URL.Path,
+		Method:    req.Method,
+		Time:      time.Now(),
 	}
-	// Store the request data safely using mutex locks, serve http
+	// Store the request data safely using mutex locks
 	at.Add(requestData)
 	log.Info().Msg("rt slice: " + utils.JSONStringify(at.requests))
 }

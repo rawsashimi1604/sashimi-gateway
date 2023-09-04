@@ -96,16 +96,7 @@ func (rps *ReverseProxy) prepareAndServeHttp(service models.Service, route model
 		// Close and replace the resp.Body, after reading the stream, stream will be at end, you must replace the data.
 		resp.Body.Close()
 		resp.Body = io.NopCloser(bytes.NewBuffer(originalBody))
-
-		// Now you can inspect (or modify) the original body data
-		// log.Info().Msg("Origin Response Body:" + string(originalBody))
-		rps.analyticsTracker.CaptureRequest(req)
-		// log.Info().Msg("req info: " + utils.JSONStringify(middleware.MiddlewareValues{
-		// 	StatusCode: resp.StatusCode,
-		// 	Data:       string(originalBody),
-		// 	ServiceId:  service.Id,
-		// 	RouteId:    route.Id,
-		// }))
+		rps.analyticsTracker.CaptureRequest(service.Id, route.Id, req)
 
 		// Return nil to indicate success
 		return nil
@@ -122,10 +113,6 @@ func (rps *ReverseProxy) parseRoutePath(path string) string {
 	urlSeperatedStrings := strings.Split(path, "/")
 	pathUrl := strings.Join(urlSeperatedStrings[2:], "/")
 	return "/" + pathUrl
-}
-
-func (rps *ReverseProxy) trackRequestData(res *http.Response) {
-	log.Info().Msg("hello world from track request data")
 }
 
 func (rps *ReverseProxy) matchService(path string) (models.Service, error) {

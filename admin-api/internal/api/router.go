@@ -29,6 +29,8 @@ func NewRouter() *mux.Router {
 	analyticsTracker := analytics.NewAnalyticsTracker()
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
+	// Run cron job to periodically add requests to the database.
+
 	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager()
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
