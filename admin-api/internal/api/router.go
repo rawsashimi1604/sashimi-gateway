@@ -35,11 +35,11 @@ func NewRouter() *mux.Router {
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 
 	// Other services
-	analyticsTracker := analytics.NewAnalyticsTracker()
+	analyticsTracker := analytics.NewAnalyticsTracker(pgRequestGateway)
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
 	// Cron job to periodically add requests to the database.
-	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, pgRequestGateway, 1*time.Second)
+	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, 5*time.Second)
 	requestCronJob.Start()
 
 	router := mux.NewRouter()
