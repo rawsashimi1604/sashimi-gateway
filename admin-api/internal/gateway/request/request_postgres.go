@@ -3,6 +3,7 @@ package request
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -46,4 +47,42 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 	}
 
 	return requests, nil
+}
+
+func (rg *PostgresRequestGateway) GetAllRequests() ([]models.ApiRequest, error) {
+	query := `
+	SELECT id, service_id, route_id, path, method, time, code
+	FROM api_request
+`
+
+	rows, err := rg.Conn.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var apiRequests []models.ApiRequest
+	for rows.Next() {
+		var apiRequest Request_DB
+
+		if err := rows.Scan(
+			&apiRequest.Id,
+			&apiRequest.ServiceId,
+			&apiRequest.RouteId,
+			&apiRequest.Path,
+			&apiRequest.Method,
+			&apiRequest.Time,
+			&apiRequest.Code,
+		); err != nil {
+			return nil, errors.New("error retrieving api requests")
+		}
+
+		apiRequests = append(apiRequests, MapRequestDbToDomain(apiRequest))
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return apiRequests, nil
 }

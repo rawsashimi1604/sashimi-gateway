@@ -40,6 +40,7 @@ func NewRouter() *mux.Router {
 	gatewayManager := admin.NewGatewayManager(gatewayConfig)
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
+	requestManager := admin.NewRequestManager(pgRequestGateway)
 
 	// Other services
 	analyticsTracker := analytics.NewAnalyticsTracker(pgRequestGateway)
@@ -62,6 +63,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")
 	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET")
 	adminRouter.HandleFunc("/route", routeManager.RegisterRouteHandler).Methods("POST")
+	adminRouter.HandleFunc("/request/all", requestManager.GetAllRequestsHandler).Methods("GET")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()

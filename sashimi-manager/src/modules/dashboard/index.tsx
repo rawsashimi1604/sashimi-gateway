@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
 
+import AdminGateway from '../../api/services/admin/AdminGateway';
 import AdminService from '../../api/services/admin/AdminService';
-import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
 import Card from './Card';
 import Information from './Information';
 
 function Dashboard() {
+  async function loadGatewayInformation() {
+    const data = await AdminGateway.getGatewayinformation();
+    console.log(data);
+  }
   async function loadApiRequest() {
     const data = await AdminService.getAllServices();
     console.log(data);
   }
 
   useEffect(() => {
+    loadGatewayInformation();
     loadApiRequest();
   }, []);
 
