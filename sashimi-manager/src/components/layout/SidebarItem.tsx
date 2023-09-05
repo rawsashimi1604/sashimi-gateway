@@ -13,7 +13,7 @@ function SidebarItem({ item, href = '/' }: SidebarItemProps) {
   return (
     <li
       className={`${
-        isSelected && 'bg-blue-100 py-0.5 pl-2'
+        isSelected && 'bg-blue-100 py-0.5 pl-2 font-semibold'
       } hover:bg-slate-100 transition-all hover:pl-4  duration-150  hover:cursor-pointer rounded-lg tracking-tighter`}
     >
       <Link to={href}>
