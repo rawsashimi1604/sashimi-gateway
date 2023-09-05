@@ -10,7 +10,7 @@ function Notifcations() {
         <h1 className="font-cabin font-light tracking-tight">notifications</h1>
 
         <div className="font-cabin flex flex-row border px-2 rounded-lg shadow-sm bg-gray-50 py-0.5 text-sm gap-2 items-center justify-between text-gray-600">
-          <span>listening</span>
+          <span className="font-cabin tracking-wider">listening</span>
           <AiOutlineLoading3Quarters className="animate-spin" />
         </div>
       </div>

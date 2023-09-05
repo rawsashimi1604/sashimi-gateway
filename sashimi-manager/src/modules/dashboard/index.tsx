@@ -1,28 +1,40 @@
 import React, { useEffect, useState } from 'react';
 
-import AdminGateway from '../../api/services/admin/AdminGateway';
+import AdminRequest from '../../api/services/admin/AdminRequest';
+import AdminRoute from '../../api/services/admin/AdminRoute';
 import AdminService from '../../api/services/admin/AdminService';
+import { GetAllRequestsResponse } from '../../api/services/admin/responses/GetAllRequests';
+import { GetAllRoutesResponse } from '../../api/services/admin/responses/GetAllRoutes';
 import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
-import LoadingSpinner from '../../components/utils/LoadingSpinner';
 import { delay } from '../../utils/delay';
 import Card from './Card';
 import Information from './Information';
 import LoadingCard from './LoadingCard';
 
 type DashboardRequestData = {
+  requests: GetAllRequestsResponse;
   services: GetAllServicesResponse;
+  routes: GetAllRoutesResponse;
 };
 
 function Dashboard() {
   const [data, setData] = useState<DashboardRequestData | null>(null);
 
   async function loadDashboardRequestData() {
-    await delay(5000);
+    await delay(2000);
     const services = await AdminService.getAllServices();
+    const requests = await AdminRequest.getAllRequests();
+    const routes = await AdminRoute.getAllRoutes();
+
     setData((prev) => {
-      return { ...prev, services: services.data };
+      return {
+        ...prev,
+        services: services.data,
+        requests: requests.data,
+        routes: routes.data
+      };
     });
   }
 
@@ -43,20 +55,20 @@ function Dashboard() {
 
       {/* Analytics (Requests, Services, Routes, Data transmitted) */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {data?.services ? (
-          <Card header="total requests" data="30" />
+        {data?.requests ? (
+          <Card header="total requests" data={data.requests.count.toString()} />
         ) : (
           <LoadingCard header="total requests" />
         )}
 
         {data?.services ? (
-          <Card header="services" data="4" />
+          <Card header="services" data={data.services.count.toString()} />
         ) : (
           <LoadingCard header="services" />
         )}
 
         {data?.services ? (
-          <Card header="routes" data="32" />
+          <Card header="routes" data={data.routes.count.toString()} />
         ) : (
           <LoadingCard header="routes" />
         )}

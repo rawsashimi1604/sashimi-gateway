@@ -37,7 +37,10 @@ func (rm *RouteManager) GetAllRoutesHandler(w http.ResponseWriter, req *http.Req
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(routes)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"count":  len(routes),
+		"routes": routes,
+	})
 }
 
 func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Request) {
