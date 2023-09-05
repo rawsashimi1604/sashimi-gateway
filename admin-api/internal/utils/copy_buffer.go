@@ -25,14 +25,11 @@ func (cb *CopyBuffer) Values() ([]interface{}, error) {
 		cb.err = err
 		return nil, err
 	}
+	line = strings.TrimSuffix(line, "\n")
 
 	values := strings.Split(line, "\t")
 	returnValues := make([]interface{}, len(values))
 	for i, v := range values {
-		// If last then strip the string
-		if i == len(values)-1 {
-			returnValues[i] = TrimLastChar(v)
-		}
 		returnValues[i] = v
 	}
 

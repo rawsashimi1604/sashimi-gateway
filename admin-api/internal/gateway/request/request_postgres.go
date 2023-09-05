@@ -22,7 +22,7 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 	for _, request := range requests {
 		fmt.Fprintf(
 			&byteBuffer,
-			"%s\t%d\t%d\t%s\t%s\t%s\t%d",
+			"%s\t%d\t%d\t%s\t%s\t%s\t%d\n",
 			request.Id,
 			request.ServiceId,
 			request.RouteId,
