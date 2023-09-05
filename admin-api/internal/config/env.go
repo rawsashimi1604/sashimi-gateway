@@ -15,6 +15,7 @@ type EnvVars struct {
 	SASHIMI_HOSTNAME         string
 	SASHIMI_TAGLINE          string
 	SASHIMI_REQUEST_INTERVAL int
+	SASHIMI_LOCAL_PORT       string
 }
 
 func LoadEnv() EnvVars {
@@ -27,6 +28,7 @@ func LoadEnv() EnvVars {
 	sashimiHostname := os.Getenv("SASHIMI_HOSTNAME")
 	sashimiTagline := os.Getenv("SASHIMI_TAGLINE")
 	sashimiRequestInterval := os.Getenv("SASHIMI_REQUEST_INTERVAL")
+	sashimiPort := os.Getenv("SASHIMI_LOCAL_PORT")
 
 	// Validate the environment variables
 	requestInterval, err := strconv.Atoi(sashimiRequestInterval)
@@ -41,5 +43,6 @@ func LoadEnv() EnvVars {
 		SASHIMI_HOSTNAME:         sashimiHostname,
 		SASHIMI_TAGLINE:          sashimiTagline,
 		SASHIMI_REQUEST_INTERVAL: requestInterval,
+		SASHIMI_LOCAL_PORT:       sashimiPort,
 	}
 }
