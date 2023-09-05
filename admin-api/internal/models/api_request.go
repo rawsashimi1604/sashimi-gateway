@@ -18,9 +18,9 @@ type ApiRequest struct {
 }
 
 type AggregatedApiRequest struct {
-	TimeBucket time.Time
-	Count      int
-	Count2xx   int
-	Count4xx   int
-	Count5xx   int
+	TimeBucket time.Time `json:"timeBucket"`
+	Count      int       `json:"count"`
+	Count2xx   int       `json:"count_2xx"`
+	Count4xx   int       `json:"count_4xx"`
+	Count5xx   int       `json:"count_5xx"`
 }
