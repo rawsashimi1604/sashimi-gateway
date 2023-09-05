@@ -11,6 +11,7 @@ import (
 type RequestGateway interface {
 	AddBulkRequests(requests []models.ApiRequest) ([]models.ApiRequest, error)
 	GetAllRequests() ([]models.ApiRequest, error)
+	GetAggregatedRequests(timespan int, dataPoints int) ([]models.AggregatedApiRequest, error)
 }
 
 type PostgresRequestGateway struct {

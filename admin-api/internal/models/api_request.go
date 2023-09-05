@@ -16,3 +16,11 @@ type ApiRequest struct {
 	Time      time.Time `json:"time"`
 	Code      int       `json:"code"`
 }
+
+type AggregatedApiRequest struct {
+	TimeBucket time.Time
+	Count      int
+	Count2xx   int
+	Count4xx   int
+	Count5xx   int
+}

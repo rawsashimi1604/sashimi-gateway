@@ -64,6 +64,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET")
 	adminRouter.HandleFunc("/route", routeManager.RegisterRouteHandler).Methods("POST")
 	adminRouter.HandleFunc("/request/all", requestManager.GetAllRequestsHandler).Methods("GET")
+	adminRouter.HandleFunc("/request/aggregate", requestManager.GetAggregatedRequestData).Methods("GET")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()

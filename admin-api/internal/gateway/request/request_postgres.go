@@ -86,3 +86,54 @@ func (rg *PostgresRequestGateway) GetAllRequests() ([]models.ApiRequest, error) 
 
 	return apiRequests, nil
 }
+
+func (rg *PostgresRequestGateway) GetAggregatedRequests(timespan int, dataPoints int) ([]models.AggregatedApiRequest, error) {
+	query := `
+	WITH time_series AS (
+		SELECT 
+			start_bin, 
+			start_bin + $1::integer * INTERVAL '1 MINUTE' AS end_bin
+		FROM generate_series(
+			(NOW() AT TIME ZONE 'UTC' - ($2::integer * $1::integer * INTERVAL '1 MINUTE')),
+			(NOW() AT TIME ZONE 'UTC'),
+			$1::integer * INTERVAL '1 MINUTE'
+		) AS t(start_bin)
+	)
+		
+	SELECT
+		ts.start_bin,
+		COALESCE(COUNT(ar.id), 0) AS count,
+		COALESCE(COUNT(CASE WHEN ar.code >= 200 AND ar.code < 300 THEN ar.id END), 0) AS count_2xx,
+		COALESCE(COUNT(CASE WHEN ar.code >= 400 AND ar.code < 500 THEN ar.id END), 0) AS count_4xx,
+		COALESCE(COUNT(CASE WHEN ar.code >= 500 AND ar.code < 600 THEN ar.id END), 0) AS count_5xx
+	FROM 
+		time_series ts 
+	LEFT JOIN 
+		api_request ar ON ar.time >= ts.start_bin AND ar.time < ts.end_bin
+	GROUP BY 
+		ts.start_bin
+	ORDER BY 
+		ts.start_bin;
+	
+	`
+
+	rows, err := rg.Conn.Query(context.Background(), query, timespan, dataPoints)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	allAggregatedBuckets := make([]models.AggregatedApiRequest, 0)
+
+	for rows.Next() {
+		var aggregated models.AggregatedApiRequest
+
+		if err := rows.Scan(&aggregated.TimeBucket, &aggregated.Count, &aggregated.Count2xx, &aggregated.Count4xx, &aggregated.Count5xx); err != nil {
+			log.Info().Msg(err.Error())
+			return nil, errors.New("error retrieving aggregated api requests")
+		}
+		allAggregatedBuckets = append(allAggregatedBuckets, aggregated)
+	}
+
+	return allAggregatedBuckets, nil
+}

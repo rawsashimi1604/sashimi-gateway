@@ -19,7 +19,6 @@ type EnvVars struct {
 }
 
 func LoadEnv() EnvVars {
-	log.Info().Msg("Loading environment variables...")
 	godotenv.Load()
 
 	postgresUrl := os.Getenv("POSTGRES_URL")
