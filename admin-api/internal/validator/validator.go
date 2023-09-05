@@ -35,6 +35,14 @@ func (v *Validator) ValidateStruct(input interface{}) error {
 	return nil
 }
 
+func (v *Validator) ValidateSimple(input string, validation string) error {
+	err := v.lib.Var(input, validation)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func concatErrors(errors []error) string {
 	errorStr := ""
 	for _, err := range errors {
