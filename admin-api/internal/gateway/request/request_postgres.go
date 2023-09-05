@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func NewPostgresRequestGatweay(conn *pgxpool.Pool) *PostgresRequestGateway {
+func NewPostgresRequestGateway(conn *pgxpool.Pool) *PostgresRequestGateway {
 	return &PostgresRequestGateway{Conn: conn}
 }
 

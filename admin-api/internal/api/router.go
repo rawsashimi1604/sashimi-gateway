@@ -10,6 +10,7 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/headers"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/request"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
@@ -22,12 +23,15 @@ import (
 func NewRouter() *mux.Router {
 	log.Info().Msg("Creating Admin Api Router.")
 
+	// Load environment variables
+	env := config.LoadEnv()
+
 	// Setup dependencies
 	conn := setupPostgresConn()
 
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
-	pgRequestGateway := request.NewPostgresRequestGatweay(conn)
+	pgRequestGateway := request.NewPostgresRequestGateway(conn)
 
 	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager()
@@ -39,7 +43,7 @@ func NewRouter() *mux.Router {
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
 	// Cron job to periodically add requests to the database.
-	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, 5*time.Second)
+	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, time.Duration(env.SASHIMI_REQUEST_INTERVAL)*time.Second)
 	requestCronJob.Start()
 
 	router := mux.NewRouter()
