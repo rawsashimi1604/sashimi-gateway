@@ -16,7 +16,7 @@ MANAGER_URL=http://localhost:5173
 
 # Gateway metadata
 SASHIMI_GATEWAY_NAME="Sushi Gateway"
-SASHIMI_HOSTNAME="loc"
+SASHIMI_HOSTNAME="http://localhost:8080"
 SASHIMI_TAGLINE="hello from sashimi gateway"
 
 # Gateway config

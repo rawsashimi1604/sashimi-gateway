@@ -29,12 +29,15 @@ func NewRouter() *mux.Router {
 	// Setup dependencies
 	conn := setupPostgresConn()
 
+	// Load initial gateway information object
+	gatewayConfig := admin.LoadInitialGatewayInfo(env)
+
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
 	pgRequestGateway := request.NewPostgresRequestGateway(conn)
 
 	// Gateway pattern (persistence, db data)
-	gatewayManager := admin.NewGatewayManager()
+	gatewayManager := admin.NewGatewayManager(gatewayConfig)
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 
