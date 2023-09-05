@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import SelectInput from '../../components/input/SelectInput';
 import Chart from '../../components/utils/Chart';
-import { generateTimeData } from '../../utils/utils';
+import { generateTimeData } from '../../utils/generateTimeData';
 
 type Timeframe = '1h' | '15m' | '5m' | '1m';
 

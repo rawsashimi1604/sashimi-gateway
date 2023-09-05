@@ -29,6 +29,7 @@ func (reqm *RequestManager) GetAllRequestsHandler(w http.ResponseWriter, req *ht
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
+		"count":    len(requests),
 		"requests": requests,
 	})
 }

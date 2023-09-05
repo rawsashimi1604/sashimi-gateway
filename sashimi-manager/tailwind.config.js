@@ -16,7 +16,7 @@ export default {
         'sashimi-deeppink': '#ff7f0e',
         'sashimi-deepgreen': '#006400',
         'sashimi-deeppurple': '#4B0082',
-        'sashimi-deepgray': '#505050',
+        'sashimi-deepgray': '#505050'
       }
     }
   },

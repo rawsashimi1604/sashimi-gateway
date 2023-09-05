@@ -1,4 +1,6 @@
-// TODO: define type
+import { Service } from './Service';
+
 export type GetAllServicesResponse = {
-  data: any;
+  count: number;
+  services: Service[];
 };
