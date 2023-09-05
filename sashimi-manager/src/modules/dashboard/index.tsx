@@ -6,6 +6,7 @@ import AdminService from '../../api/services/admin/AdminService';
 import { GetAllRequestsResponse } from '../../api/services/admin/responses/GetAllRequests';
 import { GetAllRoutesResponse } from '../../api/services/admin/responses/GetAllRoutes';
 import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
+import { Request } from '../../api/services/admin/responses/Request';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
 import { delay } from '../../utils/delay';
@@ -81,7 +82,7 @@ function Dashboard() {
       </section>
 
       {/* Graph */}
-      <Information />
+      <Information requests={data?.requests.requests as Request[]} />
     </Container>
   );
 }

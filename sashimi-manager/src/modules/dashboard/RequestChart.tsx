@@ -1,13 +1,18 @@
 import { ChartConfiguration } from 'c3';
 import React, { useState } from 'react';
 
+import { Request } from '../../api/services/admin/responses/Request';
 import SelectInput from '../../components/input/SelectInput';
 import Chart from '../../components/utils/Chart';
 import { generateTimeData } from '../../utils/generateTimeData';
 
 type Timeframe = '1h' | '15m' | '5m' | '1m';
 
-function RequestChart() {
+interface RequestChartProps {
+  requests: Request[];
+}
+
+function RequestChart({ requests }: RequestChartProps) {
   const [timeframe, setTimeframe] = useState<Timeframe>('15m');
 
   let chosenTimeSeriesData, format;

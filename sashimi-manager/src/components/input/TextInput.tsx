@@ -23,7 +23,7 @@ function TextInput({
         id={id}
         name={name}
         type="text"
-        className="font-sans tracking-tighter indent-1 rounded-lg w-full bg-sashimi-gray border border-sashimi-deepgray px-1 py-0.5 text-sm focus:outline-none"
+        className="font-sans tracking-wider indent-1 rounded-lg w-full bg-gray-100 border-sashimi-deepgray border-[0.5px] px-1 py-0.5 text-sm focus:outline-none"
         placeholder={placeholder}
         value={value}
         onChange={onChange}

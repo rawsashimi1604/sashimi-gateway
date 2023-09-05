@@ -1,5 +1,3 @@
-import React from 'react';
-
 import GatewayLogo from '../sashimi-gateway/GatewayLogo';
 import Logo from '../sashimi-gateway/Logo';
 import SidebarItem from './SidebarItem';

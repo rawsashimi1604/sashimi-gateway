@@ -1,13 +1,24 @@
 import React from 'react';
 
+import { GetAllRequestsResponse } from '../../api/services/admin/responses/GetAllRequests';
+import { Request } from '../../api/services/admin/responses/Request';
 import Header from '../../components/typography/Header';
+import LoadingText from '../../components/utils/LoadingText';
 import RequestChart from './RequestChart';
 
-function Information() {
+interface InformationProps {
+  requests: Request[];
+}
+
+function Information({ requests }: InformationProps) {
   return (
     <div className="mt-6">
       <Header text="api requests" size="sm" align="left" />
-      <RequestChart />
+      {requests ? (
+        <RequestChart requests={requests} />
+      ) : (
+        <LoadingText text="loading request chart..." />
+      )}
     </div>
   );
 }
