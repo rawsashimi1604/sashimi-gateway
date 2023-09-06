@@ -1,5 +1,4 @@
 import { ChartConfiguration } from 'c3';
-import 'c3/c3.css';
 import React, { useEffect, useState } from 'react';
 
 import AdminRequest from '../../api/services/admin/AdminRequest';
@@ -8,7 +7,6 @@ import SelectInput from '../../components/input/SelectInput';
 import Chart from '../../components/utils/Chart';
 import LoadingText from '../../components/utils/LoadingText';
 import { delay } from '../../utils/delay';
-import { generateTimeData } from '../../utils/generateTimeData';
 
 type Timeframe = '1h' | '15m' | '5m' | '1m';
 
@@ -26,6 +24,7 @@ function RequestChart() {
   const [chartConfig, setChartConfig] = useState<ChartConfiguration | null>(null);
 
   async function loadAggregatedResponses(timespan: number, dataPoints: number) {
+    setChartConfig(null);
     await delay(2000);
     const requests = await AdminRequest.getAggregatedRequest(timespan, dataPoints);
     setAggregatedReq(requests.data);
