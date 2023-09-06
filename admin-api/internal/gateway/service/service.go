@@ -11,6 +11,7 @@ import (
 type ServiceGateway interface {
 	GetServiceByPath(path string) (models.Service, error)
 	GetServiceByTargetUrl(targetUrl string) (models.Service, error)
+	GetServiceById(id int) (models.Service, error)
 	GetAllServices() ([]models.Service, error)
 	RegisterService(service models.Service) (models.Service, error)
 }

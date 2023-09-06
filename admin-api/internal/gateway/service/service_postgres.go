@@ -148,6 +148,72 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 	return MapServiceDbToDomain(service, routes), nil
 }
 
+func (s *PostgresServiceGateway) GetServiceById(id int) (models.Service, error) {
+	query := `
+		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
+		FROM service s
+		LEFT JOIN route r
+		ON s.id=r.service_id
+		WHERE s.id=$1
+	`
+
+	rows, err := s.Conn.Query(context.Background(), query, id)
+	if err != nil {
+		return models.Service{}, err
+	}
+	defer rows.Close()
+
+	var service Service_DB
+	var routes = make([]models.Route, 0)
+
+	serviceExists := false
+	for rows.Next() {
+		serviceExists = true
+		var route r.Route_DB
+
+		var routeID sql.NullInt64
+		var routePath sql.NullString
+		var routeDescription sql.NullString
+		var routeCreatedAt, routeUpdatedAt sql.NullTime
+		var routeMethod sql.NullString
+
+		if err := rows.Scan(
+			&service.Id,
+			&service.Name,
+			&service.TargetUrl,
+			&service.Path,
+			&service.Description,
+			&service.CreatedAt,
+			&service.UpdatedAt,
+			&routeID,
+			&routePath,
+			&routeDescription,
+			&routeCreatedAt,
+			&routeUpdatedAt,
+			&routeMethod,
+		); err != nil {
+			log.Info().Msg(err.Error())
+			return models.Service{}, err
+		}
+
+		if routeID.Valid {
+			route.Id = int(routeID.Int64)
+			route.Path = routePath.String
+			route.Description = routeDescription.String
+			route.CreatedAt = routeCreatedAt.Time
+			route.UpdatedAt = routeUpdatedAt.Time
+			route.Method = routeMethod.String
+			routes = append(routes, r.MapRouteDbToDomain(route))
+		}
+	}
+
+	if !serviceExists {
+		return models.Service{}, ErrServiceNotFound
+	}
+
+	return MapServiceDbToDomain(service, routes), nil
+}
+
 func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 	query := `
 		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, r.id, r.path, r.description, r.created_at, r.updated_at, r.method

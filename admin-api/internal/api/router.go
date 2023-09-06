@@ -16,7 +16,6 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/jobs"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/middleware"
 	"github.com/rs/zerolog/log"
 )
 
@@ -52,13 +51,14 @@ func NewRouter() *mux.Router {
 
 	router := mux.NewRouter()
 	// Create context middlware to pass to following req/res lifecycle.
-	router.Use(middleware.CreateContextMiddlware)
+	// router.Use(middleware.CreateContextMiddlware)
 
 	// These route wont go through the reverse proxy middlewares
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
 	adminRouter.HandleFunc("/general", gatewayManager.GetGatewayInformationHandler).Methods("GET")
+	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")
 	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET")
