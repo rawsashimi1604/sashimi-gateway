@@ -2,9 +2,11 @@ import { ChartConfiguration } from 'c3';
 import React, { useEffect, useState } from 'react';
 
 import AdminRequest from '../../api/services/admin/AdminRequest';
+import { AggregatedRequest } from '../../api/services/admin/responses/AggregatedRequest';
 import { GetAggregatedRequestResponse } from '../../api/services/admin/responses/GetAggregatedRequest';
 import SelectInput from '../../components/input/SelectInput';
 import Chart from '../../components/utils/Chart';
+import LoadingSpinner from '../../components/utils/LoadingSpinner';
 import LoadingText from '../../components/utils/LoadingText';
 import { delay } from '../../utils/delay';
 
@@ -20,6 +22,7 @@ const timeframeMap = {
 function RequestChart() {
   const NUMBER_OF_DATAPOINTS = 6;
   const [timeframe, setTimeframe] = useState<Timeframe>('1h');
+  const [errorRate, setErrorRate] = useState('0');
   const [aggregatedReq, setAggregatedReq] = useState<GetAggregatedRequestResponse | null>(null);
   const [chartConfig, setChartConfig] = useState<ChartConfiguration | null>(null);
 
@@ -30,6 +33,21 @@ function RequestChart() {
     setAggregatedReq(requests.data);
   }
 
+  async function calculateAndSetErrorRate(requests: AggregatedRequest[]) {
+    let totalErrRequests = 0;
+    let totalRequests = 0;
+    for (const req of requests) {
+      totalRequests += req.count;
+      totalErrRequests += req.count_4xx;
+      totalErrRequests += req.count_5xx;
+    }
+
+    // Ignore divide by 0 error
+    if (totalRequests === 0) return;
+    const errorRate = (totalErrRequests / totalRequests) * 100;
+    setErrorRate(errorRate.toFixed(3));
+  }
+
   useEffect(() => {
     const timeframeNumber = timeframeMap[timeframe];
     loadAggregatedResponses(timeframeNumber, NUMBER_OF_DATAPOINTS);
@@ -38,6 +56,7 @@ function RequestChart() {
   useEffect(() => {
     const requests = aggregatedReq?.requests;
     if (!requests) return;
+    calculateAndSetErrorRate(requests);
     setChartConfig({
       data: {
         x: 'x',
@@ -78,8 +97,15 @@ function RequestChart() {
   return (
     <React.Fragment>
       <div className="text-xs flex items-center justify-end">
-        <span className="mr-2 font-md border-r pr-2 border-sashimi-deepgray">
-          Error rate (4xx and 5xx Status): <b className="text-sashimi-deeppink font-bold tracking-tighter">35.06%</b>
+        <span className="mr-2 font-md border-r pr-2 border-sashimi-deepgray flex items-center gap-2">
+          Error rate (4xx and 5xx Status):{' '}
+          {chartConfig ? (
+            <b className="text-sashimi-deeppink font-bold tracking-tighter">{errorRate}%</b>
+          ) : (
+            <span>
+              <LoadingSpinner size={12} />
+            </span>
+          )}
         </span>
         <span className="mr-2">select timeframe</span>
         <SelectInput options={['1h', '15m', '5m', '1m']} onChange={(value) => setTimeframe(value as Timeframe)} />
