@@ -13,14 +13,9 @@ function Breadcrumbs() {
         return (
           <span
             key={i + (breadcrumb.breadcrumb?.toString() as string)}
-            className={`${
-              breadcrumb.key === location.pathname
-                ? 'font-semibold'
-                : 'text-gray-500'
-            }`}
+            className={`${breadcrumb.key === location.pathname ? 'font-semibold' : 'text-gray-500'}`}
           >
-            {breadcrumb.key === '/' ? 'manager' : breadcrumb.key.slice(1)}{' '}
-            {i + 1 !== breadcrumbs.length && '>'}
+            {breadcrumb.key === '/' ? 'manager' : breadcrumb.key.slice(1)} {i + 1 !== breadcrumbs.length && '>'}
           </span>
         );
       })}

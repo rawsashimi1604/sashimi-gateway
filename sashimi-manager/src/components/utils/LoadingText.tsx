@@ -10,9 +10,7 @@ interface LoadingTextProps {
 function LoadingText({ text, spinnerSize = 14 }: LoadingTextProps) {
   return (
     <div className="flex flex-row items-center gap-2 h-96 justify-center">
-      <span className="font-cabin tracking-wider text-gray-600 text-sm">
-        {text}
-      </span>
+      <span className="font-cabin tracking-wider text-gray-600 text-sm">{text}</span>
       <LoadingSpinner size={spinnerSize} />
     </div>
   );

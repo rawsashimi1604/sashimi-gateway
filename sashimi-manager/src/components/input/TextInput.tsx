@@ -9,14 +9,7 @@ interface TextInputProps {
   error?: string;
 }
 
-function TextInput({
-  id,
-  name,
-  placeholder,
-  value,
-  onChange,
-  error
-}: TextInputProps) {
+function TextInput({ id, name, placeholder, value, onChange, error }: TextInputProps) {
   return (
     <>
       <input

@@ -8,13 +8,7 @@ type HeaderProps = {
   size?: 'sm' | 'md' | 'lg';
 };
 
-function Header({
-  text,
-  align = 'center',
-  className,
-  hasTextDecoration = false,
-  size = 'lg'
-}: HeaderProps) {
+function Header({ text, align = 'center', className, hasTextDecoration = false, size = 'lg' }: HeaderProps) {
   const sizeMap = {
     sm: 'text-xl',
     md: 'text-2xl ',
@@ -30,8 +24,7 @@ function Header({
   return (
     <h1
       className={`${sizeMap[size]} mb-2 tracking-wide font-cabin font-light ${
-        hasTextDecoration &&
-        'underline decoration-gray-200 underline-offset-[6px] '
+        hasTextDecoration && 'underline decoration-gray-200 underline-offset-[6px] '
       }  
       ${textAlignmentMap[align]} ${className}
     `}

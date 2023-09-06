@@ -1,90 +1,91 @@
 import { ChartConfiguration } from 'c3';
-import React, { useState } from 'react';
+import 'c3/c3.css';
+import React, { useEffect, useState } from 'react';
 
-import { Request } from '../../api/services/admin/responses/Request';
+import AdminRequest from '../../api/services/admin/AdminRequest';
+import { GetAggregatedRequestResponse } from '../../api/services/admin/responses/GetAggregatedRequest';
 import SelectInput from '../../components/input/SelectInput';
 import Chart from '../../components/utils/Chart';
+import LoadingText from '../../components/utils/LoadingText';
+import { delay } from '../../utils/delay';
 import { generateTimeData } from '../../utils/generateTimeData';
 
 type Timeframe = '1h' | '15m' | '5m' | '1m';
 
-interface RequestChartProps {
-  requests: Request[];
-}
+const timeframeMap = {
+  '1h': 60,
+  '15m': 15,
+  '5m': 5,
+  '1m': 1
+};
 
-function RequestChart({ requests }: RequestChartProps) {
-  const [timeframe, setTimeframe] = useState<Timeframe>('15m');
+function RequestChart() {
+  const NUMBER_OF_DATAPOINTS = 6;
+  const [timeframe, setTimeframe] = useState<Timeframe>('1h');
+  const [aggregatedReq, setAggregatedReq] = useState<GetAggregatedRequestResponse | null>(null);
+  const [chartConfig, setChartConfig] = useState<ChartConfiguration | null>(null);
 
-  let chosenTimeSeriesData, format;
-  switch (timeframe) {
-    case '1h':
-      chosenTimeSeriesData = generateTimeData(60, 6);
-      format = '%H:%M';
-      break;
-    case '15m':
-      chosenTimeSeriesData = generateTimeData(15, 6);
-      format = '%H:%M';
-      break;
-    case '5m':
-      chosenTimeSeriesData = generateTimeData(5, 6);
-      format = '%H:%M';
-      break;
-    case '1m':
-      chosenTimeSeriesData = generateTimeData(1, 6);
-      format = '%H:%M';
-      break;
-    default:
-      chosenTimeSeriesData = generateTimeData(15, 6);
-      format = '%H:%M';
-      break;
+  async function loadAggregatedResponses(timespan: number, dataPoints: number) {
+    await delay(2000);
+    const requests = await AdminRequest.getAggregatedRequest(timespan, dataPoints);
+    setAggregatedReq(requests.data);
   }
 
-  const chartConfig: ChartConfiguration = {
-    data: {
-      x: 'x',
-      columns: [
-        ['x', ...chosenTimeSeriesData],
-        ['2xx', 5, 10, 0, 0, 20, 23],
-        ['4xx', 5, 10, 12, 5, 20, 23],
-        ['5xx', 5, 10, 0, 20, 20, 23]
-      ],
-      types: {
-        '2xx': 'area-spline',
-        '4xx': 'area-spline',
-        '5xx': 'area-spline'
+  useEffect(() => {
+    const timeframeNumber = timeframeMap[timeframe];
+    loadAggregatedResponses(timeframeNumber, NUMBER_OF_DATAPOINTS);
+  }, [timeframe]);
+
+  useEffect(() => {
+    const requests = aggregatedReq?.requests;
+    if (!requests) return;
+    setChartConfig({
+      data: {
+        x: 'x',
+        columns: [
+          [
+            'x',
+            ...requests.map((request) => {
+              const date = new Date(request.timeBucket);
+              return date;
+            })
+          ],
+          ['2xx', ...requests.map((request) => request.count_2xx)],
+          ['4xx', ...requests.map((request) => request.count_4xx)],
+          ['5xx', ...requests.map((request) => request.count_5xx)]
+        ],
+        types: {
+          '2xx': 'area-spline',
+          '4xx': 'area-spline',
+          '5xx': 'area-spline'
+        },
+        groups: [['2xx', '4xx', '5xx']]
       },
-      groups: [['2xx', '4xx', '5xx']]
-    },
-    color: {
-      pattern: ['#006400', '#ff7f0e', '#4B0082']
-    },
-    axis: {
-      x: {
-        type: 'timeseries',
-        tick: {
-          format: format,
-          culling: false
+      color: {
+        pattern: ['#006400', '#ff7f0e', '#4B0082']
+      },
+      axis: {
+        x: {
+          type: 'timeseries',
+          tick: {
+            format: '%H:%M',
+            culling: false
+          }
         }
       }
-    }
-  };
+    });
+  }, [aggregatedReq]);
 
   return (
     <React.Fragment>
       <div className="text-xs flex items-center justify-end">
         <span className="mr-2 font-md border-r pr-2 border-sashimi-deepgray">
-          Error rate (4xx and 5xx Status):{' '}
-          <b className="text-sashimi-deeppink font-bold tracking-tighter">
-            35.06%
-          </b>
+          Error rate (4xx and 5xx Status): <b className="text-sashimi-deeppink font-bold tracking-tighter">35.06%</b>
         </span>
         <span className="mr-2">select timeframe</span>
-        <SelectInput
-          options={['1h', '15m', '5m', '1m']}
-          onChange={(value) => setTimeframe(value as Timeframe)}
-        />
+        <SelectInput options={['1h', '15m', '5m', '1m']} onChange={(value) => setTimeframe(value as Timeframe)} />
       </div>
-      <Chart config={chartConfig} />
+      {chartConfig ? <Chart config={chartConfig} /> : <LoadingText text="loading request chart..." />}
     </React.Fragment>
   );
 }

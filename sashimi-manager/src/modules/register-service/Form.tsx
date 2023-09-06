@@ -66,10 +66,7 @@ function Form() {
       <form className="flex flex-col gap-3 w-3/5" onSubmit={handleSubmit}>
         {/* Service name */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label
-            htmlFor="form-name"
-            className="tracking-tighter flex flex-row items-center justify-start gap-2 "
-          >
+          <label htmlFor="form-name" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
             <span className="mb-1 italic">service name</span>
             <AiFillInfoCircle />
           </label>
@@ -87,10 +84,7 @@ function Form() {
 
         {/* TargetUrl */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label
-            htmlFor="form-targetUrl"
-            className="tracking-tighter flex flex-row items-center justify-start gap-2 "
-          >
+          <label htmlFor="form-targetUrl" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
             <span className="mb-1 italic">target URL</span>
             <AiFillInfoCircle />
           </label>
@@ -108,10 +102,7 @@ function Form() {
 
         {/* Path */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label
-            htmlFor="form-path"
-            className="tracking-tighter flex flex-row items-center justify-start gap-2 "
-          >
+          <label htmlFor="form-path" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
             <span className="mb-1 italic">gateway path</span>
             <AiFillInfoCircle />
           </label>

@@ -43,16 +43,10 @@ function Dashboard() {
     loadDashboardRequestData();
   }, []);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   return (
     <Container>
       <Header text="welcome to sashimi gateway" align="left" size="sm" />
-      <h3 className="text-xs -mt-2 text-gray-600 mb-4">
-        welcome to sashimi gateway
-      </h3>
+      <h3 className="text-xs -mt-2 text-gray-600 mb-4">welcome to sashimi gateway</h3>
 
       {/* Analytics (Requests, Services, Routes, Data transmitted) */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -74,15 +68,11 @@ function Dashboard() {
           <LoadingCard header="routes" />
         )}
 
-        {data?.services ? (
-          <Card header="data transmitted" data="4,096MB" />
-        ) : (
-          <LoadingCard header="data transmitted" />
-        )}
+        {data?.services ? <Card header="data transmitted" data="4,096MB" /> : <LoadingCard header="data transmitted" />}
       </section>
 
       {/* Graph */}
-      <Information requests={data?.requests.requests as Request[]} />
+      <Information />
     </Container>
   );
 }

@@ -7,8 +7,6 @@ interface TableProps {
 }
 
 function Table({ services }: TableProps) {
-  console.log(services);
-
   return (
     <div>
       <div className="relative overflow-x-auto font-sans">

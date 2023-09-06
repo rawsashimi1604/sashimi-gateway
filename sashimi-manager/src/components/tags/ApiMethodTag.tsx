@@ -14,11 +14,7 @@ function ApiMethodTag({ method }: ApiMethodTagProps) {
   const selectedColor = color[method as string];
 
   return (
-    <div
-      className={`inline-block text-white px-1.5 py-1 rounded-lg text-xs shadow-sm ${selectedColor}`}
-    >
-      {method}
-    </div>
+    <div className={`inline-block text-white px-1.5 py-1 rounded-lg text-xs shadow-sm ${selectedColor}`}>{method}</div>
   );
 }
 
