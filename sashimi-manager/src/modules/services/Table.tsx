@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Service } from '../../api/services/admin/responses/Service';
 
@@ -7,6 +8,12 @@ interface TableProps {
 }
 
 function Table({ services }: TableProps) {
+  const navigate = useNavigate();
+
+  function handleNavigate(id: any) {
+    navigate('/services/' + id);
+  }
+
   return (
     <div>
       <div className="relative overflow-x-auto font-sans">
@@ -37,6 +44,7 @@ function Table({ services }: TableProps) {
                   <tr
                     key={service.id}
                     className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 cursor-pointer text-xs"
+                    onClick={() => handleNavigate(service.id)}
                   >
                     <td className="px-3 py-4">{service.id}</td>
                     <td className="px-3 py-4">{service.name}</td>

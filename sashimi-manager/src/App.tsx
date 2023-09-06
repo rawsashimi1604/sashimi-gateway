@@ -7,6 +7,7 @@ import Logs from './modules/gateway-logs';
 import RegisterRoute from './modules/register-route';
 import RegisterService from './modules/register-service';
 import Routes from './modules/routes';
+import ServiceDetails from './modules/service-details';
 import Services from './modules/services';
 import Settings from './modules/settings';
 
@@ -19,6 +20,10 @@ function App() {
     {
       path: '/services',
       element: <Services />
+    },
+    {
+      path: '/services/:id',
+      element: <ServiceDetails />
     },
     {
       path: '/services/register',
