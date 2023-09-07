@@ -49,7 +49,7 @@ function Dashboard() {
       <h3 className="text-xs -mt-2 text-gray-600 mb-4">welcome to sashimi gateway</h3>
 
       {/* Analytics (Requests, Services, Routes, Data transmitted) */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {data?.requests ? (
           <Card header="total requests" data={data.requests.count.toString()} />
         ) : (
@@ -67,8 +67,6 @@ function Dashboard() {
         ) : (
           <LoadingCard header="routes" />
         )}
-
-        {data?.services ? <Card header="data transmitted" data="4,096MB" /> : <LoadingCard header="data transmitted" />}
       </section>
 
       {/* Graph */}
