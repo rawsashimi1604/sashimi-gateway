@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { GetServiceByIdResponse } from '../../api/services/admin/responses/GetServiceById';
+import ApiMethodTag from '../../components/tags/ApiMethodTag';
 import Header from '../../components/typography/Header';
+import { ApiMethod } from '../../types/api/ApiMethod.interface';
 
 interface ServiceProps {
   data: GetServiceByIdResponse;
@@ -84,7 +86,9 @@ function ServiceInformation({ data }: ServiceProps) {
                       className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs"
                     >
                       <td className="px-3 py-2">{route.id}</td>
-                      <td className="px-3 py-2">{route.method}</td>
+                      <td className="px-3 py-2">
+                        <ApiMethodTag method={route.method as ApiMethod} />
+                      </td>
                       <td className="px-3 py-2">{route.path}</td>
                       <td className="px-3 py-2">{route.description}</td>
                       <td className="px-3 py-2">{new Date(route.createdAt).toLocaleString()}</td>
