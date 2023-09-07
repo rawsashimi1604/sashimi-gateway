@@ -7,4 +7,6 @@ export type Service = {
   path: string;
   description: string;
   routes: Route[];
+  createdAt: string;
+  updatedAt: string;
 };

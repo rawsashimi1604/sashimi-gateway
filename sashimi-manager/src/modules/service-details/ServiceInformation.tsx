@@ -5,6 +5,7 @@ import { GetServiceByIdResponse } from '../../api/services/admin/responses/GetSe
 import ApiMethodTag from '../../components/tags/ApiMethodTag';
 import Header from '../../components/typography/Header';
 import { ApiMethod } from '../../types/api/ApiMethod.interface';
+import { parseDateString } from '../../utils/parseDate';
 
 interface ServiceProps {
   data: GetServiceByIdResponse;
@@ -50,6 +51,14 @@ function ServiceInformation({ data }: ServiceProps) {
                 <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs">
                   <td className="px-3 py-2">description</td>
                   <td className="px-3 py-2">{data.service.description}</td>
+                </tr>
+                <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs">
+                  <td className="px-3 py-2">created at</td>
+                  <td className="px-3 py-2">{parseDateString(data.service.createdAt)}</td>
+                </tr>
+                <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs">
+                  <td className="px-3 py-2">updated at</td>
+                  <td className="px-3 py-2">{parseDateString(data.service.updatedAt)}</td>
                 </tr>
               </tbody>
             </table>
@@ -103,8 +112,8 @@ function ServiceInformation({ data }: ServiceProps) {
                       </td>
                       <td className="px-3 py-2">{route.path}</td>
                       <td className="px-3 py-2">{route.description}</td>
-                      <td className="px-3 py-2">{new Date(route.createdAt).toLocaleString()}</td>
-                      <td className="px-3 py-2">{new Date(route.updatedAt).toLocaleString()}</td>
+                      <td className="px-3 py-2">{parseDateString(route.createdAt)}</td>
+                      <td className="px-3 py-2">{parseDateString(route.updatedAt)}</td>
                     </tr>
                   );
                 })}
