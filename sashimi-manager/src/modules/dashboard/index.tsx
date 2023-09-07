@@ -24,7 +24,7 @@ function Dashboard() {
   const [data, setData] = useState<DashboardRequestData | null>(null);
 
   async function loadDashboardRequestData() {
-    await delay(2000);
+    await delay(500);
     const services = await AdminService.getAllServices();
     const requests = await AdminRequest.getAllRequests();
     const routes = await AdminRoute.getAllRoutes();

@@ -28,7 +28,7 @@ function RequestChart() {
 
   async function loadAggregatedResponses(timespan: number, dataPoints: number) {
     setChartConfig(null);
-    await delay(2000);
+    await delay(500);
     const requests = await AdminRequest.getAggregatedRequest(timespan, dataPoints);
     setAggregatedReq(requests.data);
   }

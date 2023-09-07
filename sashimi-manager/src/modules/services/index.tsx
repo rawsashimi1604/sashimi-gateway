@@ -6,7 +6,6 @@ import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAl
 import { Service } from '../../api/services/admin/responses/Service';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
-import LoadingSpinner from '../../components/utils/LoadingSpinner';
 import LoadingText from '../../components/utils/LoadingText';
 import { delay } from '../../utils/delay';
 import Table from './Table';
@@ -15,7 +14,7 @@ function Services() {
   const [services, setServices] = useState<GetAllServicesResponse | null>(null);
 
   async function loadServices() {
-    await delay(5000);
+    await delay(500);
     const services = await AdminService.getAllServices();
     setServices(services.data);
   }
