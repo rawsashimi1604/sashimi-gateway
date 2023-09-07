@@ -53,7 +53,6 @@ func (at *AnalyticsTracker) CaptureRequest(service models.Service, route models.
 	}
 	// Store the request data safely using mutex locks
 	at.Add(requestData)
-	log.Info().Msg("rt slice: " + utils.JSONStringify(at.requests))
 }
 
 func (at *AnalyticsTracker) StoreRequests() {

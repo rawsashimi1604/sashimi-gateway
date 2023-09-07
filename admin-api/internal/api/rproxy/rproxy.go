@@ -13,7 +13,6 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	sg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 
 	"github.com/rs/zerolog/log"
 )
@@ -47,7 +46,6 @@ func (rps *ReverseProxy) ReverseProxyMiddleware(next http.Handler) http.Handler 
 			http.Error(w, "service unable to be validated", http.StatusBadGateway)
 			return
 		}
-		log.Info().Msg("service: " + utils.JSONStringify(validatedService))
 
 		// validate route
 		validatedRoute, _, err := rps.matchRoute(validatedService, rps.parseRoutePath(req.URL.Path))
@@ -56,7 +54,6 @@ func (rps *ReverseProxy) ReverseProxyMiddleware(next http.Handler) http.Handler 
 			http.Error(w, "unable to find route", http.StatusNotFound)
 			return
 		}
-		log.Info().Msg("route: " + utils.JSONStringify(validatedRoute))
 
 		// create origin url
 		origin, err := url.Parse(validatedService.TargetUrl + validatedRoute.Path)
@@ -117,7 +114,6 @@ func (rps *ReverseProxy) parseRoutePath(path string) string {
 
 func (rps *ReverseProxy) matchService(path string) (models.Service, error) {
 	service, err := rps.serviceGateway.GetServiceByPath(rps.parseServicePath(path))
-	log.Info().Msg(utils.JSONStringify(service))
 	if err != nil {
 		if err == sg.ErrServiceNotFound {
 			return models.Service{}, sg.ErrServiceNotFound

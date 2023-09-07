@@ -48,7 +48,6 @@ func (sm *ServiceManager) GetAllServicesHandler(w http.ResponseWriter, req *http
 
 func (sm *ServiceManager) GetServiceById(w http.ResponseWriter, req *http.Request) {
 	serviceId := mux.Vars(req)["id"]
-	log.Info().Msg("id: " + serviceId)
 	serviceIdConverted, err := strconv.Atoi(serviceId)
 	if err != nil {
 		log.Info().Msg(err.Error())
@@ -119,8 +118,6 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		http.Error(w, "something went wrong when creating service", http.StatusBadGateway)
 		return
 	}
-
-	log.Info().Msg("service: " + utils.JSONStringify(service))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

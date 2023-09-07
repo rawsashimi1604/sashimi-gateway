@@ -78,9 +78,6 @@ func (reqm *RequestManager) GetAggregatedRequestData(w http.ResponseWriter, req 
 		return
 	}
 
-	log.Info().Msg("timespan: " + timespan)
-	log.Info().Msg("dataPoints: " + dataPoints)
-
 	aggregatedRequests, err := reqm.requestGateway.GetAggregatedRequests(
 		int(timeSpanConverted),
 		int(dataPointsConverted),

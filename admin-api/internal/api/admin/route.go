@@ -8,7 +8,6 @@ import (
 
 	rg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
 )
@@ -61,7 +60,6 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 		http.Error(w, ErrInvalidRouteBody.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Info().Msg("route to be added: " + utils.JSONStringify(body))
 
 	validator := validator.NewValidator()
 	err = validator.ValidateStruct(&body)
