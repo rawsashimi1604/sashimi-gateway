@@ -6,6 +6,7 @@ import { Route } from '../../api/services/admin/models/Route';
 import { GetAllRoutesResponse } from '../../api/services/admin/responses/GetAllRoutes';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
+import LoadingText from '../../components/utils/LoadingText';
 import { delay } from '../../utils/delay';
 import Table from './Table';
 
@@ -34,7 +35,7 @@ function Routes() {
         </Link>
       </div>
 
-      <Table routes={routes?.routes as Route[]} />
+      {routes ? <Table routes={routes?.routes as Route[]} /> : <LoadingText text="loading gateway routes" />}
     </Container>
   );
 }
