@@ -47,5 +47,5 @@ VALUES
 
 INSERT INTO api_request(id, service_id, route_id, path, method, time, code)
 VALUES 
-    ('someRandomUUID', 1, 1, '/salmon', 'GET', current_timestamp, 200),
-    ('someRandomUUID2', 2, 3, '/tuna', 'GET', current_timestamp, 200);
+    (gen_random_uuid(), 1, 1, '/salmon', 'GET', current_timestamp, 200),
+    (gen_random_uuid(), 2, 3, '/tuna', 'GET', current_timestamp, 200);
