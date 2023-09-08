@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import AdminService from '../../api/services/admin/AdminService';
+import { Service } from '../../api/services/admin/models/Service';
 import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
-import { Service } from '../../api/services/admin/responses/Service';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
 import LoadingText from '../../components/utils/LoadingText';

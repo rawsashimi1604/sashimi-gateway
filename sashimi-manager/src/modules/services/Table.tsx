@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Service } from '../../api/services/admin/responses/Service';
+import { Service } from '../../api/services/admin/models/Service';
 
 interface TableProps {
   services: Service[];

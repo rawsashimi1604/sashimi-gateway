@@ -19,6 +19,7 @@ func main() {
 	// TODO: add admin api (ongoing)
 	// TODO: add GUI dashboard (ongoing)
 	// TODO: refactor some services into their own seperate microservice.
+	// TODO: track how long each request took.
 
 	logger.SetupLogger()
 	router := api.NewRouter()

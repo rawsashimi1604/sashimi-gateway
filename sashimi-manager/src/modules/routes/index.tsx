@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import AdminRoute from '../../api/services/admin/AdminRoute';
+import { Route } from '../../api/services/admin/models/Route';
+import { GetAllRoutesResponse } from '../../api/services/admin/responses/GetAllRoutes';
 import Container from '../../components/layout/Container';
 import Header from '../../components/typography/Header';
+import { delay } from '../../utils/delay';
 import Table from './Table';
 
 function Routes() {
+  const [routes, setRoutes] = useState<GetAllRoutesResponse | null>(null);
+
+  async function loadRoutes() {
+    await delay(500);
+    const routes = await AdminRoute.getAllRoutes();
+    setRoutes(routes.data);
+  }
+
+  useEffect(() => {
+    loadRoutes();
+  }, []);
+
   return (
     <Container>
       <Header text="gateway routes" align="left" size="sm" />
@@ -18,7 +34,7 @@ function Routes() {
         </Link>
       </div>
 
-      <Table />
+      <Table routes={routes?.routes as Route[]} />
     </Container>
   );
 }
