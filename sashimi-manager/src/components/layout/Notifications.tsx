@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 import { Request } from '../../api/services/admin/models/Request';
+import ApiRequestNotification from './ApiRequestNotification';
 
 function Notifications() {
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -20,11 +21,9 @@ function Notifications() {
 
     // Listen for messages
     websocket.addEventListener('message', (event) => {
-      console.log('Message from server: ', event.data);
       const parsed = JSON.parse(event.data);
 
       if (parsed.requests) {
-        console.log('inside if block');
         const requests: Request[] = [];
         for (const req of parsed.requests) {
           const request: Request = {
@@ -67,13 +66,11 @@ function Notifications() {
         )}
       </div>
 
-      {requests?.map((req) => {
-        return (
-          <div key={req.id} className="font-cabin text-sm">
-            {req.id}
-          </div>
-        );
-      })}
+      <div className="flex flex-col gap-3 overflow-y-scroll">
+        {requests?.map((req) => {
+          return <ApiRequestNotification key={req.id} request={req} />;
+        })}
+      </div>
     </div>
   );
 }
