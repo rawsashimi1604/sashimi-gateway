@@ -67,7 +67,7 @@ function Notifications() {
       </div>
 
       <div className="flex flex-col mt-2 gap-3 overflow-y-scroll grow container">
-        {requests?.map((req) => {
+        {requests?.reverse().map((req) => {
           return <ApiRequestNotification key={req.id} request={req} />;
         })}
       </div>
