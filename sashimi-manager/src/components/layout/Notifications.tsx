@@ -2,36 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 import { Request } from '../../api/services/admin/models/Request';
-import { socketManager } from '../../api/websockets/socket';
 
 function Notifications() {
+  const [ws, setWs] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [requests, setRequests] = useState<Request[]>([]);
 
   useEffect(() => {
-    function onConnect() {
-      console.log('connected via websockets!');
-      setIsConnected(true);
-    }
+    // Create WebSocket connection.
+    const websocket = new WebSocket('ws://localhost:8080/api/admin/ws');
 
-    function onDisconnect() {
-      console.log('disconnected via websockets!');
-      setIsConnected(false);
-    }
+    // Connection opened
+    websocket.addEventListener('open', (event) => {
+      websocket.send(JSON.stringify({ message: 'Hello Server!' }));
+    });
 
-    function onReceiveNotification(requests: Request[]) {
-      console.log(requests);
-      setRequests((prev) => [...prev, ...requests]);
-    }
+    // Listen for messages
+    websocket.addEventListener('message', (event) => {
+      console.log('Message from server: ', event.data);
+    });
 
-    socketManager.on('connect', onConnect);
-    socketManager.on('disconnect', onDisconnect);
-    socketManager.on('event:apiRequests', onReceiveNotification);
+    setWs(websocket);
 
-    // Cleanup on unmount
     return () => {
-      socketManager.off('connect', onConnect);
-      socketManager.off('disconnect', onDisconnect);
+      websocket.close();
     };
   }, []);
 

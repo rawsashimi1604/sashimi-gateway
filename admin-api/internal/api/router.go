@@ -28,6 +28,9 @@ func NewRouter() *mux.Router {
 	// Setup dependencies
 	conn := setupPostgresConn()
 
+	// Create websocket server
+	ws := NewWebSocketServer()
+
 	// Load initial gateway information object
 	gatewayConfig := admin.LoadInitialGatewayInfo(env)
 
@@ -56,6 +59,7 @@ func NewRouter() *mux.Router {
 
 	// These route wont go through the reverse proxy middlewares
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
+	adminRouter.HandleFunc("/ws", ws.HandleClient)
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
 	adminRouter.HandleFunc("/general", gatewayManager.GetGatewayInformationHandler).Methods("GET")
