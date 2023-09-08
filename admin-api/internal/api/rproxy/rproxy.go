@@ -124,8 +124,15 @@ func (rps *ReverseProxy) matchService(path string) (models.Service, error) {
 }
 
 func (rps *ReverseProxy) matchRoute(service models.Service, requestPath string) (models.Route, map[string]string, error) {
+	// Match 1 to 1 routes first, before checking dynamic routes.
 	for _, route := range service.Routes {
 		if isMatch, pathParams := rps.isRouteMatch(route.Path, requestPath); isMatch {
+			return route, pathParams, nil
+		}
+	}
+
+	for _, route := range service.Routes {
+		if isMatch, pathParams := rps.isRouteMatchDynamic(route.Path, requestPath); isMatch {
 			return route, pathParams, nil
 		}
 	}
@@ -143,7 +150,28 @@ func (rps *ReverseProxy) isRouteMatch(routePath string, requestPath string) (boo
 	params := make(map[string]string)
 
 	for i := range routeSegments {
-		if strings.HasPrefix(routeSegments[i], ":") {
+		if routeSegments[i] != requestSegments[i] {
+			return false, nil
+		}
+	}
+
+	return true, params
+}
+
+func (rps *ReverseProxy) isRouteMatchDynamic(routePath string, requestPath string) (bool, map[string]string) {
+	routeSegments := strings.Split(routePath, "/")
+	requestSegments := strings.Split(requestPath, "/")
+
+	if len(routeSegments) != len(requestSegments) {
+		return false, nil
+	}
+
+	params := make(map[string]string)
+
+	for i := range routeSegments {
+		if routeSegments[i] == requestSegments[i] {
+			continue
+		} else if strings.HasPrefix(routeSegments[i], ":") {
 			paramKey := strings.TrimPrefix(routeSegments[i], ":")
 			params[paramKey] = requestSegments[i]
 		} else if routeSegments[i] != requestSegments[i] {
