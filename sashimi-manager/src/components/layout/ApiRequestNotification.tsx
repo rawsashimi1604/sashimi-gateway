@@ -40,8 +40,8 @@ function ApiRequestNotification({ request }: ApiRequestNotificationProps) {
         </div>
         <div className="font-bold">CODE {request.code}</div>
       </div>
-      <div className="text-xs mt-1">
-        received: <span className="italic text-sashimi-deepgray">{parseDateString(request.time)}</span>
+      <div className="text-xs mt-1 text-right font-sans tracking-wider">
+        at: <span className="italic text-sashimi-deepgray">{parseDateString(request.time)}</span>
       </div>
     </div>
   );

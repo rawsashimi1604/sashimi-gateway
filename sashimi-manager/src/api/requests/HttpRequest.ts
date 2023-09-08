@@ -7,9 +7,7 @@ const instance = axios.create();
 // Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
-    config.baseURL = `${import.meta.env.VITE_BACKEND_URL}${
-      import.meta.env.VITE_ADMIN_API_PATH
-    }`;
+    config.baseURL = `${import.meta.env.VITE_BACKEND_URL}${import.meta.env.VITE_ADMIN_API_PATH}`;
     return config;
   },
   function (error) {
@@ -19,27 +17,14 @@ instance.interceptors.request.use(
 );
 
 export default {
-  get: <T = any, R = AxiosResponse<T>>(
-    url: string,
-    config?: AxiosRequestConfig
-  ): Promise<R> => instance.get<T, R>(url, config),
-  post: <T = any, R = AxiosResponse<T>>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<R> => instance.post<T, R>(url, data, config),
-  put: <T = any, R = AxiosResponse<T>>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<R> => instance.put<T, R>(url, data, config),
-  delete: <T = any, R = AxiosResponse<T>>(
-    url: string,
-    config?: AxiosRequestConfig
-  ): Promise<R> => instance.delete<T, R>(url, config),
-  patch: <T = any, R = AxiosResponse<T>>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<R> => instance.patch<T, R>(url, data, config)
+  get: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> =>
+    instance.get<T, R>(url, config),
+  post: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> =>
+    instance.post<T, R>(url, data, config),
+  put: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> =>
+    instance.put<T, R>(url, data, config),
+  delete: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> =>
+    instance.delete<T, R>(url, config),
+  patch: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> =>
+    instance.patch<T, R>(url, data, config)
 };
