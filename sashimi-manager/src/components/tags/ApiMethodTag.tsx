@@ -9,7 +9,7 @@ interface ApiMethodTagProps {
 function ApiMethodTag({ method }: ApiMethodTagProps) {
   const color: any = {
     GET: 'bg-sashimi-deepgreen',
-    POST: 'bg-sashimi-deepblue'
+    POST: 'bg-sashimi-deepyellow'
   };
 
   const selectedColor = color[method as string];
