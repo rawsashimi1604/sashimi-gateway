@@ -16,6 +16,11 @@
   font-size: 14px;
 }
 
+.c3-legend-item text {
+  font-family: 'sans-serif';
+  letter-spacing: 0.12em;
+}
+
 .container {
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
