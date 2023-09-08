@@ -16,6 +16,7 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/jobs"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/websocket"
 	"github.com/rs/zerolog/log"
 )
 
@@ -29,7 +30,7 @@ func NewRouter() *mux.Router {
 	conn := setupPostgresConn()
 
 	// Create websocket server
-	ws := NewWebSocketServer()
+	ws := websocket.NewWebSocketServer()
 
 	// Load initial gateway information object
 	gatewayConfig := admin.LoadInitialGatewayInfo(env)
@@ -49,7 +50,7 @@ func NewRouter() *mux.Router {
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
 	// Cron job to periodically add requests to the database.
-	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, time.Duration(env.SASHIMI_REQUEST_INTERVAL)*time.Second)
+	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, time.Duration(env.SASHIMI_REQUEST_INTERVAL)*time.Second, ws)
 	requestCronJob.Start()
 
 	router := mux.NewRouter()

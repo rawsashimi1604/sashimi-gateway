@@ -1,4 +1,4 @@
-package api
+package websocket
 
 import (
 	"net/http"
@@ -16,16 +16,14 @@ var upgrader = websocket.Upgrader{
 
 // WebSocketServer will hold the active connections and the broadcast channel
 type WebSocketServer struct {
-	clients   map[*websocket.Conn]bool
-	broadcast chan []byte
-	mutex     sync.Mutex
+	clients map[*websocket.Conn]bool
+	mutex   sync.Mutex
 }
 
 // NewWebSocketServer creates a new WebSocketServer
 func NewWebSocketServer() *WebSocketServer {
 	return &WebSocketServer{
-		broadcast: make(chan []byte),
-		clients:   make(map[*websocket.Conn]bool),
+		clients: make(map[*websocket.Conn]bool),
 	}
 }
 
@@ -58,8 +56,8 @@ func (server *WebSocketServer) HandleClient(w http.ResponseWriter, r *http.Reque
 			delete(server.clients, ws)
 			break
 		}
-		// Broadcast the received message to all clients
-		server.broadcast <- []byte(msg.Message)
+		log.Info().Msg(ws.RemoteAddr().String() + ": " + msg.Message)
+		server.BroadcastMessage([]byte("from server"))
 	}
 }
 
@@ -68,7 +66,7 @@ func (server *WebSocketServer) BroadcastMessage(message []byte) {
 	defer server.mutex.Unlock()
 
 	for client := range server.clients {
-		err := client.WriteJSON(message)
+		err := client.WriteJSON(map[string]interface{}{"message": message})
 		if err != nil {
 			log.Info().Msgf("error: %v", err)
 			client.Close()
