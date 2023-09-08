@@ -1,4 +1,4 @@
-import { Service } from './Service';
+import { Service } from '../models/Service';
 
 export type GetServiceByIdResponse = {
   service: Service;

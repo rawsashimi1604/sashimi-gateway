@@ -55,7 +55,7 @@ func (at *AnalyticsTracker) CaptureRequest(service models.Service, route models.
 	at.Add(requestData)
 }
 
-func (at *AnalyticsTracker) StoreRequests() {
+func (at *AnalyticsTracker) StoreRequests() []models.ApiRequest {
 	// Get the requests safely using mutexes lock and unlock mechanism
 	requests := at.GetAndReset()
 	_, err := at.requestGateway.AddBulkRequests(requests)
@@ -64,4 +64,6 @@ func (at *AnalyticsTracker) StoreRequests() {
 		log.Info().Msg(err.Error())
 		log.Info().Msg("something went wrong when storing requests")
 	}
+
+	return requests
 }

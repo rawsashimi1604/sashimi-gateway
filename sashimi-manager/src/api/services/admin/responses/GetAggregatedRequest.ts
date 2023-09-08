@@ -1,4 +1,4 @@
-import { AggregatedRequest } from './AggregatedRequest';
+import { AggregatedRequest } from '../models/AggregatedRequest';
 
 export type GetAggregatedRequestResponse = {
   dataPoints: number;

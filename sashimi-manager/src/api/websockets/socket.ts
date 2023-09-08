@@ -1,8 +1,9 @@
-import { io } from 'socket.io-client';
+import socket from 'socket.io-client';
 
-const URL = import.meta.env.VITE_BACKEND_URL + import.meta.env.VITE_WEBSOCKET_API_PATH;
+const HOST = import.meta.env.VITE_BACKEND_URL;
+const PATH = import.meta.env.VITE_ADMIN_API_PATH + import.meta.env.VITE_WEBSOCKET_API_PATH;
 
-export const socket = io(URL, {
-  autoConnect: false,
-  withCredentials: true
+export const socketManager = new socket.Manager(HOST, {
+  path: PATH,
+  transports: ['websocket']
 });

@@ -1,4 +1,4 @@
-import { Route } from './Route';
+import { Route } from '../models/Route';
 
 export type GetAllRoutesResponse = {
   count: number;
