@@ -10,35 +10,52 @@ interface ApiRequestNotificationProps {
 }
 
 function ApiRequestNotification({ request }: ApiRequestNotificationProps) {
-  const colorMap = {
-    '2xx': 'bg-sashimi-green',
-    '4xx': 'bg-sashimi-pink',
-    '5xx': 'bg-sashimi-purple',
-    others: 'bg-sashimi-gray'
+  const bgColorMap = {
+    '2xx': {
+      bg: 'bg-sashimi-green',
+      text: 'text-sashimi-deepgreen'
+    },
+    '4xx': {
+      bg: 'bg-sashimi-pink',
+      text: 'text-sashimi-deeppink'
+    },
+    '5xx': {
+      bg: 'bg-sashimi-purple',
+      text: 'text-sashimi-deeppurple'
+    },
+    others: {
+      bg: 'bg-sashimi-gray',
+      text: 'text-sashimi-deepgray'
+    }
   };
 
   function getColor() {
     if (request.code >= 200 && request.code < 300) {
-      return colorMap['2xx'];
+      return bgColorMap['2xx'];
     } else if (request.code >= 400 && request.code < 500) {
-      return colorMap['4xx'];
+      return bgColorMap['4xx'];
     } else if (request.code >= 500) {
-      return colorMap['5xx'];
+      return bgColorMap['5xx'];
     } else {
-      return colorMap['others'];
+      return bgColorMap['others'];
     }
   }
 
   return (
     <div
-      className={`${getColor()} animate__animated animate__fadeIn border-sashimi-gray border px-2 py-2.5 rounded-lg text-xs font-sans shadow-md`}
+      className={`${
+        getColor().bg
+      } animate__animated animate__fadeIn border-sashimi-gray border px-2 py-2.5 rounded-lg text-xs font-sans shadow-md`}
     >
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-2">
           <ApiMethodTag method={request.method as ApiMethod} />
           <span className="font-sans tracking-wider">{request.path}</span>
         </div>
-        <div className="font-bold">CODE {request.code}</div>
+        <div className="">
+          <span className="tracking-wider">status</span>{' '}
+          <span className={`${getColor().text} font-bold`}>{request.code}</span>
+        </div>
       </div>
       <div className="text-xs mt-1 text-right font-sans tracking-wider">
         at: <span className="italic text-sashimi-deepgray">{parseDateString(request.time)}</span>
