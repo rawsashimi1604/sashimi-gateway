@@ -43,7 +43,9 @@ VALUES
     (1, 'POST', '/', 'Add salmon dish', current_timestamp, current_timestamp),
     (2, 'GET', '/', 'Get all tuna dishes', current_timestamp, current_timestamp),
     (1, 'GET', '/test', 'Test salmon service', current_timestamp, current_timestamp),
-    (1, 'GET', '/:id', 'Get salmon dish by id', current_timestamp, current_timestamp);
+    (1, 'GET', '/:id', 'Get salmon dish by id', current_timestamp, current_timestamp),
+    (1, 'GET', '/healthz', 'Salmon Healthz', current_timestamp, current_timestamp),
+    (2, 'GET', '/healthz', 'Tuna Healthz', current_timestamp, current_timestamp);
 
 INSERT INTO api_request(id, service_id, route_id, path, method, time, code)
 VALUES 
