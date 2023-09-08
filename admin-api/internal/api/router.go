@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	socketio "github.com/googollee/go-socket.io"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
 	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/admin"
@@ -29,9 +28,6 @@ func NewRouter() *mux.Router {
 	// Setup dependencies
 	conn := setupPostgresConn()
 
-	// Setup Websocket server
-	websocketServer := setupWebSocketServer()
-
 	// Load initial gateway information object
 	gatewayConfig := admin.LoadInitialGatewayInfo(env)
 
@@ -50,7 +46,7 @@ func NewRouter() *mux.Router {
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
 	// Cron job to periodically add requests to the database.
-	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, time.Duration(env.SASHIMI_REQUEST_INTERVAL)*time.Second, websocketServer)
+	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, time.Duration(env.SASHIMI_REQUEST_INTERVAL)*time.Second)
 	requestCronJob.Start()
 
 	router := mux.NewRouter()
@@ -62,7 +58,6 @@ func NewRouter() *mux.Router {
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
-	adminRouter.Handle("/socket.io/", websocketServer)
 	adminRouter.HandleFunc("/general", gatewayManager.GetGatewayInformationHandler).Methods("GET")
 	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
@@ -82,27 +77,6 @@ func NewRouter() *mux.Router {
 
 	log.Info().Msg("Admin Api Router created successfully.")
 	return router
-}
-
-func setupWebSocketServer() *socketio.Server {
-	server := socketio.NewServer(nil)
-
-	server.OnConnect("/", func(s socketio.Conn) error {
-		log.Info().Msg("Connected!")
-		s.SetContext("")
-		s.Emit("connect", "connected to websocket server")
-		s.Join("bcast")
-		return nil
-	})
-
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		// Add the Remove session id. Fixed the connection & mem leak
-		s.Emit("disconnect", "disconnected to websocket server")
-	})
-
-	log.Info().Msg("Created websocket server successfully.")
-	go server.Serve()
-	return server
 }
 
 func setupPostgresConn() *pgxpool.Pool {
