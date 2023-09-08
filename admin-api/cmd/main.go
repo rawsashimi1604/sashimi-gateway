@@ -18,6 +18,7 @@ func main() {
 	// TODO: add rate limiting
 	// TODO: add admin api (ongoing)
 	// TODO: add GUI dashboard (ongoing)
+	// TODO: refactor some services into their own seperate microservice.
 
 	logger.SetupLogger()
 	router := api.NewRouter()

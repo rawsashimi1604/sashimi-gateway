@@ -7,6 +7,7 @@ import (
 // New creates a new router
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
+	r.HandleFunc("/healthz", Healthz).Methods("GET")
 	r.HandleFunc("/", GetDishesHandler).Methods("GET")
 	r.HandleFunc("/", AddDishHandler).Methods("POST")
 	r.HandleFunc("/{id:[0-9]+}", GetDishByIdHandler).Methods("GET")

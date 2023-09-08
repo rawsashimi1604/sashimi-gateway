@@ -5,7 +5,6 @@ import (
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/robfig/cron/v3"
-	"github.com/rs/zerolog/log"
 )
 
 // TODO: create gateway for adding requests.
@@ -31,7 +30,5 @@ func (rcj *RequestCronJob) Start() {
 }
 
 func (rcj *RequestCronJob) run() {
-	log.Info().Msg("Ran the cron job!")
 	rcj.AnalyticsTracker.StoreRequests()
-	log.Info().Msg("End of cron job!")
 }
