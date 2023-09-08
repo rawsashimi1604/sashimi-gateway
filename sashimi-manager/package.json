@@ -14,6 +14,7 @@
   "dependencies": {
     "@fontsource-variable/cabin": "^5.0.9",
     "@types/react-router-dom": "^5.3.3",
+    "@types/socket.io-client": "^3.0.0",
     "animate.css": "^4.1.1",
     "axios": "^1.4.0",
     "c3": "^0.7.20",
@@ -22,6 +23,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-router-dom": "^6.15.0",
+    "socket.io-client": "^4.7.2",
     "use-react-router-breadcrumbs": "^4.0.1",
     "vite-plugin-svgr": "^3.2.0",
     "yup": "^1.2.0"
