@@ -15,11 +15,31 @@ function Notifications() {
     // Connection opened
     websocket.addEventListener('open', (event) => {
       websocket.send(JSON.stringify({ message: 'Hello Server!' }));
+      setIsConnected(true);
     });
 
     // Listen for messages
     websocket.addEventListener('message', (event) => {
       console.log('Message from server: ', event.data);
+      const parsed = JSON.parse(event.data);
+
+      if (parsed.requests) {
+        console.log('inside if block');
+        const requests: Request[] = [];
+        for (const req of parsed.requests) {
+          const request: Request = {
+            id: req.id,
+            serviceId: req.serviceId,
+            routeId: req.routeId,
+            path: req.path,
+            method: req.method,
+            time: req.time,
+            code: req.code
+          };
+          requests.push(request);
+        }
+        setRequests((prev) => [...prev, ...requests]);
+      }
     });
 
     setWs(websocket);
@@ -35,7 +55,6 @@ function Notifications() {
       <div className="absolute left-0 border-l border-gray-200 h-full w-full -z-10"></div>
       <div className="flex flex-row items-center justify-between">
         <h1 className="font-cabin font-light tracking-tight">notifications</h1>
-
         {isConnected ? (
           <div className="font-cabin flex flex-row border px-2 rounded-lg shadow-sm bg-gray-50 py-0.5 text-sm gap-2 items-center justify-between text-gray-600">
             <span className="font-cabin tracking-wider">listening</span>
@@ -47,6 +66,14 @@ function Notifications() {
           </div>
         )}
       </div>
+
+      {requests?.map((req) => {
+        return (
+          <div key={req.id} className="font-cabin text-sm">
+            {req.id}
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rs/zerolog/log"
 )
 
@@ -57,16 +58,30 @@ func (server *WebSocketServer) HandleClient(w http.ResponseWriter, r *http.Reque
 			break
 		}
 		log.Info().Msg(ws.RemoteAddr().String() + ": " + msg.Message)
-		server.BroadcastMessage([]byte("from server"))
+		server.BroadcastMessage("hello from server")
 	}
 }
 
-func (server *WebSocketServer) BroadcastMessage(message []byte) {
+func (server *WebSocketServer) BroadcastMessage(message string) {
 	server.mutex.Lock()
 	defer server.mutex.Unlock()
 
 	for client := range server.clients {
 		err := client.WriteJSON(map[string]interface{}{"message": message})
+		if err != nil {
+			log.Info().Msgf("error: %v", err)
+			client.Close()
+			delete(server.clients, client)
+		}
+	}
+}
+
+func (server *WebSocketServer) BroadcastRequests(requests []models.ApiRequest) {
+	server.mutex.Lock()
+	defer server.mutex.Unlock()
+
+	for client := range server.clients {
+		err := client.WriteJSON(map[string]interface{}{"requests": requests})
 		if err != nil {
 			log.Info().Msgf("error: %v", err)
 			client.Close()
