@@ -46,8 +46,8 @@ function LoginForm() {
       <form className="flex flex-col gap-3" onSubmit={handleLogin}>
         {/* Username */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label htmlFor="username" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
-            <span className="mb-1 italic">username</span>
+          <label htmlFor="username" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1 ">username</span>
             <AiFillInfoCircle />
           </label>
           <div className="">
@@ -63,8 +63,8 @@ function LoginForm() {
 
         {/* Password */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label htmlFor="password" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
-            <span className="mb-1 italic">password</span>
+          <label htmlFor="password" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1 ">password</span>
             <AiFillInfoCircle />
           </label>
           <div className="">
