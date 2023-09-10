@@ -10,7 +10,11 @@ function Notifications() {
 
   useEffect(() => {
     // Create WebSocket connection.
-    const websocket = new WebSocket('ws://localhost:8080/api/admin/ws');
+    const PATH =
+      import.meta.env.VITE_BACKEND_DOMAIN +
+      import.meta.env.VITE_ADMIN_API_PATH +
+      import.meta.env.VITE_WEBSOCKET_API_PATH;
+    const websocket = new WebSocket('ws://' + PATH);
 
     // Connection opened
     websocket.addEventListener('open', (event) => {
