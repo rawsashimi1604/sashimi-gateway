@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AiFillInfoCircle } from 'react-icons/ai';
 import * as yup from 'yup';
 
+import TextAreaInput from '../../components/input/TextAreaInput';
 import TextInput from '../../components/input/TextInput';
 import ToggleInput from '../../components/input/ToggleInput';
 import Subheader from '../../components/typography/Subheader';
@@ -128,7 +129,7 @@ function Form() {
             <AiFillInfoCircle />
           </label>
           <div className="">
-            <TextInput
+            <TextAreaInput
               id="form-description"
               name="form-description"
               value={formData.formDescription}
