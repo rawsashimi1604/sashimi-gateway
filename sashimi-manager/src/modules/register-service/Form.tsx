@@ -38,7 +38,6 @@ function Form() {
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
-  const [apiRequestError, setApiRequestError] = useState('');
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -51,7 +50,6 @@ function Form() {
       await validationSchema.validate(formData, { abortEarly: false });
       console.log('Form is valid. Submitting:', formData);
       setValidationErrors({});
-      setApiRequestError('');
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         const errorObj: { [key: string]: string } = {};
@@ -144,12 +142,29 @@ function Form() {
           <div className="border-b" />
         </div>
 
-        <div className="flex flex-row items-start justify-between">
+        {/* Health checks */}
+        <div className="flex flex-row items-start justify-between mb-2">
+          <div>
+            <label htmlFor="form-description" className="tracking-wide flex flex-row items-center justify-start gap-3">
+              <span className="text-sm">use swagger open api specification</span>
+            </label>
+            <span className="font-sans text-sashimi-deepgray text-xs block">
+              some boiler plate text here. to be implemented
+            </span>
+          </div>
+          <ToggleInput />
+        </div>
+
+        {/* Health checks */}
+        <div className="flex flex-row items-start justify-between mb-2">
           <div>
             <label htmlFor="form-description" className="tracking-wide flex flex-row items-center justify-start gap-3">
               <span className="text-sm">enable health checks</span>
             </label>
-            <span className="font-sans text-sashimi-deepgray text-xs block">Some helper text for health checks</span>
+            <span className="font-sans text-sashimi-deepgray text-xs block">
+              To enable health checks, service must contain a <span className="italic">'/healthz'</span> endpoint that
+              returns a 200 OK status code.
+            </span>
           </div>
           <ToggleInput />
         </div>
