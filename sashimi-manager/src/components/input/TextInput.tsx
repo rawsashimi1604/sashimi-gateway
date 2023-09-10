@@ -17,12 +17,12 @@ function TextInput({ id, name, placeholder, value, onChange, error, type = 'text
         id={id}
         name={name}
         type={type}
-        className="font-sans tracking-wider indent-1 rounded-lg w-full bg-gray-100 border-sashimi-deepgray border-[0.5px] px-1 py-0.5 text-sm focus:outline-none"
+        className="font-sans tracking-wider indent-1 rounded-lg w-full bg-gray-100 border-sashimi-gray border-[0.5px] px-1 py-0.5 text-sm focus:outline-none"
         placeholder={placeholder}
         value={value}
         onChange={onChange}
       />
-      {error && <span className="text-red-500 text-xs">{error}</span>}
+      {error && <span className="tracking-wider text-red-500 text-xs">{error}</span>}
     </>
   );
 }

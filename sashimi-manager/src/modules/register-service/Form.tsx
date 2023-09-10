@@ -66,8 +66,8 @@ function Form() {
       <form className="flex flex-col gap-3 w-3/5" onSubmit={handleSubmit}>
         {/* Service name */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label htmlFor="form-name" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
-            <span className="mb-1 italic">service name</span>
+          <label htmlFor="form-name" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1">service name</span>
             <AiFillInfoCircle />
           </label>
           <div className="">
@@ -84,8 +84,8 @@ function Form() {
 
         {/* TargetUrl */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label htmlFor="form-targetUrl" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
-            <span className="mb-1 italic">target URL</span>
+          <label htmlFor="form-name" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1">target url</span>
             <AiFillInfoCircle />
           </label>
           <div className="">
@@ -102,8 +102,8 @@ function Form() {
 
         {/* Path */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label htmlFor="form-path" className="tracking-tighter flex flex-row items-center justify-start gap-2 ">
-            <span className="mb-1 italic">gateway path</span>
+          <label htmlFor="form-path" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1">gateway path</span>
             <AiFillInfoCircle />
           </label>
           <div className="">
@@ -120,11 +120,8 @@ function Form() {
 
         {/* Description */}
         <div className="flex flex-col justify-center gap-1 text-sm">
-          <label
-            htmlFor="form-description"
-            className="tracking-tighter flex flex-row items-center justify-start gap-2 "
-          >
-            <span className="mb-1 italic">service description</span>
+          <label htmlFor="form-description" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1">service description</span>
             <AiFillInfoCircle />
           </label>
           <div className="">
@@ -141,7 +138,7 @@ function Form() {
 
         <button
           type="submit"
-          className="w-[80px] mt-2 text-xs tracking-tighter py-1.5 px-2 pb-2 text-white bg-sashimi-deepgreen shadow-md rounded-lg font-sans border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
+          className="w-[80px] mt-2 text-xs py-1.5 px-2 pb-2 text-white bg-sashimi-deepgreen shadow-md rounded-lg font-sans tracking-wider border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
         >
           <span>register</span>
         </button>
