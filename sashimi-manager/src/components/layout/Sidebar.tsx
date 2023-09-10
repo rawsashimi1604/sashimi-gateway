@@ -36,7 +36,7 @@ function Sidebar() {
         </div>
       </div>
 
-      <button className="w-full flex-end py-2 bg-blue-500 text-white shadow-md rounded-full font-sans border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg">
+      <button className="w-full flex-end py-2 bg-blue-500 text-white shadow-md rounded-full font-sans border-0 tracking-widest duration-300 transition-all hover:-translate-y-1 hover:shadow-lg">
         logout
       </button>
     </nav>

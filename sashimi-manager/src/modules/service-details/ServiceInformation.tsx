@@ -70,7 +70,7 @@ function ServiceInformation({ data }: ServiceProps) {
             <button
               type="button"
               onClick={() => navigate('/routes/register')}
-              className="text-xs py-1 px-2 bg-blue-500 text-white shadow-md rounded-lg font-sans border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
+              className="flex-end text-xs py-1 px-2 bg-blue-500 text-white shadow-md rounded-lg font-sans tracking-wider border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
             >
               <span>add route</span>
             </button>

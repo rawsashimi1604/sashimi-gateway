@@ -81,7 +81,7 @@ function LoginForm() {
 
         <button
           type="submit"
-          className="w-full mt-2 text-xs tracking-tighter py-1.5 px-2 pb-2 text-white bg-sashimi-deepgreen shadow-md rounded-lg font-sans border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
+          className="w-[80px] mt-2 text-xs py-1.5 px-2 pb-2 text-white bg-sashimi-deepblue shadow-md rounded-lg font-sans tracking-wider border-0 duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
         >
           <span>login</span>
         </button>
