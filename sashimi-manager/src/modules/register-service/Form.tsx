@@ -146,8 +146,7 @@ function Form() {
         <div className="flex flex-row items-start justify-between">
           <div>
             <label htmlFor="form-description" className="tracking-wide flex flex-row items-center justify-start gap-3">
-              <span className="mb-1 text-sm">enable health checks</span>
-              <AiFillInfoCircle />
+              <span className="text-sm">enable health checks</span>
             </label>
             <span className="font-sans text-sashimi-deepgray text-xs block">Some helper text for health checks</span>
           </div>

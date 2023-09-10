@@ -6,7 +6,6 @@ import ApiRequestNotification from './ApiRequestNotification';
 
 function Notifications() {
   const [ws, setWs] = useState<WebSocket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
   const [requests, setRequests] = useState<Request[]>([]);
 
   useEffect(() => {
@@ -16,7 +15,6 @@ function Notifications() {
     // Connection opened
     websocket.addEventListener('open', (event) => {
       websocket.send(JSON.stringify({ message: 'Hello Server!' }));
-      setIsConnected(true);
     });
 
     // Listen for messages
@@ -54,7 +52,7 @@ function Notifications() {
       <div className="absolute left-0 border-l border-gray-200 h-full w-full -z-10"></div>
       <div className="flex flex-row items-center justify-between">
         <h1 className="font-cabin font-light tracking-tight">notifications</h1>
-        {isConnected ? (
+        {ws ? (
           <div className="font-cabin flex flex-row border px-2 rounded-lg shadow-sm bg-gray-50 py-0.5 text-sm gap-2 items-center justify-between text-gray-600">
             <span className="font-cabin tracking-wider">listening</span>
             <AiOutlineLoading3Quarters className="animate-spin" />
