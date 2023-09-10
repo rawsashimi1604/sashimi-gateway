@@ -33,13 +33,18 @@ function Form() {
     formName: '',
     formTargetUrl: '',
     formPath: '',
-    formDescription: ''
+    formDescription: '',
+    formHealthChecks: false
   });
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
 
   const handleChange = (name: string, value: string) => {
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleToggleChange = (name: string, value: boolean) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
@@ -152,7 +157,13 @@ function Form() {
               some boiler plate text here. to be implemented
             </span>
           </div>
-          <ToggleInput />
+          <ToggleInput
+            id="form-swagger"
+            name="form-swagger"
+            checked={false}
+            onChange={(e) => console.log('to be implemented.')}
+            disabled
+          />
         </div>
 
         {/* Health checks */}
@@ -166,7 +177,12 @@ function Form() {
               returns a 200 OK status code.
             </span>
           </div>
-          <ToggleInput />
+          <ToggleInput
+            id="form-healthchecks"
+            name="form-healthchecks"
+            checked={formData.formHealthChecks}
+            onChange={(e) => handleToggleChange('formHealthChecks', e)}
+          />
         </div>
 
         <button
