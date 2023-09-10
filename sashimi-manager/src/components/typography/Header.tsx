@@ -23,7 +23,7 @@ function Header({ text, align = 'center', className, hasTextDecoration = false, 
 
   return (
     <h1
-      className={`${sizeMap[size]} mb-2 tracking-wide font-cabin font-light ${
+      className={`${sizeMap[size]} mb-2 tracking-wide font-lora font-light ${
         hasTextDecoration && 'underline decoration-gray-200 underline-offset-[6px] '
       }  
       ${textAlignmentMap[align]} ${className}

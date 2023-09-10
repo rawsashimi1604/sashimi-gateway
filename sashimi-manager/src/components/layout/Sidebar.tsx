@@ -18,7 +18,7 @@ function Sidebar() {
         </div>
         {/* Services, Routes */}
         <div className="mt-4">
-          <h2 className="font-bold text-gray-800 tracking-tighter">gateway</h2>
+          <h2 className="font-bold text-gray-800 tracking-tighter font-lora">gateway</h2>
           <ul className="flex flex-col gap-0">
             <SidebarItem item="Home" href="/" />
             <SidebarItem item="Services" href="/services" />
@@ -28,7 +28,7 @@ function Sidebar() {
         </div>
         {/* Settings , Logout */}
         <div className="mt-4">
-          <h2 className="font-bold text-gray-800 tracking-tighter">account</h2>
+          <h2 className="font-bold text-gray-800 tracking-tighter font-lora">account</h2>
           <ul className="flex flex-col gap-0">
             <SidebarItem item="Account" href="/account" />
             <SidebarItem item="Settings" href="/settings" />

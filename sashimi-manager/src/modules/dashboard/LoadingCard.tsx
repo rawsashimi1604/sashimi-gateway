@@ -13,7 +13,7 @@ function LoadingCard({ header }: LoadingCardProps) {
         <h2 className="text-sm mb-4 tracking-wide">{header}</h2>
         <div className="flex flex-row items-center justiy-start gap-2 text-sashimi-deepgray">
           <LoadingSpinner size={12} color="#505050" />
-          <h3 className="font-cabin tracking-wider text-[18px] font-bold">loading...</h3>
+          <h3 className="font-lora tracking-wider text-[18px] font-bold">loading...</h3>
         </div>
       </div>
     </div>

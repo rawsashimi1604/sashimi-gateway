@@ -4,7 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        cabin: 'cabin, serif'
+        cabin: 'Cabin Variable, sans-serif',
+        lora: 'Lora Variable, sans-serif',
+        bitter: 'Bitter Variable, sans-serif'
       },
       colors: {
         'sashimi-blue': '#E3F5FF',

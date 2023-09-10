@@ -51,15 +51,15 @@ function Notifications() {
       {/* border */}
       <div className="absolute left-0 border-l border-gray-200 h-full w-full -z-10"></div>
       <div className="flex flex-row items-center justify-between">
-        <h1 className="font-cabin font-light tracking-tight">notifications</h1>
+        <h1 className="font-lora font-light tracking-tight">notifications</h1>
         {ws ? (
-          <div className="font-cabin flex flex-row border px-2 rounded-lg shadow-sm bg-gray-50 py-0.5 text-sm gap-2 items-center justify-between text-gray-600">
-            <span className="font-cabin tracking-wider">listening</span>
+          <div className="font-lora flex flex-row border px-2 rounded-lg shadow-sm bg-gray-50 py-0.5 text-sm gap-2 items-center justify-between text-gray-600">
+            <span className="font-lora tracking-wider">listening</span>
             <AiOutlineLoading3Quarters className="animate-spin" />
           </div>
         ) : (
-          <div className="font-cabin flex flex-row border px-2 rounded-lg shadow-sm bg-sashimi-pink py-0.5 text-sm gap-2 items-center justify-between text-sashimi-deeppink">
-            <span className="font-cabin tracking-wider">not connected</span>
+          <div className="font-lora flex flex-row border px-2 rounded-lg shadow-sm bg-sashimi-pink py-0.5 text-sm gap-2 items-center justify-between text-sashimi-deeppink">
+            <span className="font-lora tracking-wider">not connected</span>
           </div>
         )}
       </div>

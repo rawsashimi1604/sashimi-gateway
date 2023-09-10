@@ -14,7 +14,7 @@ function SidebarItem({ item, href = '/' }: SidebarItemProps) {
     <li
       className={`${
         isSelected && 'bg-blue-100 py-0.5 pl-2 font-semibold'
-      } hover:bg-slate-100 transition-all hover:pl-4  duration-150  hover:cursor-pointer rounded-lg tracking-tighter`}
+      } hover:bg-slate-100 transition-all hover:pl-4 font-lora duration-150 hover:cursor-pointer rounded-lg tracking-wide`}
     >
       <Link to={href}>
         <span className="hover:transition-all duration-150">{item}</span>

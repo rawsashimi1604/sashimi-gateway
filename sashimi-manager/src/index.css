@@ -1,5 +1,7 @@
 @import 'c3/c3.min.css';
 @import '@fontsource-variable/cabin';
+@import '@fontsource-variable/lora';
+@import '@fontsource-variable/bitter';
 
 @tailwind base;
 @tailwind components;
