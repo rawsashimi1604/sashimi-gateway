@@ -43,9 +43,7 @@ function ApiRequestNotification({ request }: ApiRequestNotificationProps) {
 
   return (
     <div
-      className={`${
-        getColor().bg
-      } animate__animated animate__fadeIn border-sashimi-gray border px-2 py-2.5 rounded-lg text-xs font-sans shadow-md`}
+      className={`bg-gray-50 animate__animated animate__fadeIn border-sashimi-gray border px-2 py-2.5 rounded-lg text-xs font-sans shadow-md`}
     >
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-2">
