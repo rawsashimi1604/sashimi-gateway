@@ -24,7 +24,7 @@ function Container({ children }: ContainerProps) {
         <div className="mt-3 container overflow-y-scroll">{children}</div>
         {/* <Footer /> */}
       </main>
-      <div className="min-w-[250px]">
+      <div className="min-w-[300px]">
         <Notifications />
       </div>
     </div>
