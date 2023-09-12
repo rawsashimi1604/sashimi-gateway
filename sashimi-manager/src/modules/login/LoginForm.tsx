@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 import AdminAuth from '../../api/services/admin/AdminAuth';
 import TextInput from '../../components/input/TextInput';
+import LoadingSpinner from '../../components/utils/LoadingSpinner';
+import { delay } from '../../utils/delay';
 
 // Define validation schema using yup for login
 const loginValidationSchema = yup.object().shape({
@@ -10,12 +13,19 @@ const loginValidationSchema = yup.object().shape({
   password: yup.string().required('Password is required.')
 });
 
+type LoginState = {
+  status: boolean;
+  message: string;
+};
+
 function LoginForm() {
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
   });
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+  const [loginState, setLoginState] = useState<LoginState | null>(null);
 
   const handleChange = (name: string, value: string) => {
     setLoginData((prevState) => ({ ...prevState, [name]: value }));
@@ -23,15 +33,10 @@ function LoginForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoginState(null);
     try {
       await loginValidationSchema.validate(loginData, { abortEarly: false });
-      console.log('Login data is valid:', loginData);
       setValidationErrors({});
-
-      // Authenticate the user, e.g. send a request to the server
-      const loginRes = await AdminAuth.login(loginData.username, loginData.password);
-      console.log({ loginRes });
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         const errorObj: { [key: string]: string } = {};
@@ -40,6 +45,22 @@ function LoginForm() {
         }
         setValidationErrors(errorObj);
       }
+    }
+
+    try {
+      const loginRes = await AdminAuth.login(loginData.username, loginData.password);
+      localStorage.setItem('jwt-token', JSON.stringify(loginRes.data));
+      setLoginState({
+        status: true,
+        message: 'successfully logged in, redirecting...'
+      });
+      await delay(2000);
+      navigate('/');
+    } catch (err) {
+      setLoginState({
+        status: false,
+        message: 'invalid credentials, please try again.'
+      });
     }
   };
 
@@ -85,6 +106,19 @@ function LoginForm() {
         >
           <span>login</span>
         </button>
+
+        {loginState && (
+          <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
+            {loginState.status ? (
+              <React.Fragment>
+                <span className="text-sashimi-deepgreen">{loginState?.message}</span>
+                <LoadingSpinner size={12} />
+              </React.Fragment>
+            ) : (
+              <span className="text-sashimi-deeppink">{loginState.message}</span>
+            )}
+          </div>
+        )}
       </form>
     </div>
   );
