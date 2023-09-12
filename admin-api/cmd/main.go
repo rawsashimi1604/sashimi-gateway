@@ -11,12 +11,10 @@ import (
 
 func main() {
 
-	// TODO: add middleware for analytics (ongoing)
 	// TODO: add health check route
 	// TODO: add authentication (JWT)
 	// TODO: add caching for services and routes (REDIS)
 	// TODO: add rate limiting
-	// TODO: add admin api (ongoing)
 	// TODO: add GUI dashboard (ongoing)
 	// TODO: refactor some services into their own seperate microservice.
 	// TODO: track how long each request took.
