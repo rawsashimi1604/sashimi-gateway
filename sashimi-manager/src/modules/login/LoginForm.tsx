@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import AdminAuth from '../../api/services/admin/AdminAuth';
 import TextInput from '../../components/input/TextInput';
 import LoadingSpinner from '../../components/utils/LoadingSpinner';
+import { useJwtLocalStorage } from '../../hooks/useJwtLocalStorage';
 import { delay } from '../../utils/delay';
 
 // Define validation schema using yup for login
@@ -20,6 +21,7 @@ type LoginState = {
 
 function LoginForm() {
   const navigate = useNavigate();
+  const jwtToken = useJwtLocalStorage();
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''

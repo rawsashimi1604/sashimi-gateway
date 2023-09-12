@@ -1,8 +1,17 @@
+import { useNavigate } from 'react-router-dom';
+
 import GatewayLogo from '../sashimi-gateway/GatewayLogo';
 import Logo from '../sashimi-gateway/Logo';
 import SidebarItem from './SidebarItem';
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem('jwt-token');
+    navigate('/login');
+  }
+
   return (
     <nav className="relative w-full h-full p-6 pt-8 pr-8 flex flex-col justify-between z-0">
       {/* border */}
@@ -36,7 +45,10 @@ function Sidebar() {
         </div>
       </div>
 
-      <button className="w-full flex-end py-2 bg-blue-500 text-white shadow-md rounded-full font-sans border-0 tracking-widest duration-300 transition-all hover:-translate-y-1 hover:shadow-lg">
+      <button
+        className="w-full flex-end py-2 bg-blue-500 text-white shadow-md rounded-full font-sans border-0 tracking-widest duration-300 transition-all hover:-translate-y-1 hover:shadow-lg"
+        onClick={handleLogout}
+      >
         logout
       </button>
     </nav>

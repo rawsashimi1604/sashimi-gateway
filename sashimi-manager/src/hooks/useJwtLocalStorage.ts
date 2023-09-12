@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { JwtToken } from '../api/services/admin/models/JwtToken';
 
-export function useUserLocalStorage() {
+export function useJwtLocalStorage() {
   const [jwtToken, setJwtToken] = useState<JwtToken | null>(null);
 
   useEffect(() => {
