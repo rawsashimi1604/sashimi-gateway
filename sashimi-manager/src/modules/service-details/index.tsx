@@ -17,6 +17,7 @@ function ServiceDetails() {
     if (!id) return;
     await delay(500);
     const serviceData = await AdminService.getServiceById(id);
+    console.log({ serviceData });
     setService(serviceData.data);
   }
 

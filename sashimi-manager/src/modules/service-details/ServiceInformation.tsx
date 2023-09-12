@@ -1,11 +1,14 @@
 import React from 'react';
+import { BsDot } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 
 import { GetServiceByIdResponse } from '../../api/services/admin/responses/GetServiceById';
 import ApiMethodTag from '../../components/tags/ApiMethodTag';
 import Header from '../../components/typography/Header';
 import { ApiMethod } from '../../types/api/ApiMethod.interface';
+import { ServiceHealth } from '../../types/api/ServiceHealth.interface';
 import { parseDateString } from '../../utils/parseDate';
+import { serviceHealthColor } from '../../utils/serviceHealthColor';
 
 interface ServiceProps {
   data: GetServiceByIdResponse;
@@ -59,6 +62,25 @@ function ServiceInformation({ data }: ServiceProps) {
                 <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs">
                   <td className="px-3 py-2">updated at</td>
                   <td className="px-3 py-2">{parseDateString(data.service.updatedAt)}</td>
+                </tr>
+                <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs">
+                  <td className="px-3 py-2">health check enabled</td>
+                  <td className="px-3 py-2">{data.service.healthCheckEnabled ? 'true' : 'false'}</td>
+                </tr>
+                <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 text-xs">
+                  <td className="px-3 py-2">health</td>
+                  <td className="pr-3 py-2">
+                    <div className="flex flex-row items-center justify-start tracking-wider">
+                      <BsDot
+                        className={`${
+                          serviceHealthColor(data.service.health as ServiceHealth).text
+                        } w-8 h-8 animate-pulse`}
+                      />
+                      <span className={`${serviceHealthColor(data.service.health as ServiceHealth).text}`}>
+                        {data.service.health}
+                      </span>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>

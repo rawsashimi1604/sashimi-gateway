@@ -9,4 +9,6 @@ export type Service = {
   routes: Route[];
   createdAt: string;
   updatedAt: string;
+  healthCheckEnabled: boolean;
+  health: string;
 };
