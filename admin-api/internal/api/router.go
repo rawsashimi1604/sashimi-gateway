@@ -9,6 +9,7 @@ import (
 	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/admin"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/headers"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/health"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
@@ -48,11 +49,14 @@ func NewRouter() *mux.Router {
 
 	// Other services
 	analyticsTracker := analytics.NewAnalyticsTracker(pgRequestGateway)
+	healthChecker := health.NewHealthChecker(pgServiceGateway)
 	reverseProxy := rproxy.NewReverseProxy(pgServiceGateway, analyticsTracker, http.DefaultTransport)
 
 	// Cron job to periodically add requests to the database.
 	requestCronJob := jobs.NewRequestCronJob(analyticsTracker, time.Duration(env.SASHIMI_REQUEST_INTERVAL)*time.Second, ws)
+	healthCheckCronJob := jobs.NewHealthCheckCronJob(healthChecker, time.Duration(5*time.Second))
 	requestCronJob.Start()
+	healthCheckCronJob.Start()
 
 	router := mux.NewRouter()
 

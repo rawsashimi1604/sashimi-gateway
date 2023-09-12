@@ -1,10 +1,12 @@
 package health
 
 import (
+	"net/http"
 	"sync"
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -62,7 +64,7 @@ func (hc *HealthChecker) UpdateServiceHealth(id int, health string) {
 	hc.serviceHealthMap[id] = health
 }
 
-func (hc *HealthChecker) PingAllServices(id int) {
+func (hc *HealthChecker) PingAllServices() {
 	services, err := hc.serviceGateway.GetAllServices()
 	if err != nil {
 		log.Info().Msg("unable to check service health. cant get service information from database.")
@@ -70,14 +72,29 @@ func (hc *HealthChecker) PingAllServices(id int) {
 	}
 
 	var wg sync.WaitGroup
-	for _, service := range services {
-		wg.Add(1)
+	wg.Add(len(services))
 
+	for _, service := range services {
+		s := service // Have to redeclare variable or goroutine wont work async
 		go func(s *models.Service) {
 			defer wg.Done()
-			log.Info().Msg("hello world from service: " + s.Name)
-		}(&service)
+			if !s.HealthCheckEnabled {
+				return
+			}
+			res, err := http.Get(s.TargetUrl + "/healthz")
+			if err != nil {
+				log.Info().Msg("something went wrong, unable to ping /healthz route for service: " + s.Name)
+				hc.UpdateServiceHealth(s.Id, "unhealthy")
+				return
+			}
+			if res.StatusCode == http.StatusOK {
+				hc.UpdateServiceHealth(s.Id, "healthy")
+			} else {
+				hc.UpdateServiceHealth(s.Id, "unhealthy")
+			}
+		}(&s)
 	}
 
 	wg.Wait()
+	log.Info().Msg("health: " + utils.JSONStringify(hc.serviceHealthMap))
 }
