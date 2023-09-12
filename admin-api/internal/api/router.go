@@ -9,6 +9,7 @@ import (
 	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/admin"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/headers"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/preflight"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
@@ -61,15 +62,16 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/ws", ws.HandleClient)
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
-	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET")
-	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST")
-	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET")
-	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
-	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")
-	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET")
-	adminRouter.HandleFunc("/route", routeManager.RegisterRouteHandler).Methods("POST")
-	adminRouter.HandleFunc("/request/all", requestManager.GetAllRequestsHandler).Methods("GET")
-	adminRouter.HandleFunc("/request/aggregate", requestManager.GetAggregatedRequestData).Methods("GET")
+	adminRouter.use(preflight.HandlePreflightReqMiddleware)
+	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST", "OPTIONS")
+	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST", "OPTIONS")
+	adminRouter.HandleFunc("/route/all", routeManager.GetAllRoutesHandler).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/route", routeManager.RegisterRouteHandler).Methods("POST", "OPTIONS")
+	adminRouter.HandleFunc("/request/all", requestManager.GetAllRequestsHandler).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/request/aggregate", requestManager.GetAggregatedRequestData).Methods("GET", "OPTIONS")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()
