@@ -1,3 +1,3 @@
-export type LoginResponse = {
-  token: string;
-};
+import { JwtToken } from '../models/JwtToken';
+
+export type LoginResponse = JwtToken;
