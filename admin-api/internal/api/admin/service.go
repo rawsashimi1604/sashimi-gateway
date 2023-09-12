@@ -100,6 +100,13 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		return
 	}
 
+	var health string
+	if body.HealthCheckEnabled {
+		health = "startup"
+	} else {
+		health = "not_enabled"
+	}
+
 	service := models.Service{
 		Name:               body.Name,
 		TargetUrl:          body.TargetUrl,
@@ -109,7 +116,7 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		CreatedAt:          time.Now(),
 		UpdatedAt:          time.Now(),
 		HealthCheckEnabled: body.HealthCheckEnabled,
-		Health:             "startup",
+		Health:             health,
 	}
 
 	// TODO: add check when service path already exists or is a RESERVED namespace.
