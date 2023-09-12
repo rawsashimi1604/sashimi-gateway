@@ -55,9 +55,6 @@ func NewRouter() *mux.Router {
 
 	router := mux.NewRouter()
 
-	// Create context middlware to pass to following req/res lifecycle.
-	// router.Use(middleware.CreateContextMiddlware)
-
 	// These route wont go through the reverse proxy middlewares
 	adminRouter := router.PathPrefix("/api/admin").Subrouter()
 	adminRouter.HandleFunc("/ws", ws.HandleClient)
