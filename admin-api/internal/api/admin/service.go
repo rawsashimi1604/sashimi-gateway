@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 	sg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
 )
@@ -90,8 +89,6 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
 	}
-
-	log.Info().Msg("service to be added: " + utils.JSONStringify(body))
 
 	validator := validator.NewValidator()
 	err = validator.ValidateStruct(&body)

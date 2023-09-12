@@ -44,6 +44,7 @@ func NewRouter() *mux.Router {
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 	requestManager := admin.NewRequestManager(pgRequestGateway)
+	adminAuthManager := admin.NewAdminAuthManager([]byte(env.SASHIMI_ADMIN_JWT_KEY))
 
 	// Other services
 	analyticsTracker := analytics.NewAnalyticsTracker(pgRequestGateway)
@@ -60,7 +61,8 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/ws", ws.HandleClient)
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
-	adminRouter.HandleFunc("/general", gatewayManager.GetGatewayInformationHandler).Methods("GET")
+	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET")
+	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST")
 	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST")

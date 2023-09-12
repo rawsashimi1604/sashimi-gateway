@@ -36,7 +36,7 @@ func LoadInitialGatewayInfo(env config.EnvVars) *GatewayConfig {
 	}
 }
 
-func (gm *GatewayManager) GetGatewayInformationHandler(w http.ResponseWriter, req *http.Request) {
+func (gm *GatewayManager) GetGatewayMetadata(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
