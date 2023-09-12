@@ -62,7 +62,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/ws", ws.HandleClient)
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
-	adminRouter.use(preflight.HandlePreflightReqMiddleware)
+	adminRouter.Use(preflight.HandlePreflightReqMiddleware)
 	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET", "OPTIONS")
