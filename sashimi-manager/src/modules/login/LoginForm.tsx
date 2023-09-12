@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { AiFillInfoCircle } from 'react-icons/ai';
 import * as yup from 'yup';
 
+import AdminAuth from '../../api/services/admin/AdminAuth';
 import TextInput from '../../components/input/TextInput';
 
 // Define validation schema using yup for login
@@ -30,6 +30,8 @@ function LoginForm() {
       setValidationErrors({});
 
       // Authenticate the user, e.g. send a request to the server
+      const loginRes = await AdminAuth.login(loginData.username, loginData.password);
+      console.log({ loginRes });
     } catch (err) {
       if (err instanceof yup.ValidationError) {
         const errorObj: { [key: string]: string } = {};
@@ -48,7 +50,6 @@ function LoginForm() {
         <div className="flex flex-col justify-center gap-1 text-sm">
           <label htmlFor="username" className="tracking-wide flex flex-row items-center justify-start gap-3">
             <span className="mb-1 ">username</span>
-            <AiFillInfoCircle />
           </label>
           <div className="">
             <TextInput
@@ -65,7 +66,6 @@ function LoginForm() {
         <div className="flex flex-col justify-center gap-1 text-sm">
           <label htmlFor="password" className="tracking-wide flex flex-row items-center justify-start gap-3">
             <span className="mb-1 ">password</span>
-            <AiFillInfoCircle />
           </label>
           <div className="">
             <TextInput

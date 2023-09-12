@@ -9,7 +9,6 @@ import (
 	admin "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/admin"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/headers"
-	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/preflight"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
@@ -62,7 +61,6 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/ws", ws.HandleClient)
 	// Set CORS policy for admin Router
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
-	adminRouter.Use(preflight.HandlePreflightReqMiddleware)
 	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET", "OPTIONS")
