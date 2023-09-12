@@ -21,13 +21,15 @@ type PostgresServiceGateway struct {
 }
 
 type Service_DB struct {
-	Id          int       `json:"id"`
-	Name        string    `json:"name"`
-	TargetUrl   string    `json:"targetUrl"`
-	Path        string    `json:"path"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	Id                 int       `json:"id"`
+	Name               string    `json:"name"`
+	TargetUrl          string    `json:"targetUrl"`
+	Path               string    `json:"path"`
+	Description        string    `json:"description"`
+	CreatedAt          time.Time `json:"createdAt"`
+	UpdatedAt          time.Time `json:"updatedAt"`
+	HealthCheckEnabled bool      `json:"healthCheckEnabled"`
+	Health             string    `json:"health"`
 }
 
 var (
@@ -36,13 +38,15 @@ var (
 
 func MapServiceDbToDomain(sdb Service_DB, r []models.Route) models.Service {
 	return models.Service{
-		Id:          sdb.Id,
-		Name:        sdb.Name,
-		TargetUrl:   sdb.TargetUrl,
-		Path:        sdb.Path,
-		Description: sdb.Description,
-		CreatedAt:   sdb.CreatedAt,
-		UpdatedAt:   sdb.UpdatedAt,
-		Routes:      r,
+		Id:                 sdb.Id,
+		Name:               sdb.Name,
+		TargetUrl:          sdb.TargetUrl,
+		Path:               sdb.Path,
+		Description:        sdb.Description,
+		CreatedAt:          sdb.CreatedAt,
+		UpdatedAt:          sdb.UpdatedAt,
+		HealthCheckEnabled: sdb.HealthCheckEnabled,
+		Health:             sdb.Health,
+		Routes:             r,
 	}
 }

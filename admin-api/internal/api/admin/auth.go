@@ -61,7 +61,7 @@ func (am *AdminAuthManager) Login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Generate new token...
+	// Generate new token, ignore linting, following documentation...
 	// https://pkg.go.dev/github.com/golang-jwt/jwt/v5#example-Parse-Hmac
 	claims := models.AdminJWTClaims{
 		env.SASHIMI_GATEWAY_NAME,

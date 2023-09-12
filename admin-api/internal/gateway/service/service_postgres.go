@@ -16,7 +16,7 @@ func NewPostgresServiceGateway(conn *pgxpool.Pool) *PostgresServiceGateway {
 
 func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, error) {
 	query := `
-		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
+		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, s.health_check_enabled, s.health, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
@@ -51,6 +51,8 @@ func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, 
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
+			&service.HealthCheckEnabled,
+			&service.Health,
 			&routeID,
 			&routePath,
 			&routeDescription,
@@ -82,7 +84,7 @@ func (s *PostgresServiceGateway) GetServiceByPath(path string) (models.Service, 
 
 func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models.Service, error) {
 	query := `
-		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
+		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, s.health_check_enabled, s.health, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
@@ -118,6 +120,8 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
+			&service.HealthCheckEnabled,
+			&service.Health,
 			&routeID,
 			&routePath,
 			&routeDescription,
@@ -150,7 +154,7 @@ func (s *PostgresServiceGateway) GetServiceByTargetUrl(targetUrl string) (models
 
 func (s *PostgresServiceGateway) GetServiceById(id int) (models.Service, error) {
 	query := `
-		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
+		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, s.health_check_enabled, s.health, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
@@ -185,6 +189,8 @@ func (s *PostgresServiceGateway) GetServiceById(id int) (models.Service, error) 
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
+			&service.HealthCheckEnabled,
+			&service.Health,
 			&routeID,
 			&routePath,
 			&routeDescription,
@@ -216,7 +222,7 @@ func (s *PostgresServiceGateway) GetServiceById(id int) (models.Service, error) 
 
 func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 	query := `
-		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
+		SELECT s.id, s.name, s.target_url, s.path, s.description, s.created_at, s.updated_at, s.health_check_enabled, s.health, r.id, r.path, r.description, r.created_at, r.updated_at, r.method
 		FROM service s
 		LEFT JOIN route r
 		ON s.id=r.service_id
@@ -251,6 +257,8 @@ func (s *PostgresServiceGateway) GetAllServices() ([]models.Service, error) {
 			&service.Description,
 			&service.CreatedAt,
 			&service.UpdatedAt,
+			&service.HealthCheckEnabled,
+			&service.Health,
 			&routeID,
 			&routePath,
 			&routeDescription,
@@ -302,10 +310,10 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 	// To be completed.
 	query := `
 		INSERT INTO service 
-			(name, target_url, path, description, created_at, updated_at) 
+			(name, target_url, path, description, created_at, updated_at, health_check_enabled, health) 
 		VALUES
 			($1, $2, $3, $4, $5, $6)
-		RETURNING id, name, target_url, path, description, created_at, updated_at;
+		RETURNING id, name, target_url, path, description, created_at, updated_at, health_check_enabled, health;
 	`
 
 	row := s.Conn.QueryRow(
@@ -317,6 +325,8 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 		service.Description,
 		service.CreatedAt,
 		service.UpdatedAt,
+		service.HealthCheckEnabled,
+		service.Health,
 	)
 
 	createdService := Service_DB{}
@@ -329,6 +339,8 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 		&createdService.Description,
 		&createdService.CreatedAt,
 		&createdService.UpdatedAt,
+		&createdService.HealthCheckEnabled,
+		&createdService.Health,
 	); err != nil {
 		log.Info().Msg(err.Error())
 		return models.Service{}, err

@@ -9,7 +9,9 @@ CREATE TABLE service (
     path TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    updated_at TIMESTAMP NOT NULL,
+    health_check_enabled BOOLEAN NOT NULL,
+    health TEXT NOT NULL
 );
 
 CREATE TABLE route (
@@ -32,10 +34,10 @@ CREATE TABLE api_request (
     code INT NOT NULL
 );
 
-INSERT INTO service(name, target_url, path, description, created_at, updated_at)
+INSERT INTO service(name, target_url, path, description, created_at, updated_at, health_check_enabled, health)
 VALUES 
-    ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp),
-    ('Tuna', 'http://localhost:8082', 'tuna', 'The tuna microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp);
+    ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp, true, 'startup'),
+    ('Tuna', 'http://localhost:8082', 'tuna', 'The tuna microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp, true, 'startup');
 
 INSERT INTO route(service_id, method, path, description, created_at, updated_at)
 VALUES 
