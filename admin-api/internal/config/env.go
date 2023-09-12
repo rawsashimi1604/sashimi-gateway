@@ -9,16 +9,17 @@ import (
 )
 
 type EnvVars struct {
-	POSTGRES_URL             string
-	MANAGER_URL              string
-	SASHIMI_GATEWAY_NAME     string
-	SASHIMI_HOSTNAME         string
-	SASHIMI_TAGLINE          string
-	SASHIMI_REQUEST_INTERVAL int
-	SASHIMI_LOCAL_PORT       string
-	SASHIMI_ADMIN_USERNAME   string
-	SASHIMI_ADMIN_PASSWORD   string
-	SASHIMI_ADMIN_JWT_KEY    string
+	POSTGRES_URL                        string
+	MANAGER_URL                         string
+	SASHIMI_GATEWAY_NAME                string
+	SASHIMI_HOSTNAME                    string
+	SASHIMI_TAGLINE                     string
+	SASHIMI_REQUEST_INTERVAL            int
+	SASHIMI_LOCAL_PORT                  string
+	SASHIMI_ADMIN_USERNAME              string
+	SASHIMI_ADMIN_PASSWORD              string
+	SASHIMI_ADMIN_JWT_KEY               string
+	SASHIMI_ADMIN_TOKEN_EXPIRY_DURATION int
 }
 
 func LoadEnv() EnvVars {
@@ -34,6 +35,7 @@ func LoadEnv() EnvVars {
 	sashimiAdminUsername := os.Getenv("SASHIMI_ADMIN_USERNAME")
 	sashimiAdminPassword := os.Getenv("SASHIMI_ADMIN_PASSWORD")
 	sashimiAdminJwtKey := os.Getenv("SASHIMI_ADMIN_JWT_KEY")
+	sashimiAdminTokenExpiryDuration := os.Getenv("SASHIMI_ADMIN_TOKEN_EXPIRY_DURATION")
 
 	// Validate the environment variables
 	requestInterval, err := strconv.Atoi(sashimiRequestInterval)
@@ -41,16 +43,22 @@ func LoadEnv() EnvVars {
 		log.Panic().Msg("invalid env variable: SASHIMI_REQUEST_INTERVAL: " + sashimiRequestInterval)
 	}
 
+	adminJwtExpiryDuration, err := strconv.Atoi(sashimiAdminTokenExpiryDuration)
+	if err != nil {
+		log.Panic().Msg("invalid env variable: SASHIMI_ADMIN_TOKEN_EXPIRY_DURATION: " + sashimiRequestInterval)
+	}
+
 	return EnvVars{
-		POSTGRES_URL:             postgresUrl,
-		MANAGER_URL:              managerUrl,
-		SASHIMI_GATEWAY_NAME:     sashimiGatewayName,
-		SASHIMI_HOSTNAME:         sashimiHostname,
-		SASHIMI_TAGLINE:          sashimiTagline,
-		SASHIMI_REQUEST_INTERVAL: requestInterval,
-		SASHIMI_LOCAL_PORT:       sashimiPort,
-		SASHIMI_ADMIN_USERNAME:   sashimiAdminUsername,
-		SASHIMI_ADMIN_PASSWORD:   sashimiAdminPassword,
-		SASHIMI_ADMIN_JWT_KEY:    sashimiAdminJwtKey,
+		POSTGRES_URL:                        postgresUrl,
+		MANAGER_URL:                         managerUrl,
+		SASHIMI_GATEWAY_NAME:                sashimiGatewayName,
+		SASHIMI_HOSTNAME:                    sashimiHostname,
+		SASHIMI_TAGLINE:                     sashimiTagline,
+		SASHIMI_REQUEST_INTERVAL:            requestInterval,
+		SASHIMI_LOCAL_PORT:                  sashimiPort,
+		SASHIMI_ADMIN_USERNAME:              sashimiAdminUsername,
+		SASHIMI_ADMIN_PASSWORD:              sashimiAdminPassword,
+		SASHIMI_ADMIN_JWT_KEY:               sashimiAdminJwtKey,
+		SASHIMI_ADMIN_TOKEN_EXPIRY_DURATION: adminJwtExpiryDuration,
 	}
 }

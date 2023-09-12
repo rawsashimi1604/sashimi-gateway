@@ -26,4 +26,5 @@ SASHIMI_REQUEST_INTERVAL=5
 
 # JWT Auth for admin Api
 SASHIMI_ADMIN_JWT_KEY=<generate your own 256 bit key, there is a function in utils file jwt_key.go to help with this>
+SASHIMI_ADMIN_TOKEN_EXPIRY_DURATION=15
 ```

@@ -66,7 +66,7 @@ func (am *AdminAuthManager) Login(w http.ResponseWriter, req *http.Request) {
 	claims := models.AdminJWTClaims{
 		env.SASHIMI_GATEWAY_NAME,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(env.SASHIMI_ADMIN_TOKEN_EXPIRY_DURATION) * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "Sashimi Gateway Admin Api",
