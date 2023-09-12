@@ -71,9 +71,9 @@ func (hc *HealthChecker) PingAllServices() {
 		return
 	}
 
+	// Ping all services /healthz route async
 	var wg sync.WaitGroup
 	wg.Add(len(services))
-
 	for _, service := range services {
 		s := service // Have to redeclare variable or goroutine wont work async
 		go func(s *models.Service) {
@@ -94,7 +94,12 @@ func (hc *HealthChecker) PingAllServices() {
 			}
 		}(&s)
 	}
-
 	wg.Wait()
+	// End of async operation
+
 	log.Info().Msg("health: " + utils.JSONStringify(hc.serviceHealthMap))
+	err = hc.serviceGateway.UpdateServicesHealth(hc.serviceHealthMap)
+	if err != nil {
+		log.Info().Msg("something went wrong when updating service health in db")
+	}
 }

@@ -14,6 +14,7 @@ type ServiceGateway interface {
 	GetServiceById(id int) (models.Service, error)
 	GetAllServices() ([]models.Service, error)
 	RegisterService(service models.Service) (models.Service, error)
+	UpdateServicesHealth(serviceHealthMap map[int]string) error
 }
 
 type PostgresServiceGateway struct {

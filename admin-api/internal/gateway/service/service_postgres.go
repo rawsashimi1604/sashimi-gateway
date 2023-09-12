@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strconv"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	r "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
@@ -347,4 +349,22 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 	}
 
 	return MapServiceDbToDomain(createdService, make([]models.Route, 0)), nil
+}
+
+func (s *PostgresServiceGateway) UpdateServicesHealth(serviceHealthMap map[int]string) error {
+	query := `
+        UPDATE service
+        SET health = CASE id
+    `
+	args := []interface{}{}
+	var i int = 0
+	for key, value := range serviceHealthMap {
+		query += fmt.Sprintf("WHEN %d THEN %s ", key, "$"+strconv.Itoa(i+1))
+		args = append(args, value)
+		i++
+	}
+	query += "END"
+
+	_, err := s.Conn.Exec(context.Background(), query, args...)
+	return err
 }
