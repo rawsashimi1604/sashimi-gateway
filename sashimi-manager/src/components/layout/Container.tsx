@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 
+import { useRedirectLogin } from '../../hooks/useRedirectLogin';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import Notifications from './Notifications';
@@ -10,6 +11,9 @@ interface ContainerProps {
 }
 
 function Container({ children }: ContainerProps) {
+  // Redirect all traffic to login page when jwt token is absent.
+  useRedirectLogin();
+
   return (
     <div className="flex h-screen w-screen ">
       <div className="min-w-[300px]">
