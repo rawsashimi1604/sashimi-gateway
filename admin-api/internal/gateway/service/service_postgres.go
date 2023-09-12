@@ -312,7 +312,7 @@ func (s *PostgresServiceGateway) RegisterService(service models.Service) (models
 		INSERT INTO service 
 			(name, target_url, path, description, created_at, updated_at, health_check_enabled, health) 
 		VALUES
-			($1, $2, $3, $4, $5, $6)
+			($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id, name, target_url, path, description, created_at, updated_at, health_check_enabled, health;
 	`
 

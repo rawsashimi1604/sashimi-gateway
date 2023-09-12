@@ -13,5 +13,5 @@ type Service struct {
 	CreatedAt          time.Time `json:"createdAt"`
 	UpdatedAt          time.Time `json:"updatedAt"`
 	HealthCheckEnabled bool      `json:"healthCheckEnabled"`
-	Health             string    `json:"health"`
+	Health             string    `json:"health"` // not_enabled, startup, healthy, unhealthy
 }

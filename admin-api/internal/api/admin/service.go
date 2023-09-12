@@ -75,17 +75,18 @@ func (sm *ServiceManager) GetServiceById(w http.ResponseWriter, req *http.Reques
 func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *http.Request) {
 
 	type RegisterServiceRequest struct {
-		Name              string `json:"name" validate:"required"`
-		TargetUrl         string `json:"targetUrl" validate:"required"`
-		Path              string `json:"path" validate:"required"`
-		Description       string `json:"description" validate:"required"`
-		EnableHealthCheck string `json:"enableHealthCheck" validate:"required"`
+		Name               string `json:"name" validate:"required"`
+		TargetUrl          string `json:"targetUrl" validate:"required"`
+		Path               string `json:"path" validate:"required"`
+		Description        string `json:"description" validate:"required"`
+		HealthCheckEnabled bool   `json:"healthCheckEnabled" validate:"required"`
 	}
 
 	var body = RegisterServiceRequest{}
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
+		log.Info().Msg(err.Error())
 		log.Info().Msg(ErrInvalidServiceBody.Error())
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
@@ -100,13 +101,15 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 	}
 
 	service := models.Service{
-		Name:        body.Name,
-		TargetUrl:   body.TargetUrl,
-		Path:        body.Path,
-		Description: body.Description,
-		Routes:      make([]models.Route, 0),
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Name:               body.Name,
+		TargetUrl:          body.TargetUrl,
+		Path:               body.Path,
+		Description:        body.Description,
+		Routes:             make([]models.Route, 0),
+		CreatedAt:          time.Now(),
+		UpdatedAt:          time.Now(),
+		HealthCheckEnabled: body.HealthCheckEnabled,
+		Health:             "startup",
 	}
 
 	// TODO: add check when service path already exists or is a RESERVED namespace.
