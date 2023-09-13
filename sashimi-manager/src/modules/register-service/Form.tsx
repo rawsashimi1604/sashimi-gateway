@@ -82,7 +82,6 @@ function Form() {
         description: formData.formDescription,
         healthCheckEnabled: formData.formHealthChecks
       });
-      console.log(registerRes);
       setFormState('success');
       await delay(2000);
       navigate('/services');

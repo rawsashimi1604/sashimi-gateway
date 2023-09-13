@@ -86,7 +86,6 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		log.Info().Msg(err.Error())
 		log.Info().Msg(ErrInvalidServiceBody.Error())
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
@@ -95,7 +94,6 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 	validator := validator.NewValidator()
 	err = validator.ValidateStruct(&body)
 	if err != nil {
-		log.Info().Msg(err.Error())
 		log.Info().Msg(ErrInvalidServiceBody.Error())
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
