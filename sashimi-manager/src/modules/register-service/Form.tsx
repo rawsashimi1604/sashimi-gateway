@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { AiFillInfoCircle } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
+import AdminService from '../../api/services/admin/AdminService';
 import TextAreaInput from '../../components/input/TextAreaInput';
 import TextInput from '../../components/input/TextInput';
 import ToggleInput from '../../components/input/ToggleInput';
 import Subheader from '../../components/typography/Subheader';
+import LoadingSpinner from '../../components/utils/LoadingSpinner';
+import { delay } from '../../utils/delay';
+
+type FormSubmitState = 'submitting' | 'success' | 'error';
 
 const isValidUrl = (value: string) => {
   try {
@@ -39,6 +45,8 @@ function Form() {
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
+  const [formState, setFormState] = useState<FormSubmitState | null>(null);
+  const navigate = useNavigate();
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -50,7 +58,7 @@ function Form() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setFormState('submitting');
     try {
       await validationSchema.validate(formData, { abortEarly: false });
       console.log('Form is valid. Submitting:', formData);
@@ -62,7 +70,24 @@ function Form() {
           errorObj[error.path as string] = error.message;
         }
         setValidationErrors(errorObj);
+        setFormState(null);
       }
+    }
+    try {
+      await delay(500);
+      const registerRes = await AdminService.registerService({
+        name: formData.formName,
+        targetUrl: formData.formTargetUrl,
+        path: formData.formPath,
+        description: formData.formDescription,
+        healthCheckEnabled: formData.formHealthChecks
+      });
+      console.log(registerRes);
+      setFormState('success');
+      await delay(2000);
+      navigate('/services');
+    } catch (err) {
+      setFormState('error');
     }
   };
 
@@ -191,6 +216,32 @@ function Form() {
         >
           <span>register</span>
         </button>
+
+        {formState == 'submitting' && (
+          <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
+            <React.Fragment>
+              <span className="text-sashimi-deepyellow">registering your service...</span>
+              <LoadingSpinner size={12} />
+            </React.Fragment>
+          </div>
+        )}
+
+        {formState == 'success' && (
+          <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
+            <React.Fragment>
+              <span className="text-sashimi-deepgreen">service registration success! redirecting...</span>
+              <LoadingSpinner size={12} />
+            </React.Fragment>
+          </div>
+        )}
+
+        {formState == 'error' && (
+          <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
+            <React.Fragment>
+              <span className="text-sashimi-deeppink">failed to register service. please try again.</span>
+            </React.Fragment>
+          </div>
+        )}
       </form>
     </div>
   );

@@ -79,7 +79,7 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 		TargetUrl          string `json:"targetUrl" validate:"required"`
 		Path               string `json:"path" validate:"required"`
 		Description        string `json:"description" validate:"required"`
-		HealthCheckEnabled bool   `json:"healthCheckEnabled" validate:"required"`
+		HealthCheckEnabled bool   `json:"healthCheckEnabled"`
 	}
 
 	var body = RegisterServiceRequest{}
@@ -95,6 +95,7 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 	validator := validator.NewValidator()
 	err = validator.ValidateStruct(&body)
 	if err != nil {
+		log.Info().Msg(err.Error())
 		log.Info().Msg(ErrInvalidServiceBody.Error())
 		http.Error(w, ErrInvalidServiceBody.Error(), http.StatusBadRequest)
 		return
@@ -122,8 +123,9 @@ func (sm *ServiceManager) RegisterServiceHandler(w http.ResponseWriter, req *htt
 	// TODO: add check when service path already exists or is a RESERVED namespace.
 	service, err = sm.serviceGateway.RegisterService(service)
 	if err != nil {
+		log.Info().Msg(err.Error())
 		log.Info().Msg("something went wrong when creating service")
-		http.Error(w, "something went wrong when creating service", http.StatusBadGateway)
+		http.Error(w, "something went wrong when creating service", http.StatusInternalServerError)
 		return
 	}
 
