@@ -3,7 +3,9 @@ import { AiFillInfoCircle } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
+import AdminRoute from '../../api/services/admin/AdminRoute';
 import AdminService from '../../api/services/admin/AdminService';
+import { RegisterRouteBody } from '../../api/services/admin/body/RegisterRouteBody';
 import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
 import SelectInput from '../../components/input/SelectInput';
 import TextAreaInput from '../../components/input/TextAreaInput';
@@ -79,9 +81,17 @@ function Form() {
     }
     try {
       await delay(500);
+      const body: RegisterRouteBody = {
+        serviceId: Number(formData.formServiceId.split('-')[0].trim()),
+        path: formData.formPath,
+        description: formData.formDescription,
+        method: formData.formMethod
+      };
+      const res = await AdminRoute.registerRoute(body);
+      console.log({ res });
       setFormState('success');
       await delay(2000);
-      navigate('/services');
+      navigate('/routes');
     } catch (err) {
       setFormState('error');
     }

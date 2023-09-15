@@ -1,7 +1,6 @@
 import { ServiceHealth } from '../types/api/ServiceHealth.interface';
 
 export function serviceHealthColor(health: ServiceHealth) {
-  console.log({ health });
   switch (health) {
     case 'healthy':
       return {
