@@ -90,5 +90,7 @@ func (rm *RouteManager) RegisterRouteHandler(w http.ResponseWriter, req *http.Re
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(registeredRoute)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"route": registeredRoute,
+	})
 }
