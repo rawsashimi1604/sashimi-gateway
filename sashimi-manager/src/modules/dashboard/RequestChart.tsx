@@ -2,7 +2,7 @@ import { ChartConfiguration } from 'c3';
 import React, { useEffect, useState } from 'react';
 
 import AdminRequest from '../../api/services/admin/AdminRequest';
-import { AggregatedRequest } from '../../api/services/admin/responses/AggregatedRequest';
+import { AggregatedRequest } from '../../api/services/admin/models/AggregatedRequest';
 import { GetAggregatedRequestResponse } from '../../api/services/admin/responses/GetAggregatedRequest';
 import SelectInput from '../../components/input/SelectInput';
 import Chart from '../../components/utils/Chart';
