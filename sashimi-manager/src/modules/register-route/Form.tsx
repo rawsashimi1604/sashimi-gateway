@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiFillInfoCircle } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
+import AdminService from '../../api/services/admin/AdminService';
+import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
 import SelectInput from '../../components/input/SelectInput';
 import TextAreaInput from '../../components/input/TextAreaInput';
 import TextInput from '../../components/input/TextInput';
@@ -33,7 +35,22 @@ function Form() {
     [key: string]: string;
   }>({});
   const [formState, setFormState] = useState<FormSubmitState | null>(null);
+  const [services, setServices] = useState<GetAllServicesResponse | null>(null);
   const navigate = useNavigate();
+
+  async function loadAllServices() {
+    const res = await AdminService.getAllServices();
+    setServices(res.data);
+  }
+
+  function getServicesDropdown() {
+    if (services) {
+      return services.services.map((service) => {
+        return service.id + ' - ' + service.name;
+      });
+    }
+    return [];
+  }
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -70,6 +87,10 @@ function Form() {
     }
   };
 
+  useEffect(() => {
+    loadAllServices();
+  }, []);
+
   return (
     <div className="font-sans">
       <form className="flex flex-col gap-3 w-3/5" onSubmit={handleSubmit}>
@@ -79,16 +100,16 @@ function Form() {
           <div className="border-b" />
         </div>
 
-        {/* Service id */}
+        {/* Service */}
         <div className="flex flex-col justify-center gap-1 text-sm">
           <label htmlFor="form-serviceId" className="tracking-wide flex flex-row items-center justify-start gap-3">
-            <span className="mb-1">service id</span>
+            <span className="mb-1">service</span>
             <AiFillInfoCircle />
           </label>
 
           <div className="">
             <SelectInput
-              options={['1h', '15m', '5m', '1m']}
+              options={getServicesDropdown()}
               onChange={(e) => handleChange('formServiceId', e)}
               value={formData.formServiceId}
               error={validationErrors.formServiceId}
@@ -123,7 +144,7 @@ function Form() {
 
           <div className="">
             <SelectInput
-              options={['1h', '15m', '5m', '1m']}
+              options={['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']}
               onChange={(e) => handleChange('formMethod', e)}
               value={formData.formMethod}
               error={validationErrors.formMethod}
@@ -141,7 +162,7 @@ function Form() {
           <div className="">
             <TextAreaInput
               id="form-description"
-              name="form-descrviption"
+              name="form-description"
               value={formData.formDescription}
               onChange={(e) => handleChange('formDescription', e.target.value)}
               error={validationErrors.formDescription}
