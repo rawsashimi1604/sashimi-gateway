@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 import SelectInput from '../../components/input/SelectInput';
+import TextAreaInput from '../../components/input/TextAreaInput';
 import TextInput from '../../components/input/TextInput';
 import ToggleInput from '../../components/input/ToggleInput';
 import Subheader from '../../components/typography/Subheader';
@@ -121,11 +122,10 @@ function Form() {
           </label>
 
           <div className="">
-            <TextInput
-              id="form-method"
-              name="form-method"
+            <SelectInput
+              options={['1h', '15m', '5m', '1m']}
+              onChange={(e) => handleChange('formMethod', e)}
               value={formData.formMethod}
-              onChange={(e) => handleChange('formMethod', e.target.value)}
               error={validationErrors.formMethod}
             />
           </div>
@@ -139,7 +139,7 @@ function Form() {
           </label>
 
           <div className="">
-            <TextInput
+            <TextAreaInput
               id="form-description"
               name="form-descrviption"
               value={formData.formDescription}
@@ -157,19 +157,19 @@ function Form() {
         {/* Health checks */}
         <div className="flex flex-row items-start justify-between mb-2">
           <div>
-            <label htmlFor="form-description" className="tracking-wide flex flex-row items-center justify-start gap-3">
-              <span className="text-sm">enable health checks</span>
+            <label htmlFor="form-auth" className="tracking-wide flex flex-row items-center justify-start gap-3">
+              <span className="text-sm">enable JWT authentication</span>
             </label>
             <span className="font-sans text-sashimi-deepgray text-xs block">
-              To enable health checks, service must contain a <span className="italic">'/healthz'</span> endpoint that
-              returns a 200 OK status code.
+              Enable JWT Authentication for route (WIP)
             </span>
           </div>
           <ToggleInput
-            id="form-healthchecks"
-            name="form-healthchecks"
+            id="form-auth"
+            name="form-auth"
             checked={true}
-            onChange={(e) => handleToggleChange('formHealthChecks', e)}
+            disabled
+            onChange={(e) => handleToggleChange('formAuth', e)}
           />
         </div>
 
