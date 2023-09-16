@@ -31,7 +31,8 @@ CREATE TABLE api_request (
     path TEXT NOT NULL,
     method TEXT NOT NULL,
     time TIMESTAMP NOT NULL,
-    code INT NOT NULL
+    code INT NOT NULL,
+    duration INT NOT NULL
 );
 
 INSERT INTO service(name, target_url, path, description, created_at, updated_at, health_check_enabled, health)
@@ -49,7 +50,7 @@ VALUES
     (1, 'GET', '/healthz', 'Salmon Healthz', current_timestamp, current_timestamp),
     (2, 'GET', '/healthz', 'Tuna Healthz', current_timestamp, current_timestamp);
 
-INSERT INTO api_request(id, service_id, route_id, path, method, time, code)
+INSERT INTO api_request(id, service_id, route_id, path, method, time, code, duration)
 VALUES 
-    (gen_random_uuid(), 1, 1, '/salmon', 'GET', current_timestamp, 200),
-    (gen_random_uuid(), 2, 3, '/tuna', 'GET', current_timestamp, 200);
+    (gen_random_uuid(), 1, 1, '/salmon', 'GET', current_timestamp, 200, 5),
+    (gen_random_uuid(), 2, 3, '/tuna', 'GET', current_timestamp, 200, 10);

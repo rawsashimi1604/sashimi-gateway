@@ -26,6 +26,7 @@ type Request_DB struct {
 	Method    string    `json:"method"`
 	Time      time.Time `json:"time"`
 	Code      int       `json:"code"`
+	Duration  int       `json:"duration"`
 }
 
 func MapRequestDbToDomain(rdb Request_DB) models.ApiRequest {
@@ -39,5 +40,6 @@ func MapRequestDbToDomain(rdb Request_DB) models.ApiRequest {
 		Method:    rdb.Method,
 		Time:      rdb.Time,
 		Code:      rdb.Code,
+		Duration:  int64(rdb.Duration),
 	}
 }

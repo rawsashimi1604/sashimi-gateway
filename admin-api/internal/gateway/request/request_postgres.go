@@ -23,7 +23,7 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 	for _, request := range requests {
 		fmt.Fprintf(
 			&byteBuffer,
-			"%s\t%d\t%d\t%s\t%s\t%s\t%d\n",
+			"%s\t%d\t%d\t%s\t%s\t%s\t%d\t%d\n",
 			request.Id,
 			request.ServiceId,
 			request.RouteId,
@@ -31,13 +31,14 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 			request.Method,
 			request.Time.UTC().Format("2006-01-02 15:04:05"),
 			request.Code,
+			request.Duration,
 		)
 	}
 
 	copyBuffer := utils.NewCopyBuffer(&byteBuffer)
 	_, err := rg.Conn.CopyFrom(context.Background(),
 		pgx.Identifier{"api_request"},
-		[]string{"id", "service_id", "route_id", "path", "method", "time", "code"},
+		[]string{"id", "service_id", "route_id", "path", "method", "time", "code", "duration"},
 		copyBuffer,
 	)
 
@@ -51,7 +52,7 @@ func (rg *PostgresRequestGateway) AddBulkRequests(requests []models.ApiRequest) 
 
 func (rg *PostgresRequestGateway) GetAllRequests() ([]models.ApiRequest, error) {
 	query := `
-	SELECT id, service_id, route_id, path, method, time, code
+	SELECT id, service_id, route_id, path, method, time, code, duration
 	FROM api_request
 `
 
@@ -73,6 +74,7 @@ func (rg *PostgresRequestGateway) GetAllRequests() ([]models.ApiRequest, error) 
 			&apiRequest.Method,
 			&apiRequest.Time,
 			&apiRequest.Code,
+			&apiRequest.Duration,
 		); err != nil {
 			return nil, errors.New("error retrieving api requests")
 		}

@@ -15,6 +15,7 @@ type ApiRequest struct {
 	Method    string    `json:"method"`
 	Time      time.Time `json:"time"`
 	Code      int       `json:"code"`
+	Duration  int64     `json:"duration"`
 }
 
 type AggregatedApiRequest struct {

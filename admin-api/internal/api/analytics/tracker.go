@@ -41,7 +41,7 @@ func (at *AnalyticsTracker) GetAndReset() []models.ApiRequest {
 	return currentRequests
 }
 
-func (at *AnalyticsTracker) CaptureRequest(service models.Service, route models.Route, req *http.Request, statusCode int) {
+func (at *AnalyticsTracker) CaptureRequest(service models.Service, route models.Route, req *http.Request, statusCode int, duration int64) {
 	requestData := models.ApiRequest{
 		Id:        uuid.New(),
 		ServiceId: service.Id,
@@ -50,6 +50,7 @@ func (at *AnalyticsTracker) CaptureRequest(service models.Service, route models.
 		Method:    req.Method,
 		Time:      time.Now(),
 		Code:      statusCode,
+		Duration:  duration,
 	}
 	// Store the request data safely using mutex locks
 	at.Add(requestData)

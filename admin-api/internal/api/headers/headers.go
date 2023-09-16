@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
-	"github.com/rs/zerolog/log"
 )
 
 func SetAdminHeadersMiddleware(next http.Handler) http.Handler {
@@ -17,7 +16,6 @@ func SetAdminHeadersMiddleware(next http.Handler) http.Handler {
 
 		// Handler preflight requests.
 		if req.Method == "OPTIONS" {
-			log.Info().Msg("Preflight request received: OK")
 			w.WriteHeader(http.StatusOK)
 			return
 		}

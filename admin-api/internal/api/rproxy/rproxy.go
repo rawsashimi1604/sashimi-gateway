@@ -8,10 +8,13 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/analytics"
 	sg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/middleware"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 
 	"github.com/rs/zerolog/log"
@@ -33,7 +36,6 @@ func NewReverseProxy(serviceGateway sg.ServiceGateway, analyticsTracker *analyti
 
 func (rps *ReverseProxy) ReverseProxyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-
 		// validate validatedService
 		validatedService, err := rps.matchService(req.URL.Path)
 		if err != nil {
@@ -84,6 +86,9 @@ func (rps *ReverseProxy) prepareAndServeHttp(service models.Service, route model
 		http.Error(w, "Error while proxying request", http.StatusInternalServerError)
 	}
 	proxy.ModifyResponse = func(resp *http.Response) error {
+		startTime := fmt.Sprintf("%d", req.Context().Value(middleware.ApiRequestDuration))
+		converted, _ := strconv.ParseInt(startTime, 10, 64)
+
 		// Read the body data (and handle any errors)
 		originalBody, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -93,8 +98,10 @@ func (rps *ReverseProxy) prepareAndServeHttp(service models.Service, route model
 		// Close and replace the resp.Body, after reading the stream, stream will be at end, you must replace the data.
 		resp.Body.Close()
 		resp.Body = io.NopCloser(bytes.NewBuffer(originalBody))
-		rps.analyticsTracker.CaptureRequest(service, route, req, resp.StatusCode)
 
+		endTime := time.Now().UnixMilli()
+		duration := endTime - converted
+		rps.analyticsTracker.CaptureRequest(service, route, req, resp.StatusCode, duration)
 		// Return nil to indicate success
 		return nil
 	}
