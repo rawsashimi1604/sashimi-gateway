@@ -35,7 +35,8 @@ function Notifications() {
             path: req.path,
             method: req.method,
             time: req.time,
-            code: req.code
+            code: req.code,
+            duration: req.duration
           };
           requests.push(request);
         }

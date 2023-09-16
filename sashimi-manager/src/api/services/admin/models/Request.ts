@@ -6,4 +6,5 @@ export type Request = {
   method: string;
   time: string;
   code: number;
+  duration: number;
 };

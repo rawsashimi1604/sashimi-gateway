@@ -58,6 +58,9 @@ function ApiRequestNotification({ request }: ApiRequestNotificationProps) {
       <div className="text-xs mt-1 text-right font-sans tracking-wider">
         at: <span className="italic text-sashimi-deepgray">{parseDateString(request.time)}</span>
       </div>
+      <div className="text-xs mt-1 text-right font-sans tracking-wider">
+        <span className="italic text-sashimi-deepgray">{request.duration} ms</span>
+      </div>
     </div>
   );
 }
