@@ -15,6 +15,7 @@ function SelectInput({ options, onChange, error, value }: SelectInputProps) {
         onChange={(e) => onChange && onChange(e.target.value)}
         value={value}
       >
+        <option value="">Select an option</option>
         {options?.map((option) => {
           return (
             <option value={option} key={option}>
