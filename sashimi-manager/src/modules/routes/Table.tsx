@@ -36,7 +36,10 @@ function Table({ routes }: TableProps) {
             {routes &&
               routes.map((route) => {
                 return (
-                  <tr className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 cursor-pointer text-xs">
+                  <tr
+                    key={route.id}
+                    className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 cursor-pointer text-xs"
+                  >
                     <td className="px-3 py-3">{route.id}</td>
                     <td className="px-3 py-3">{route.serviceId}</td>
                     <td className="px-3 py-3">

@@ -21,7 +21,7 @@ function Container({ children }: ContainerProps) {
       </div>
       <main className="flex-grow p-6">
         <Navbar />
-        <div className="mt-3 container overflow-y-scroll">{children}</div>
+        <div className="mt-3 overflow-y-scroll">{children}</div>
         {/* <Footer /> */}
       </main>
       <div className="min-w-[300px]">
