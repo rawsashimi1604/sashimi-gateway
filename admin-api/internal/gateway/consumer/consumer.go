@@ -10,6 +10,7 @@ import (
 
 type ConsumerGateway interface {
 	RegisterConsumer(consumer models.Consumer) (models.Consumer, error)
+	ListConsumers() ([]models.Consumer, error)
 }
 
 type PostgresConsumerGateway struct {

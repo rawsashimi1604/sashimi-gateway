@@ -26,7 +26,7 @@ func NewConsumerManager(consumerGateway cg.ConsumerGateway) *ConsumerManager {
 	}
 }
 
-func (cm *ConsumerManager) GetAllConsumers(w http.ResponseWriter, req *http.Request) {
+func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Request) {
 	// TODO: tbd, work in progress
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
