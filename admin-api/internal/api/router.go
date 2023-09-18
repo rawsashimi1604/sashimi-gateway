@@ -13,6 +13,7 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/api/rproxy"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/request"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
@@ -39,12 +40,14 @@ func NewRouter() *mux.Router {
 	pgServiceGateway := service.NewPostgresServiceGateway(conn)
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
 	pgRequestGateway := request.NewPostgresRequestGateway(conn)
+	pgConsumerGateway := consumer.NewPostgresConsumerGateway(conn)
 
 	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager(gatewayConfig)
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 	requestManager := admin.NewRequestManager(pgRequestGateway)
+	consumerManager := admin.NewConsumerManager(pgConsumerGateway)
 	adminAuthManager := admin.NewAdminAuthManager([]byte(env.SASHIMI_ADMIN_JWT_KEY))
 
 	// Other services
@@ -74,6 +77,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/route", routeManager.RegisterRouteHandler).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/request/all", requestManager.GetAllRequestsHandler).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/request/aggregate", requestManager.GetAggregatedRequestData).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/consumer", consumerManager.RegisterConsumerHandler).Methods("POST", "OPTIONS")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()
