@@ -35,6 +35,13 @@ CREATE TABLE api_request (
     duration INT NOT NULL
 );
 
+CREATE TABLE consumer (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
+
 INSERT INTO service(name, target_url, path, description, created_at, updated_at, health_check_enabled, health)
 VALUES 
     ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp, true, 'startup'),
@@ -54,3 +61,8 @@ INSERT INTO api_request(id, service_id, route_id, path, method, time, code, dura
 VALUES 
     (gen_random_uuid(), 1, 1, '/salmon', 'GET', current_timestamp, 200, 5),
     (gen_random_uuid(), 2, 3, '/tuna', 'GET', current_timestamp, 200, 10);
+
+INSERT INTO consumer(id, username, created_at, updated_at)
+VALUES
+    (gen_random_uuid(), 'user1', current_timestamp, current_timestamp),
+    (gen_random_uuid(), 'user2', current_timestamp, current_timestamp);
