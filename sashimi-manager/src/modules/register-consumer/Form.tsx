@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AiFillInfoCircle } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 import AdminConsumer from '../../api/services/admin/AdminConsumer';
-import AdminRoute from '../../api/services/admin/AdminRoute';
-import AdminService from '../../api/services/admin/AdminService';
 import { RegisterConsumerBody } from '../../api/services/admin/body/RegisterConsumerBody';
-import { RegisterRouteBody } from '../../api/services/admin/body/RegisterRouteBody';
-import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
-import SelectInput from '../../components/input/SelectInput';
-import TextAreaInput from '../../components/input/TextAreaInput';
 import TextInput from '../../components/input/TextInput';
-import ToggleInput from '../../components/input/ToggleInput';
 import Subheader from '../../components/typography/Subheader';
 import LoadingSpinner from '../../components/utils/LoadingSpinner';
 import { delay } from '../../utils/delay';
