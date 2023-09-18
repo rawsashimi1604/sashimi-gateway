@@ -214,7 +214,7 @@ function Form() {
         {formState == 'submitting' && (
           <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
             <React.Fragment>
-              <span className="text-sashimi-deepyellow">registering your service...</span>
+              <span className="text-sashimi-deepyellow">registering your route...</span>
               <LoadingSpinner size={12} />
             </React.Fragment>
           </div>
@@ -223,7 +223,7 @@ function Form() {
         {formState == 'success' && (
           <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
             <React.Fragment>
-              <span className="text-sashimi-deepgreen">service registration success! redirecting...</span>
+              <span className="text-sashimi-deepgreen">route registration success! redirecting...</span>
               <LoadingSpinner size={12} />
             </React.Fragment>
           </div>
@@ -232,7 +232,7 @@ function Form() {
         {formState == 'error' && (
           <div className="flex flex-row items-center gap-2 text-sm tracking-wider">
             <React.Fragment>
-              <span className="text-sashimi-deeppink">failed to register service. please try again.</span>
+              <span className="text-sashimi-deeppink">failed to register route. please try again.</span>
             </React.Fragment>
           </div>
         )}
