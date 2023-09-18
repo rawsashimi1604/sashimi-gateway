@@ -27,11 +27,19 @@ func NewConsumerManager(consumerGateway cg.ConsumerGateway) *ConsumerManager {
 }
 
 func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Request) {
-	// TODO: tbd, work in progress
+
+	consumers, err := cm.consumerGateway.ListConsumers()
+	if err != nil {
+		log.Info().Msg(ErrBadServer.Error())
+		http.Error(w, ErrBadServer.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"consumers": make([]models.Consumer, 0),
+		"count":     len(consumers),
+		"consumers": consumers,
 	})
 }
 
