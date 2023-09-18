@@ -32,6 +32,7 @@ function Sidebar() {
             <SidebarItem item="Home" href="/" />
             <SidebarItem item="Services" href="/services" />
             <SidebarItem item="Routes" href="/routes" />
+            <SidebarItem item="Consumers" href="/consumers" />
             <SidebarItem item="Logs" href="/logs" />
           </ul>
         </div>

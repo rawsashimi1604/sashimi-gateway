@@ -2,9 +2,11 @@ import 'animate.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import Account from './modules/account';
+import Consumer from './modules/consumer';
 import Dashboard from './modules/dashboard';
 import Logs from './modules/gateway-logs';
 import Login from './modules/login';
+import RegisterConsumer from './modules/register-consumer';
 import RegisterRoute from './modules/register-route';
 import RegisterService from './modules/register-service';
 import Routes from './modules/routes';
@@ -41,6 +43,14 @@ function App() {
     {
       path: '/routes/register',
       element: <RegisterRoute />
+    },
+    {
+      path: '/consumers',
+      element: <Consumer />
+    },
+    {
+      path: '/consumers/register',
+      element: <RegisterConsumer />
     },
     {
       path: '/logs',
