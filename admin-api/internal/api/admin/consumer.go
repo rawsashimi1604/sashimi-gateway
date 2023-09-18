@@ -26,6 +26,15 @@ func NewConsumerManager(consumerGateway cg.ConsumerGateway) *ConsumerManager {
 	}
 }
 
+func (cm *ConsumerManager) GetAllConsumers(w http.ResponseWriter, req *http.Request) {
+	// TODO: tbd, work in progress
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"consumers": make([]models.Consumer, 0),
+	})
+}
+
 func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *http.Request) {
 
 	type RegisterConsumerRequest struct {
