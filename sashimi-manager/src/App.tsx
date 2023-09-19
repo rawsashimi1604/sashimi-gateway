@@ -13,6 +13,7 @@ import Routes from './modules/routes';
 import ServiceInformation from './modules/service-details';
 import Services from './modules/services';
 import Settings from './modules/settings';
+import Test from './modules/test';
 
 function App() {
   const router = createBrowserRouter([
@@ -63,6 +64,10 @@ function App() {
     {
       path: '/settings',
       element: <Settings />
+    },
+    {
+      path: '/test',
+      element: <Test />
     }
   ]);
 

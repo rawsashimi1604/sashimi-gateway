@@ -42,6 +42,20 @@ CREATE TABLE consumer (
     updated_at TIMESTAMP NOT NULL
 );
 
+CREATE TABLE jwt_credentials (
+    id TEXT PRIMARY KEY,
+    key TEXT NOT NULL,
+    secret TEXT NOT NULL,
+    name TEXT NOT NULL,
+    consumer_id TEXT REFERENCES consumer(id) NOT NULL
+);
+
+CREATE TABLE consumers_has_services (
+    consumer_id TEXT REFERENCES consumer(id) NOT NULL,
+    service_id INT REFERENCES service(id) NOT NULL
+);
+
+
 INSERT INTO service(name, target_url, path, description, created_at, updated_at, health_check_enabled, health)
 VALUES 
     ('Salmon', 'http://localhost:8081', 'salmon', 'The salmon microservice used to learn how to create a golang api gateway infrastructure.', current_timestamp, current_timestamp, true, 'startup'),
@@ -64,5 +78,13 @@ VALUES
 
 INSERT INTO consumer(id, username, created_at, updated_at)
 VALUES
-    (gen_random_uuid(), 'user1', current_timestamp, current_timestamp),
+    ('e757b713-62e2-457e-8320-0e2fc4ac3a12', 'user1', current_timestamp, current_timestamp),
     (gen_random_uuid(), 'user2', current_timestamp, current_timestamp);
+
+INSERT INTO jwt_credentials(id, key, secret, name, consumer_id)
+VALUES
+    (gen_random_uuid(), 'someKey', 'someSecret', 'user1Auth', 'e757b713-62e2-457e-8320-0e2fc4ac3a12');
+
+INSERT INTO consumers_has_services(consumer_id, service_id)
+VALUES 
+    ('e757b713-62e2-457e-8320-0e2fc4ac3a12', 1);
