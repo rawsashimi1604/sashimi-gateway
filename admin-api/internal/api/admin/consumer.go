@@ -44,7 +44,7 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 }
 
 func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *http.Request) {
-
+	// TODO: need to link services when creating consumers.
 	type RegisterConsumerRequest struct {
 		Username string `json:"username" validate:"required"`
 	}
