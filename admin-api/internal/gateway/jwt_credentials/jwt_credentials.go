@@ -8,6 +8,7 @@ import (
 
 type JWTCredentialsGateway interface {
 	ListCredentials() ([]models.JWTCredentials, error)
+	GetAllCredentialsByConsumer(consumerId uuid.UUID) ([]models.JWTCredentials, error)
 }
 
 type PostgresJWTCredentialsGateway struct {

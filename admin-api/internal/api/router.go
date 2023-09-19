@@ -75,6 +75,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/auth/private-jwt", adminAuthManager.GetPrivateJwt).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/auth/credentials", jwtCredentialsManager.ListCredentialsHandler).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/auth/credentials/{id}", jwtCredentialsManager.GetAllCredentialsByConsumerId).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST", "OPTIONS")
