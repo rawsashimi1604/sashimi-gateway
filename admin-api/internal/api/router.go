@@ -14,6 +14,7 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/config"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/db"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/jwt_credentials"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/request"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/route"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
@@ -41,6 +42,7 @@ func NewRouter() *mux.Router {
 	pgRouteGateway := route.NewPostgresRouteGateway(conn)
 	pgRequestGateway := request.NewPostgresRequestGateway(conn)
 	pgConsumerGateway := consumer.NewPostgresConsumerGateway(conn)
+	pgJwtCredentialsGateway := jwt_credentials.NewPostgresJWTCredentialsGateway(conn)
 
 	// Gateway pattern (persistence, db data)
 	gatewayManager := admin.NewGatewayManager(gatewayConfig)
@@ -48,6 +50,7 @@ func NewRouter() *mux.Router {
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 	requestManager := admin.NewRequestManager(pgRequestGateway)
 	consumerManager := admin.NewConsumerManager(pgConsumerGateway)
+	jwtCredentialsManager := admin.NewJwtCredentialsManager(pgJwtCredentialsGateway)
 	adminAuthManager := admin.NewAdminAuthManager([]byte(env.SASHIMI_ADMIN_JWT_KEY))
 
 	// Other services
@@ -71,6 +74,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/auth/private-jwt", adminAuthManager.GetPrivateJwt).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/auth/credentials", jwtCredentialsManager.ListCredentialsHandler).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/service/{id:[0-9]+}", serviceManager.GetServiceById).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/service/all", serviceManager.GetAllServicesHandler).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/service", serviceManager.RegisterServiceHandler).Methods("POST", "OPTIONS")

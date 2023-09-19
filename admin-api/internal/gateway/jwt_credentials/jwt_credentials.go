@@ -6,7 +6,8 @@ import (
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 )
 
-type JWTCredentialsDateway interface {
+type JWTCredentialsGateway interface {
+	ListCredentials() ([]models.JWTCredentials, error)
 }
 
 type PostgresJWTCredentialsGateway struct {
@@ -14,11 +15,10 @@ type PostgresJWTCredentialsGateway struct {
 }
 
 type JWTCredentials_DB struct {
-	Id         string
-	Key        string
-	Secret     string
-	Name       string
-	ConsumerId string
+	Id     string
+	Key    string
+	Secret string
+	Name   string
 }
 
 func MapJWTCredsDBToDomain(jcdb JWTCredentials_DB, consumer models.Consumer) models.JWTCredentials {
