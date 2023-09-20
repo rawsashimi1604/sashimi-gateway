@@ -47,7 +47,8 @@ CREATE TABLE jwt_credentials (
     key TEXT NOT NULL,
     secret TEXT NOT NULL,
     name TEXT NOT NULL,
-    consumer_id TEXT REFERENCES consumer(id) NOT NULL
+    consumer_id TEXT REFERENCES consumer(id) NOT NULL,
+    created_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE consumers_has_services (
@@ -81,9 +82,9 @@ VALUES
     ('e757b713-62e2-457e-8320-0e2fc4ac3a12', 'user1', current_timestamp, current_timestamp),
     (gen_random_uuid(), 'user2', current_timestamp, current_timestamp);
 
-INSERT INTO jwt_credentials(id, key, secret, name, consumer_id)
+INSERT INTO jwt_credentials(id, key, secret, name, consumer_id, created_at)
 VALUES
-    (gen_random_uuid(), 'someKey', 'someSecret', 'user1Auth', 'e757b713-62e2-457e-8320-0e2fc4ac3a12');
+    (gen_random_uuid(), 'someKey', 'someSecret', 'user1Auth', 'e757b713-62e2-457e-8320-0e2fc4ac3a12', current_timestamp);
 
 INSERT INTO consumers_has_services(consumer_id, service_id)
 VALUES 

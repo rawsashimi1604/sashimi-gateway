@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/jwt_credentials"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
@@ -19,11 +21,13 @@ var (
 
 type JwtCredentialsManager struct {
 	JwtCredentialsGateway jwt_credentials.JWTCredentialsGateway
+	ConsumerGateway       consumer.ConsumerGateway
 }
 
-func NewJwtCredentialsManager(jcg jwt_credentials.JWTCredentialsGateway) *JwtCredentialsManager {
+func NewJwtCredentialsManager(jcg jwt_credentials.JWTCredentialsGateway, cg consumer.ConsumerGateway) *JwtCredentialsManager {
 	return &JwtCredentialsManager{
 		JwtCredentialsGateway: jcg,
+		ConsumerGateway:       cg,
 	}
 }
 
@@ -43,15 +47,40 @@ func (jcm *JwtCredentialsManager) CreateNewCredential(w http.ResponseWriter, req
 		return
 	}
 
+	id, err := uuid.Parse(body.ConsumerId)
+	if err != nil {
+		log.Info().Msg("invalid id passed")
+		http.Error(w, "invalid id passed", http.StatusBadRequest)
+		return
+	}
+
+	cmer, err := jcm.ConsumerGateway.GetConsumerById(id)
+	if err != nil {
+		if err == consumer.ErrConsumerNotFound {
+			log.Info().Msg("consumer does not exist")
+			http.Error(w, "consumer does not exist", http.StatusNotFound)
+			return
+		}
+
+		log.Info().Msg("something went wrong when finding consumer")
+		http.Error(w, "something went wrong when finding consumer", http.StatusInternalServerError)
+		return
+	}
+
 	jwtKey, _ := utils.GenerateRandomKey()
 	jwtSecret, _ := utils.GenerateRandomKey()
 
 	credential := models.JWTCredentials{
-		Id:     uuid.New(),
-		Key:    jwtKey,
-		Secret: jwtSecret,
-		Name:   body.Name,
+		Id:        uuid.New(),
+		Key:       jwtKey,
+		Secret:    jwtSecret,
+		Name:      body.Name,
+		Consumer:  cmer,
+		CreatedAt: time.Now(),
 	}
+
+	// TODO: Add credential to db.
+	log.Info().Msg(utils.JSONStringify(credential))
 
 }
 

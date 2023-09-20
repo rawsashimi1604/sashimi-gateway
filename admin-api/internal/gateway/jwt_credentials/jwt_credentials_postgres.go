@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rs/zerolog/log"
 )
 
 func NewPostgresJWTCredentialsGateway(conn *pgxpool.Pool) *PostgresJWTCredentialsGateway {
@@ -16,7 +17,7 @@ func NewPostgresJWTCredentialsGateway(conn *pgxpool.Pool) *PostgresJWTCredential
 
 func (jcg *PostgresJWTCredentialsGateway) ListCredentials() ([]models.JWTCredentials, error) {
 	query := `
-		SELECT jc.id, jc.key, jc.secret, jc.name, jc.consumer_id, c.username, c.created_at, c.updated_at
+		SELECT jc.id, jc.key, jc.secret, jc.name, jc.consumer_id, jc.created_at, c.username, c.created_at, c.updated_at
 		FROM jwt_credentials jc
 		LEFT JOIN consumer c
 		ON c.id=jc.consumer_id
@@ -39,6 +40,7 @@ func (jcg *PostgresJWTCredentialsGateway) ListCredentials() ([]models.JWTCredent
 			&jwtCredentials.Key,
 			&jwtCredentials.Secret,
 			&jwtCredentials.Name,
+			&jwtCredentials.CreatedAt,
 			&consumerDb.Id,
 			&consumerDb.Username,
 			&consumerDb.CreatedAt,
@@ -65,7 +67,7 @@ func (jcg *PostgresJWTCredentialsGateway) GetAllCredentialsByConsumer(consumerId
 	converted := consumerId.String()
 
 	query := `
-		SELECT jc.id, jc.key, jc.secret, jc.name, jc.consumer_id, c.username, c.created_at, c.updated_at
+		SELECT jc.id, jc.key, jc.secret, jc.name, jc.consumer_id, jc.created_at, c.username, c.created_at, c.updated_at
 		FROM jwt_credentials jc
 		LEFT JOIN consumer c
 		ON c.id=jc.consumer_id
@@ -89,6 +91,7 @@ func (jcg *PostgresJWTCredentialsGateway) GetAllCredentialsByConsumer(consumerId
 			&jwtCredentials.Key,
 			&jwtCredentials.Secret,
 			&jwtCredentials.Name,
+			&jwtCredentials.CreatedAt,
 			&consumerDb.Id,
 			&consumerDb.Username,
 			&consumerDb.CreatedAt,
@@ -108,4 +111,55 @@ func (jcg *PostgresJWTCredentialsGateway) GetAllCredentialsByConsumer(consumerId
 	}
 
 	return credentials, nil
+}
+
+func (jcg *PostgresJWTCredentialsGateway) AddCredential(credential models.JWTCredentials) (models.JWTCredentials, error) {
+
+	query := `
+	WITH ins AS (
+		INSERT INTO jwt_credentials(id, key, secret, name, consumer_id, created_at) 
+		VALUES
+			($1, $2, $3, $4, $5, $6)
+		RETURNING *
+	)
+	SELECT 
+		ins.id, ins.key, ins.secret, ins.name, ins.consumer_id, ins.created_at,
+		c.id, c.username, c.created_at AS consumer_created_at, c.updated_at AS consumer_updated_at
+	FROM ins
+	JOIN consumer c ON ins.consumer_id = c.id;
+	`
+
+	row := jcg.Conn.QueryRow(
+		context.Background(),
+		query,
+		credential.Id.String(),
+		credential.Key,
+		credential.Secret,
+		credential.Name,
+		credential.CreatedAt,
+	)
+
+	createdCredential := JWTCredentials_DB{}
+	relatedConsumer := consumer.Consumer_DB{}
+
+	if err := row.Scan(
+		&createdCredential.Id,
+		&createdCredential.Key,
+		&createdCredential.Secret,
+		&createdCredential.Name,
+		&relatedConsumer.Id,
+		&createdCredential.CreatedAt,
+		&relatedConsumer.Username,
+		&relatedConsumer.CreatedAt,
+		&relatedConsumer.UpdatedAt,
+	); err != nil {
+		log.Info().Msg(err.Error())
+		return models.JWTCredentials{}, err
+	}
+
+	// TODO: get the related consumer...
+	return MapJWTCredsDBToDomain(
+		createdCredential,
+		consumer.MapConsumerDbToDomain(relatedConsumer),
+	), nil
 }
