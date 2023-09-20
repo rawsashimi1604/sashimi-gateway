@@ -124,7 +124,7 @@ func (jcg *PostgresJWTCredentialsGateway) AddCredential(credential models.JWTCre
 	)
 	SELECT 
 		ins.id, ins.key, ins.secret, ins.name, ins.consumer_id, ins.created_at,
-		c.id, c.username, c.created_at AS consumer_created_at, c.updated_at AS consumer_updated_at
+		c.username, c.created_at AS consumer_created_at, c.updated_at AS consumer_updated_at
 	FROM ins
 	JOIN consumer c ON ins.consumer_id = c.id;
 	`
@@ -136,6 +136,7 @@ func (jcg *PostgresJWTCredentialsGateway) AddCredential(credential models.JWTCre
 		credential.Key,
 		credential.Secret,
 		credential.Name,
+		credential.Consumer.Id.String(),
 		credential.CreatedAt,
 	)
 

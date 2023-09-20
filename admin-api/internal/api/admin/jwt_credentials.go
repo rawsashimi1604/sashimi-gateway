@@ -31,7 +31,7 @@ func NewJwtCredentialsManager(jcg jwt_credentials.JWTCredentialsGateway, cg cons
 	}
 }
 
-func (jcm *JwtCredentialsManager) CreateNewCredential(w http.ResponseWriter, req *http.Request) {
+func (jcm *JwtCredentialsManager) CreateNewCredentialHandler(w http.ResponseWriter, req *http.Request) {
 
 	type CreateNewCredentialRequest struct {
 		ConsumerId string `json:"consumerId" validate:"required"`
@@ -61,7 +61,7 @@ func (jcm *JwtCredentialsManager) CreateNewCredential(w http.ResponseWriter, req
 			http.Error(w, "consumer does not exist", http.StatusNotFound)
 			return
 		}
-
+		log.Info().Msg(err.Error())
 		log.Info().Msg("something went wrong when finding consumer")
 		http.Error(w, "something went wrong when finding consumer", http.StatusInternalServerError)
 		return

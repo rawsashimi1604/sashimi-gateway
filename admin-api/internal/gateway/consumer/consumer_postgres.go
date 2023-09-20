@@ -121,7 +121,7 @@ func (cg *PostgresConsumerGateway) GetConsumerById(id uuid.UUID) (models.Consume
 	WHERE c.id=$1
 	`
 
-	rows, err := cg.Conn.Query(context.Background(), query)
+	rows, err := cg.Conn.Query(context.Background(), query, id.String())
 	if err != nil {
 		return models.Consumer{}, err
 	}
