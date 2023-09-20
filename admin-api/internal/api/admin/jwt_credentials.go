@@ -2,12 +2,19 @@ package admin
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/jwt_credentials"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rs/zerolog/log"
+)
+
+var (
+	ErrInvalidCredentialBody = errors.New("invalid jwt credentials body")
 )
 
 type JwtCredentialsManager struct {
@@ -18,6 +25,34 @@ func NewJwtCredentialsManager(jcg jwt_credentials.JWTCredentialsGateway) *JwtCre
 	return &JwtCredentialsManager{
 		JwtCredentialsGateway: jcg,
 	}
+}
+
+func (jcm *JwtCredentialsManager) CreateNewCredential(w http.ResponseWriter, req *http.Request) {
+
+	type CreateNewCredentialRequest struct {
+		ConsumerId string `json:"consumerId" validate:"required"`
+		Name       string `json:"name" validate:"required"`
+	}
+
+	var body = CreateNewCredentialRequest{}
+
+	err := json.NewDecoder(req.Body).Decode(&body)
+	if err != nil {
+		log.Info().Msg(ErrInvalidCredentialBody.Error())
+		http.Error(w, ErrInvalidCredentialBody.Error(), http.StatusBadRequest)
+		return
+	}
+
+	jwtKey, _ := utils.GenerateRandomKey()
+	jwtSecret, _ := utils.GenerateRandomKey()
+
+	credential := models.JWTCredentials{
+		Id:     uuid.New(),
+		Key:    jwtKey,
+		Secret: jwtSecret,
+		Name:   body.Name,
+	}
+
 }
 
 func (jcm *JwtCredentialsManager) ListCredentialsHandler(w http.ResponseWriter, req *http.Request) {

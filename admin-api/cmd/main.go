@@ -17,7 +17,6 @@ func main() {
 	// TODO: add rate limiting
 	// TODO: add GUI dashboard (ongoing)
 	// TODO: refactor some services into their own seperate microservice.
-	// TODO: track how long each request took.
 
 	logger.SetupLogger()
 	router := api.NewRouter()

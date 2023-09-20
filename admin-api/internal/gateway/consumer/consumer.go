@@ -1,6 +1,7 @@
 package consumer
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,7 +13,12 @@ type ConsumerGateway interface {
 	RegisterConsumer(consumer models.Consumer) (models.Consumer, error)
 	ListConsumers() ([]models.Consumer, error)
 	AddConsumerServices(cmer models.Consumer, servicesId []int) error
+	GetConsumerById(id uuid.UUID) (models.Consumer, error)
 }
+
+var (
+	ErrConsumerNotFound = errors.New("consuemr not found in the database")
+)
 
 type PostgresConsumerGateway struct {
 	Conn *pgxpool.Pool

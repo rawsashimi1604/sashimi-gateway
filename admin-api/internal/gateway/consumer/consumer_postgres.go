@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
@@ -110,4 +111,42 @@ func (cg *PostgresConsumerGateway) ListConsumers() ([]models.Consumer, error) {
 	}
 
 	return consumers, nil
+}
+
+func (cg *PostgresConsumerGateway) GetConsumerById(id uuid.UUID) (models.Consumer, error) {
+
+	query := `
+	SELECT c.id, c.username, c.created_at, c.updated_at
+	FROM consumer c
+	WHERE c.id=$1
+	`
+
+	rows, err := cg.Conn.Query(context.Background(), query)
+	if err != nil {
+		return models.Consumer{}, err
+	}
+	defer rows.Close()
+
+	consumerExists := false
+	var consumer models.Consumer
+	for rows.Next() {
+		consumerExists = true
+		var consDb Consumer_DB
+
+		if err := rows.Scan(&consDb.Id, &consDb.Username, &consDb.CreatedAt, &consDb.UpdatedAt); err != nil {
+			return models.Consumer{}, errors.New("error retrieving consumer")
+		}
+
+		consumer = MapConsumerDbToDomain(consDb)
+	}
+
+	if err := rows.Err(); err != nil {
+		return models.Consumer{}, err
+	}
+
+	if !consumerExists {
+		return models.Consumer{}, ErrConsumerNotFound
+	}
+
+	return consumer, nil
 }
