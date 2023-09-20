@@ -8,7 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	cg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
+	sv "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
 )
 
@@ -18,11 +20,13 @@ var (
 
 type ConsumerManager struct {
 	consumerGateway cg.ConsumerGateway
+	serviceGateway  sv.ServiceGateway
 }
 
-func NewConsumerManager(consumerGateway cg.ConsumerGateway) *ConsumerManager {
+func NewConsumerManager(consumerGateway cg.ConsumerGateway, serviceGateway sv.ServiceGateway) *ConsumerManager {
 	return &ConsumerManager{
 		consumerGateway: consumerGateway,
+		serviceGateway:  serviceGateway,
 	}
 }
 
@@ -44,14 +48,23 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 }
 
 func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *http.Request) {
-	// TODO: need to link services when creating consumers.
+
 	type RegisterConsumerRequest struct {
 		Username string `json:"username" validate:"required"`
+		Services []int  `json:"services" validate:"min=1"`
 	}
 
 	var body = RegisterConsumerRequest{}
 
 	err := json.NewDecoder(req.Body).Decode(&body)
+	if err != nil {
+		log.Info().Msg(ErrInvalidConsumerBody.Error())
+		http.Error(w, ErrInvalidConsumerBody.Error(), http.StatusBadRequest)
+		return
+	}
+
+	validator := validator.NewValidator()
+	err = validator.ValidateStruct(&body)
 	if err != nil {
 		log.Info().Msg(ErrInvalidConsumerBody.Error())
 		http.Error(w, ErrInvalidConsumerBody.Error(), http.StatusBadRequest)
