@@ -82,6 +82,19 @@ func (jcm *JwtCredentialsManager) CreateNewCredential(w http.ResponseWriter, req
 	// TODO: Add credential to db.
 	log.Info().Msg(utils.JSONStringify(credential))
 
+	created, err := jcm.JwtCredentialsGateway.AddCredential(credential)
+	if err != nil {
+		log.Info().Msg("something went wrong when adding jwt_credentials")
+		http.Error(w, "something went wrong when adding jwt_credentials", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"jwt_credentials": created,
+	})
+
 }
 
 func (jcm *JwtCredentialsManager) ListCredentialsHandler(w http.ResponseWriter, req *http.Request) {
