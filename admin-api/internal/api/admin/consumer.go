@@ -51,7 +51,7 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 
 	type RegisterConsumerRequest struct {
 		Username string `json:"username" validate:"required"`
-		Services []int  `json:"services" validate:"min=1"`
+		Services []int  `json:"services" validate:"required,min=1"`
 	}
 
 	var body = RegisterConsumerRequest{}
@@ -86,9 +86,46 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 		return
 	}
 
+	err = cm.consumerGateway.AddConsumerServices(created, body.Services)
+	if err != nil {
+		log.Info().Msg(err.Error())
+		log.Info().Msg("somethng went wrong registering services for consumer")
+		http.Error(w, "something went wrong registering services for customer", http.StatusInternalServerError)
+		return
+	}
+
+	services, err := cm.serviceGateway.GetAllServices()
+	if err != nil {
+		log.Info().Msg(err.Error())
+		log.Info().Msg("somethng went wrong when retrieving services")
+		http.Error(w, "something went wrong when retreiving services", http.StatusInternalServerError)
+		return
+	}
+
+	// Filter services by ids
+	matched := make([]models.Service, 0)
+	for _, service := range services {
+		if servicesContainsId(services, service.Id) {
+			matched = append(matched, service)
+		}
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"consumer": created,
+		"linked": map[string]interface{}{
+			"count":    len(matched),
+			"services": matched,
+		},
 	})
+}
+
+func servicesContainsId(slice []models.Service, id int) bool {
+	for _, i := range slice {
+		if i.Id == id {
+			return true
+		}
+	}
+	return false
 }

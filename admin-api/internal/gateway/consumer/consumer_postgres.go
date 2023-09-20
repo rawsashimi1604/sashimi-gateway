@@ -1,16 +1,47 @@
 package consumer
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 
 func NewPostgresConsumerGateway(conn *pgxpool.Pool) *PostgresConsumerGateway {
 	return &PostgresConsumerGateway{Conn: conn}
+}
+
+func (cg *PostgresConsumerGateway) AddConsumerServices(cmer models.Consumer, servicesId []int) error {
+	// Bulk insert using COPY command from Buffer
+	var byteBuffer bytes.Buffer
+	for _, serviceId := range servicesId {
+		fmt.Fprintf(
+			&byteBuffer,
+			"%s\t%d\n",
+			cmer.Id,
+			serviceId,
+		)
+	}
+
+	copyBuffer := utils.NewCopyBuffer(&byteBuffer)
+	_, err := cg.Conn.CopyFrom(context.Background(),
+		pgx.Identifier{"consumers_has_services"},
+		[]string{"consumer_id", "service_id"},
+		copyBuffer,
+	)
+
+	if err != nil {
+		log.Info().Msg("something went wrong when adding bulk requests")
+		return err
+	}
+
+	return nil
 }
 
 func (cg *PostgresConsumerGateway) RegisterConsumer(consumer models.Consumer) (models.Consumer, error) {
