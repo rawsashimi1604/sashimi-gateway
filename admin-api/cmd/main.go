@@ -11,7 +11,6 @@ import (
 
 func main() {
 
-	// TODO: add health check route
 	// TODO: add authentication (JWT)
 	// TODO: add caching for services and routes (REDIS)
 	// TODO: add rate limiting

@@ -10,6 +10,7 @@ import (
 	cg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
 	sv "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
 )
@@ -38,6 +39,15 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 		http.Error(w, ErrBadServer.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	services, err := cm.serviceGateway.GetAllServices()
+	if err != nil {
+		log.Info().Msg(ErrBadServer.Error())
+		http.Error(w, ErrBadServer.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.Info().Msg(utils.JSONStringify(services))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
