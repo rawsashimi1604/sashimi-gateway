@@ -21,6 +21,9 @@ function Table({ consumers }: TableProps) {
                 Username
               </th>
               <th scope="col" className="px-3 py-4">
+                Services
+              </th>
+              <th scope="col" className="px-3 py-4">
                 Created At
               </th>
               <th scope="col" className="px-3 py-4">
@@ -39,6 +42,7 @@ function Table({ consumers }: TableProps) {
                   >
                     <td className="px-3 py-4">{consumer.id}</td>
                     <td className="px-3 py-4">{consumer.username}</td>
+                    <td className="px-3 py-4">{consumer.services.map((service) => service.name).join(', ')}</td>
                     <td className="px-3 py-4">{parseDateString(consumer.createdAt)}</td>
                     <td className="px-3 py-4">{parseDateString(consumer.updatedAt)}</td>
                   </tr>
