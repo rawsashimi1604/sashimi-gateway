@@ -135,12 +135,3 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 		},
 	})
 }
-
-func servicesContainsId(slice []int, id int) bool {
-	for _, i := range slice {
-		if i == id {
-			return true
-		}
-	}
-	return false
-}
