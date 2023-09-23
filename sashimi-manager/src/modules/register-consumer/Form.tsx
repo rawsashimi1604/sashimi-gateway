@@ -77,6 +77,15 @@ function Form() {
     return [];
   }
 
+  function removeService(serviceDetails: string) {
+    setFormData((prev) => {
+      return {
+        ...prev,
+        formServices: formData.formServices.filter((svc) => svc !== serviceDetails)
+      };
+    });
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormState('submitting');
@@ -101,8 +110,8 @@ function Form() {
         services: formData.formServices.map((val) => parseInt(val.split('-')[0].trim()))
       };
       console.log({ body });
-      // const res = await AdminConsumer.registerConsumer(body);
-      // console.log({ res });
+      const res = await AdminConsumer.registerConsumer(body);
+      console.log({ res });
       setFormState('success');
       await delay(2000);
       navigate('/consumers');
@@ -164,10 +173,23 @@ function Form() {
         <div className="font-sans text-sm tracking-wider mt-6">
           <h2 className="tracking-wide pb-2">registered services</h2>
           <div className="flex flex-row items-center gap-3 p-3.5 bg-sashimi-gray/50 rounded-xl">
-            <span className="px-2 py-1 rounded-lg bg-sashimi-gray shadow-md flex items-center gap-2 transiton-all duration-150 hover:-translate-y-1 hover:cursor-pointer hover:bg-sashimi-pink">
-              <span>Salmon</span>
-              <IoIosRemoveCircle className="w-5 h-5" />
-            </span>
+            {formData.formServices.length > 0 ? (
+              formData.formServices.map((svcDetails: string) => {
+                return (
+                  <span
+                    className="animate__animated animate__fadeIn px-2 py-1 rounded-lg bg-sashimi-gray shadow-md flex items-center gap-2 transiton-all duration-150 hover:-translate-y-1 hover:cursor-pointer hover:bg-sashimi-pink"
+                    onClick={() => removeService(svcDetails)}
+                  >
+                    <span>{svcDetails}</span>
+                    <IoIosRemoveCircle className="w-5 h-5" />
+                  </span>
+                );
+              })
+            ) : (
+              <div className="flex items-center justify-center w-full">
+                No services registered. You require at least one service.
+              </div>
+            )}
           </div>
         </div>
 
