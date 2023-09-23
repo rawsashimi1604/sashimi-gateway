@@ -3,6 +3,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import Account from './modules/account';
 import Consumer from './modules/consumer';
+import ConsumerDetails from './modules/consumer-details';
 import Dashboard from './modules/dashboard';
 import Logs from './modules/gateway-logs';
 import Login from './modules/login';
@@ -48,6 +49,10 @@ function App() {
     {
       path: '/consumers',
       element: <Consumer />
+    },
+    {
+      path: '/consumers/:id',
+      element: <ConsumerDetails />
     },
     {
       path: '/consumers/register',

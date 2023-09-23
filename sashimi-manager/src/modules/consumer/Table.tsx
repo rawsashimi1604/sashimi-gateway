@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Consumer } from '../../api/services/admin/models/Consumer';
 import { parseDateString } from '../../utils/parseDate';
@@ -8,6 +9,8 @@ interface TableProps {
 }
 
 function Table({ consumers }: TableProps) {
+  const navigate = useNavigate();
+
   return (
     <div>
       <div className="relative overflow-x-auto font-sans">
@@ -38,7 +41,7 @@ function Table({ consumers }: TableProps) {
                   <tr
                     key={consumer.id}
                     className="transition-all duration-150 hover:pl-10 bg-white border-b hover:bg-sashimi-gray/50 cursor-pointer text-xs"
-                    onClick={() => console.log('to be implemented, navigate')}
+                    onClick={() => navigate('/consumers/' + consumer.id)}
                   >
                     <td className="px-3 py-4">{consumer.id}</td>
                     <td className="px-3 py-4">{consumer.username}</td>
