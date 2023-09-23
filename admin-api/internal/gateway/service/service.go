@@ -13,6 +13,7 @@ type ServiceGateway interface {
 	GetServiceByTargetUrl(targetUrl string) (models.Service, error)
 	GetServiceById(id int) (models.Service, error)
 	GetAllServices() ([]models.Service, error)
+	GetAllServicesMatchingConsumer(consumer models.Consumer) ([]models.Service, error)
 	RegisterService(service models.Service) (models.Service, error)
 	UpdateServicesHealth(serviceHealthMap map[int]string) error
 }

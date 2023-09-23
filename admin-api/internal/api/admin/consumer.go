@@ -39,6 +39,7 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 		http.Error(w, ErrBadServer.Error(), http.StatusInternalServerError)
 		return
 	}
+	log.Info().Msg(utils.JSONStringify(consumers))
 
 	services, err := cm.serviceGateway.GetAllServices()
 	if err != nil {
@@ -48,22 +49,6 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 	}
 
 	resultDto := make([]map[string]interface{}, 0)
-
-	for _, consumer := range consumers {
-		matched := make([]models.Service, 0)
-		for _, service := range services {
-			if servicesContainsId(services, service.Id) {
-				matched = append(matched, service)
-			}
-		}
-		resultDto = append(resultDto, map[string]interface{}{
-			"id":        consumer.Id,
-			"username":  consumer.Username,
-			"createdAt": consumer.CreatedAt,
-			"updatedAt": consumer.UpdatedAt,
-			"services":  matched,
-		})
-	}
 
 	log.Info().Msg(utils.JSONStringify(services))
 
@@ -122,20 +107,12 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 		return
 	}
 
-	services, err := cm.serviceGateway.GetAllServices()
+	services, err := cm.serviceGateway.GetAllServicesMatchingConsumer(consumer)
 	if err != nil {
 		log.Info().Msg(err.Error())
 		log.Info().Msg("somethng went wrong when retrieving services")
 		http.Error(w, "something went wrong when retreiving services", http.StatusInternalServerError)
 		return
-	}
-
-	// Filter services by ids
-	matched := make([]models.Service, 0)
-	for _, service := range services {
-		if servicesContainsId(services, service.Id) {
-			matched = append(matched, service)
-		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -146,14 +123,14 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 			"username":  consumer.Username,
 			"createdAt": consumer.CreatedAt,
 			"updatedAt": consumer.UpdatedAt,
-			"services":  matched,
+			"services":  services,
 		},
 	})
 }
 
-func servicesContainsId(slice []models.Service, id int) bool {
+func servicesContainsId(slice []int, id int) bool {
 	for _, i := range slice {
-		if i.Id == id {
+		if i == id {
 			return true
 		}
 	}
