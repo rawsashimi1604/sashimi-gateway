@@ -49,13 +49,6 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 
 	resultDto := make([]map[string]interface{}, 0)
 
-	// {
-	// 	"consumer": {
-	// 		// info
-	// 		// services
-	// 	}
-	// }
-
 	for _, consumer := range consumers {
 		matched := make([]models.Service, 0)
 		for _, service := range services {
@@ -148,10 +141,12 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"consumer": created,
-		"linked": map[string]interface{}{
-			"count":    len(matched),
-			"services": matched,
+		"consumer": map[string]interface{}{
+			"id":        consumer.Id,
+			"username":  consumer.Username,
+			"createdAt": consumer.CreatedAt,
+			"updatedAt": consumer.UpdatedAt,
+			"services":  matched,
 		},
 	})
 }
