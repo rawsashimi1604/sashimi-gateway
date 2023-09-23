@@ -1,5 +1,7 @@
 # Sashimi API Gateway
 
+<img width="1506" alt="image" src="https://github.com/rawsashimi1604/sashimi-gateway/assets/75880261/ba4e4282-1faa-404d-804a-cdca5ada0fbd">
+
 ## WORK IN PROGRESS
 
 <p>A Lightweight API Gateway built in Golang to learn more about API infrastructure and microservices</p>
