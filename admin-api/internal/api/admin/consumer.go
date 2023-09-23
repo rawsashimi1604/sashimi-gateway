@@ -47,13 +47,38 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 		return
 	}
 
+	resultDto := make([]map[string]interface{}, 0)
+
+	// {
+	// 	"consumer": {
+	// 		// info
+	// 		// services
+	// 	}
+	// }
+
+	for _, consumer := range consumers {
+		matched := make([]models.Service, 0)
+		for _, service := range services {
+			if servicesContainsId(services, service.Id) {
+				matched = append(matched, service)
+			}
+		}
+		resultDto = append(resultDto, map[string]interface{}{
+			"id":        consumer.Id,
+			"username":  consumer.Username,
+			"createdAt": consumer.CreatedAt,
+			"updatedAt": consumer.UpdatedAt,
+			"services":  matched,
+		})
+	}
+
 	log.Info().Msg(utils.JSONStringify(services))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"count":     len(consumers),
-		"consumers": consumers,
+		"count":     len(resultDto),
+		"consumers": resultDto,
 	})
 }
 
