@@ -80,7 +80,6 @@ VALUES
 INSERT INTO consumer(id, username, created_at, updated_at)
 VALUES
     ('e757b713-62e2-457e-8320-0e2fc4ac3a12', 'user1', current_timestamp, current_timestamp),
-    (gen_random_uuid(), 'user2', current_timestamp, current_timestamp);
 
 INSERT INTO jwt_credentials(id, key, secret, name, consumer_id, created_at)
 VALUES

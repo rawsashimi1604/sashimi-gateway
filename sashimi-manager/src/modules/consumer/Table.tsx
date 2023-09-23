@@ -42,7 +42,7 @@ function Table({ consumers }: TableProps) {
                   >
                     <td className="px-3 py-4">{consumer.id}</td>
                     <td className="px-3 py-4">{consumer.username}</td>
-                    <td className="px-3 py-4">{consumer.services.map((service) => service.name).join(', ')}</td>
+                    <td className="px-3 py-4">{consumer.services?.map((service) => service.name).join(', ')}</td>
                     <td className="px-3 py-4">{parseDateString(consumer.createdAt)}</td>
                     <td className="px-3 py-4">{parseDateString(consumer.updatedAt)}</td>
                   </tr>
