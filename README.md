@@ -26,6 +26,11 @@
 
 - [ ] Requires big infrastructure refactor (code is messy and in a POC state) can consider clean architecture in golang or domain driven design
 - [ ] Split the rev. proxy, cron jobs, admin api into different microservices, write docker-compose to start all containers easily
+- [ ] Introduce redis as caching (lazy loading or write through)
+- [ ] Introduce rate limiting into rev. proxy
+- [ ] Incorporate credentials into manager GUI and test functionality
+- [ ] Write unit tests, integration tests and e2e tests
+- [ ] Write simple script to startup service with configured environment variables OR kubernetes/helm to deploy
 
 ## Multiple Golang applications
 
