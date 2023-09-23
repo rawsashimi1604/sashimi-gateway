@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiFillInfoCircle } from 'react-icons/ai';
+import { IoIosRemoveCircle } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 import AdminConsumer from '../../api/services/admin/AdminConsumer';
+import AdminService from '../../api/services/admin/AdminService';
 import { RegisterConsumerBody } from '../../api/services/admin/body/RegisterConsumerBody';
+import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
+import SelectInput from '../../components/input/SelectInput';
 import TextInput from '../../components/input/TextInput';
 import Subheader from '../../components/typography/Subheader';
 import LoadingSpinner from '../../components/utils/LoadingSpinner';
@@ -12,29 +16,66 @@ import { delay } from '../../utils/delay';
 
 type FormSubmitState = 'submitting' | 'success' | 'error';
 
+type FormSchema = {
+  formUsername: string;
+  formServices: string[];
+};
+
 // Define validation schema using yup
 const validationSchema = yup.object().shape({
-  formUsername: yup.string().required('Consumer username is required.')
+  formUsername: yup.string().required('Consumer username is required.'),
+  formServices: yup.array().required('At least one service is required.').min(1, 'At least one service is required.')
 });
 
 function Form() {
   // Setting up states for the inputs
-  const [formData, setFormData] = useState({
-    formUsername: ''
+  const [formData, setFormData] = useState<FormSchema>({
+    formUsername: '',
+    formServices: []
   });
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
   const [formState, setFormState] = useState<FormSubmitState | null>(null);
+  const [selectedService, setSelectedService] = useState<string>('');
+  const [services, setServices] = useState<GetAllServicesResponse | null>(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    loadAllServices();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedService) return;
+    if (formData.formServices.find((service) => service === selectedService)) return;
+    handleArrayChange('formServices', [...formData.formServices, selectedService]);
+  }, [selectedService]);
+
   const handleChange = (name: string, value: string) => {
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleArrayChange = (name: string, value: string[]) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleToggleChange = (name: string, value: boolean) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
+
+  async function loadAllServices() {
+    const res = await AdminService.getAllServices();
+    setServices(res.data);
+  }
+
+  function getServicesDropdown() {
+    if (services) {
+      return services.services.map((service) => {
+        return service.id + ' - ' + service.name;
+      });
+    }
+    return [];
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,10 +97,12 @@ function Form() {
     try {
       await delay(500);
       const body: RegisterConsumerBody = {
-        username: formData.formUsername
+        username: formData.formUsername,
+        services: formData.formServices.map((val) => parseInt(val.split('-')[0].trim()))
       };
-      const res = await AdminConsumer.registerConsumer(body);
-      console.log({ res });
+      console.log({ body });
+      // const res = await AdminConsumer.registerConsumer(body);
+      // console.log({ res });
       setFormState('success');
       await delay(2000);
       navigate('/consumers');
@@ -77,7 +120,7 @@ function Form() {
           <div className="border-b" />
         </div>
 
-        {/* Service */}
+        {/* username */}
         <div className="flex flex-col justify-center gap-1 text-sm">
           <label htmlFor="form-username" className="tracking-wide flex flex-row items-center justify-start gap-3">
             <span className="mb-1">consumer username</span>
@@ -100,7 +143,33 @@ function Form() {
           <div className="border-b" />
         </div>
 
-        <h2 className="tracking-wide text-sm">No consumer configurations.</h2>
+        <div className="flex flex-col justify-center gap-1 text-sm">
+          <label htmlFor="form-services" className="tracking-wide flex flex-row items-center justify-start gap-3">
+            <span className="mb-1">register to services</span>
+            <AiFillInfoCircle />
+          </label>
+
+          <div className="">
+            <SelectInput
+              options={getServicesDropdown()}
+              value={selectedService}
+              onChange={(e) => {
+                setSelectedService(e);
+              }}
+              error={validationErrors.formUsername}
+            />
+          </div>
+        </div>
+
+        <div className="font-sans text-sm tracking-wider mt-6">
+          <h2 className="tracking-wide pb-2">registered services</h2>
+          <div className="flex flex-row items-center gap-3 p-3.5 bg-sashimi-gray/50 rounded-xl">
+            <span className="px-2 py-1 rounded-lg bg-sashimi-gray shadow-md flex items-center gap-2 transiton-all duration-150 hover:-translate-y-1 hover:cursor-pointer hover:bg-sashimi-pink">
+              <span>Salmon</span>
+              <IoIosRemoveCircle className="w-5 h-5" />
+            </span>
+          </div>
+        </div>
 
         <button
           type="submit"
