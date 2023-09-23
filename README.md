@@ -22,6 +22,11 @@
 - API Health Checks
 - GUI Application
 
+## To do
+
+- [ ] Requires big infrastructure refactor (code is messy and in a POC state) can consider clean architecture in golang or domain driven design
+- [ ] Split the rev. proxy, cron jobs, admin api into different microservices, write docker-compose to start all containers easily
+
 ## Multiple Golang applications
 
 ```
