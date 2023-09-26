@@ -14,6 +14,9 @@
 
 <img width="506" alt="image" src="https://github.com/rawsashimi1604/sashimi-gateway/assets/75880261/55b60953-9782-4b8b-b0a4-5145a19b61cd">
 
+## Reverse Proxy
+<img width="1287" alt="image" src="https://github.com/rawsashimi1604/sashimi-gateway/assets/75880261/e90b1b0a-ff5d-440c-84e3-66a113795eab">
+
 ## Features
 
 - Request Analytics
