@@ -49,12 +49,12 @@ func (cg *PostgresConsumerGateway) RegisterConsumer(consumer models.Consumer) (m
 	query := `
 	WITH inserted AS (
 		INSERT INTO consumer
-			(id, username, created_at, updated_at)
+			(id, username, created_at, updated_at, jwt_auth_enabled)
 		VALUES 
-			($1, $2, $3, $4)
+			($1, $2, $3, $4, $5)
 		RETURNING *
 	)
-	SELECT id, username, created_at, updated_at
+	SELECT id, username, created_at, updated_at, jwt_auth_enabled
 	FROM inserted
 	`
 
@@ -65,6 +65,7 @@ func (cg *PostgresConsumerGateway) RegisterConsumer(consumer models.Consumer) (m
 		consumer.Username,
 		consumer.CreatedAt,
 		consumer.UpdatedAt,
+		consumer.JwtAuthEnabled,
 	)
 
 	createdConsumer := Consumer_DB{}
@@ -74,6 +75,7 @@ func (cg *PostgresConsumerGateway) RegisterConsumer(consumer models.Consumer) (m
 		&createdConsumer.Username,
 		&createdConsumer.CreatedAt,
 		&createdConsumer.UpdatedAt,
+		&createdConsumer.JwtAuthEnabled,
 	); err != nil {
 		log.Info().Msg(err.Error())
 		return models.Consumer{}, nil
@@ -84,7 +86,7 @@ func (cg *PostgresConsumerGateway) RegisterConsumer(consumer models.Consumer) (m
 
 func (cg *PostgresConsumerGateway) ListConsumers() ([]models.Consumer, error) {
 	query := `
-		SELECT c.id, c.username, c.created_at, c.updated_at
+		SELECT c.id, c.username, c.created_at, c.updated_at, c.jwt_auth_enabled
 		FROM consumer c
 		ORDER BY c.id ASC
 	`
@@ -99,7 +101,7 @@ func (cg *PostgresConsumerGateway) ListConsumers() ([]models.Consumer, error) {
 	for rows.Next() {
 		var consumer Consumer_DB
 
-		if err := rows.Scan(&consumer.Id, &consumer.Username, &consumer.CreatedAt, &consumer.UpdatedAt); err != nil {
+		if err := rows.Scan(&consumer.Id, &consumer.Username, &consumer.CreatedAt, &consumer.UpdatedAt, &consumer.JwtAuthEnabled); err != nil {
 			return nil, errors.New("error retrieving consumer")
 		}
 
@@ -116,7 +118,7 @@ func (cg *PostgresConsumerGateway) ListConsumers() ([]models.Consumer, error) {
 func (cg *PostgresConsumerGateway) GetConsumerById(id uuid.UUID) (models.Consumer, error) {
 
 	query := `
-	SELECT c.id, c.username, c.created_at, c.updated_at
+	SELECT c.id, c.username, c.created_at, c.updated_at, c.jwt_auth_enabled
 	FROM consumer c
 	WHERE c.id=$1
 	`
@@ -133,7 +135,7 @@ func (cg *PostgresConsumerGateway) GetConsumerById(id uuid.UUID) (models.Consume
 		consumerExists = true
 		var consDb Consumer_DB
 
-		if err := rows.Scan(&consDb.Id, &consDb.Username, &consDb.CreatedAt, &consDb.UpdatedAt); err != nil {
+		if err := rows.Scan(&consDb.Id, &consDb.Username, &consDb.CreatedAt, &consDb.UpdatedAt, &consDb.JwtAuthEnabled); err != nil {
 			return models.Consumer{}, errors.New("error retrieving consumer")
 		}
 

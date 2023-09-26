@@ -73,7 +73,6 @@ func NewRouter() *mux.Router {
 	adminRouter.Use(headers.SetAdminHeadersMiddleware)
 	adminRouter.HandleFunc("/metadata", gatewayManager.GetGatewayMetadata).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/login", adminAuthManager.Login).Methods("POST", "OPTIONS")
-	adminRouter.HandleFunc("/auth/private-jwt", adminAuthManager.GetPrivateJwt).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/auth/credentials", jwtCredentialsManager.ListCredentialsHandler).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/auth/credentials", jwtCredentialsManager.CreateNewCredentialHandler).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/auth/credentials/{id}", jwtCredentialsManager.GetAllCredentialsByConsumerId).Methods("GET", "OPTIONS")
@@ -86,6 +85,7 @@ func NewRouter() *mux.Router {
 	adminRouter.HandleFunc("/request/aggregate", requestManager.GetAggregatedRequestData).Methods("GET", "OPTIONS")
 	adminRouter.HandleFunc("/consumer", consumerManager.RegisterConsumerHandler).Methods("POST", "OPTIONS")
 	adminRouter.HandleFunc("/consumer", consumerManager.ListConsumers).Methods("GET", "OPTIONS")
+	adminRouter.HandleFunc("/consumer/{id}", consumerManager.GetConsumerById).Methods("GET", "OPTIONS")
 
 	// Other requests will go through the rproxy subrouter.
 	reverseProxyRouter := router.PathPrefix("/").Subrouter()

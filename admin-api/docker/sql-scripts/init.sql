@@ -39,7 +39,8 @@ CREATE TABLE consumer (
     id TEXT PRIMARY KEY,
     username TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    updated_at TIMESTAMP NOT NULL,
+    jwt_auth_enabled BOOLEAN NOT NULL
 );
 
 CREATE TABLE jwt_credentials (
@@ -77,9 +78,9 @@ VALUES
     (gen_random_uuid(), 1, 1, '/salmon', 'GET', current_timestamp, 200, 5),
     (gen_random_uuid(), 2, 3, '/tuna', 'GET', current_timestamp, 200, 10);
 
-INSERT INTO consumer(id, username, created_at, updated_at)
+INSERT INTO consumer(id, username, created_at, updated_at, jwt_auth_enabled)
 VALUES
-    ('e757b713-62e2-457e-8320-0e2fc4ac3a12', 'user1', current_timestamp, current_timestamp);
+    ('e757b713-62e2-457e-8320-0e2fc4ac3a12', 'user1', current_timestamp, current_timestamp, true);
 
 INSERT INTO jwt_credentials(id, key, secret, name, consumer_id, created_at)
 VALUES

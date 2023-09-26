@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	cg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
 	jc "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/jwt_credentials"
 	sv "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
@@ -106,10 +107,11 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 	}
 
 	consumer := models.Consumer{
-		Id:        uuid.New(),
-		Username:  body.Username,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Id:             uuid.New(),
+		Username:       body.Username,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+		JwtAuthEnabled: body.EnableJwtAuth,
 	}
 
 	created, err := cm.consumerGateway.RegisterConsumer(consumer)
@@ -167,5 +169,42 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 			"services":  services,
 		},
 		"credential": createdCred,
+	})
+}
+
+func (cm *ConsumerManager) GetConsumerById(w http.ResponseWriter, req *http.Request) {
+	consumerId := mux.Vars(req)["id"]
+	consumerIdConverted, err := uuid.Parse(consumerId)
+	if err != nil {
+		log.Info().Msg(err.Error())
+		http.Error(w, "invalid id passed in", http.StatusBadRequest)
+		return
+	}
+
+	consumer, err := cm.consumerGateway.GetConsumerById(consumerIdConverted)
+	if err != nil {
+		if err == cg.ErrConsumerNotFound {
+			log.Info().Msg(cg.ErrConsumerNotFound.Error())
+			http.Error(w, cg.ErrConsumerNotFound.Error(), http.StatusNotFound)
+			return
+		}
+		log.Info().Msg("unable to retrieve consumer by id")
+		http.Error(w, "unable to retrieve consumer by id", http.StatusInternalServerError)
+		return
+	}
+
+	// Check for credenetials
+	credentials, err := cm.credentialGateway.GetAllCredentialsByConsumer(consumer.Id)
+	if err != nil {
+		log.Info().Msg(err.Error())
+		log.Info().Msg("unable to retrieve credentials by consumer")
+		http.Error(w, "unable to retrieve credentials by consumer", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"consumer":   consumer,
+		"credential": credentials,
 	})
 }

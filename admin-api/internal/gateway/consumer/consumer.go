@@ -25,19 +25,21 @@ type PostgresConsumerGateway struct {
 }
 
 type Consumer_DB struct {
-	Id        string    `json:"id"`
-	Username  string    `json:"username"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	Id             string    `json:"id"`
+	Username       string    `json:"username"`
+	CreatedAt      time.Time `json:"createdAt"`
+	UpdatedAt      time.Time `json:"updatedAt"`
+	JwtAuthEnabled bool      `json:"isJwtAuthEnabled"`
 }
 
 func MapConsumerDbToDomain(cdb Consumer_DB) models.Consumer {
 	id, _ := uuid.Parse(cdb.Id)
 
 	return models.Consumer{
-		Id:        id,
-		Username:  cdb.Username,
-		CreatedAt: cdb.CreatedAt,
-		UpdatedAt: cdb.UpdatedAt,
+		Id:             id,
+		Username:       cdb.Username,
+		CreatedAt:      cdb.CreatedAt,
+		UpdatedAt:      cdb.UpdatedAt,
+		JwtAuthEnabled: cdb.JwtAuthEnabled,
 	}
 }

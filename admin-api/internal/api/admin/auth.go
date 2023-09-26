@@ -89,14 +89,6 @@ func (am *AdminAuthManager) Login(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (am *AdminAuthManager) GetPrivateJwt(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"data": "test",
-	})
-}
-
 func (am *AdminAuthManager) SignJWT(claims *models.AdminJWTClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString(am.key)

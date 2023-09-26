@@ -91,12 +91,13 @@ func (jcg *PostgresJWTCredentialsGateway) GetAllCredentialsByConsumer(consumerId
 			&jwtCredentials.Key,
 			&jwtCredentials.Secret,
 			&jwtCredentials.Name,
-			&jwtCredentials.CreatedAt,
 			&consumerDb.Id,
+			&jwtCredentials.CreatedAt,
 			&consumerDb.Username,
 			&consumerDb.CreatedAt,
 			&consumerDb.UpdatedAt,
 		); err != nil {
+			log.Info().Msg(err.Error())
 			return nil, errors.New("error retrieving jwt credential")
 		}
 
