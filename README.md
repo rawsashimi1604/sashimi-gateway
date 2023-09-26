@@ -24,6 +24,42 @@
 - API Health Checks
 - GUI Application
 
+## Functional Requirements
+
+### Request Routing
+
+- The API gateway should be able to route incoming HTTP(S) requests to specific services based on URL paths, HTTP methods, and other request attributes.
+- The routing mechanism should support versioning so that different versions of a service can be addressed separately.
+
+# Authentication & Authorization
+
+- The gateway should be able to validate tokens (e.g., JWT) and decide if a request should proceed.
+- Role-based access control (RBAC) might be implemented to restrict endpoints based on user roles.
+
+### Rate Limiting
+
+- To prevent abuse, the gateway should limit the number of requests a client can make in a given time frame. This could be global, per user, per IP, or per service.
+
+### Logging & Monitoring
+
+- All requests and responses should be logged for auditing and debugging purposes.
+- Integrations with monitoring tools to track response times, error rates, and other important metrics.
+
+### Service Discovery Integration
+
+- As services can be dynamically added or removed, the API gateway should integrate with service discovery mechanisms to know where to route requests.
+
+### Security
+
+- DDoS protection: Recognizing and mitigating large-scale attempts to overwhelm the system.
+- Support for HTTPS with SSL/TLS termination.
+- Integration with Web Application Firewalls (WAF) to block malicious requests.
+
+### Health Checks
+
+- The gateway should implement periodic health checks to verify the status and availability of integrated API services.
+- The health check mechanism should be configurable, allowing for adjustments to the frequency and conditions of checks.
+
 ## To do
 
 - [ ] Requires big infrastructure refactor (code is messy and in a POC state) can consider clean architecture in golang or domain driven design
