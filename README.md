@@ -31,7 +31,7 @@
 - The API gateway should be able to route incoming HTTP(S) requests to specific services based on URL paths, HTTP methods, and other request attributes.
 - The routing mechanism should support versioning so that different versions of a service can be addressed separately.
 
-# Authentication & Authorization
+### Authentication & Authorization
 
 - The gateway should be able to validate tokens (e.g., JWT) and decide if a request should proceed.
 - Role-based access control (RBAC) might be implemented to restrict endpoints based on user roles.
