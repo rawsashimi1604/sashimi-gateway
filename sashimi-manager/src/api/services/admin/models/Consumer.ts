@@ -5,5 +5,5 @@ export type Consumer = {
   username: string;
   createdAt: string;
   updatedAt: string;
-  services: Service[];
+  services?: Service[];
 };

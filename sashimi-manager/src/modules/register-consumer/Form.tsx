@@ -97,7 +97,6 @@ function Form() {
     setFormState('submitting');
     try {
       await validationSchema.validate(formData, { abortEarly: false });
-      console.log('Form is valid. Submitting:', formData);
       setValidationErrors({});
     } catch (err) {
       if (err instanceof yup.ValidationError) {
@@ -117,9 +116,7 @@ function Form() {
         enableJwtAuth: formData.formEnableJwt,
         jwtCredentialsName: formData.formCredentialName ? formData.formCredentialName : ''
       };
-      console.log({ body });
-      const res = await AdminConsumer.registerConsumer(body);
-      console.log({ res });
+      await AdminConsumer.registerConsumer(body);
       setFormState('success');
       await delay(2000);
       navigate('/consumers');
