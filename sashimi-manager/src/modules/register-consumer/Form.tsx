@@ -10,6 +10,7 @@ import { RegisterConsumerBody } from '../../api/services/admin/body/RegisterCons
 import { GetAllServicesResponse } from '../../api/services/admin/responses/GetAllServices';
 import SelectInput from '../../components/input/SelectInput';
 import TextInput from '../../components/input/TextInput';
+import ToggleInput from '../../components/input/ToggleInput';
 import Subheader from '../../components/typography/Subheader';
 import LoadingSpinner from '../../components/utils/LoadingSpinner';
 import { delay } from '../../utils/delay';
@@ -18,12 +19,14 @@ type FormSubmitState = 'submitting' | 'success' | 'error';
 
 type FormSchema = {
   formUsername: string;
+  formEnableJwt: boolean;
   formServices: string[];
 };
 
 // Define validation schema using yup
 const validationSchema = yup.object().shape({
   formUsername: yup.string().required('Consumer username is required.'),
+  formEnableJwt: yup.boolean().required('Choosing whether to enable JWT authentication is required.'),
   formServices: yup.array().required('At least one service is required.').min(1, 'At least one service is required.')
 });
 
@@ -31,6 +34,7 @@ function Form() {
   // Setting up states for the inputs
   const [formData, setFormData] = useState<FormSchema>({
     formUsername: '',
+    formEnableJwt: false,
     formServices: []
   });
   const [validationErrors, setValidationErrors] = useState<{
@@ -170,8 +174,7 @@ function Form() {
           </div>
         </div>
 
-        <div className="font-sans text-sm tracking-wider mt-6">
-          <h2 className="tracking-wide pb-2">registered services</h2>
+        <div className="font-sans text-sm tracking-wider mb-6">
           <div className="flex flex-row items-center gap-3 p-3.5 bg-sashimi-gray/50 rounded-xl">
             {formData.formServices.length > 0 ? (
               formData.formServices.map((svcDetails: string) => {
@@ -191,6 +194,24 @@ function Form() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Health checks */}
+        <div className="flex flex-row items-start justify-between mb-2">
+          <div>
+            <label htmlFor="form-enableJwt" className="tracking-wide flex flex-row items-center justify-start gap-3">
+              <span className="text-sm">enable jwt authentication</span>
+            </label>
+            <span className="font-sans text-sashimi-deepgray text-xs block">
+              enable JWT authentication for all services registered to this consumer.
+            </span>
+          </div>
+          <ToggleInput
+            id="form-enableJwt"
+            name="form-enableJwt"
+            checked={formData.formEnableJwt}
+            onChange={(e) => handleToggleChange('formEnableJwt', e)}
+          />
         </div>
 
         <button
