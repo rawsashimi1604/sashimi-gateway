@@ -113,7 +113,9 @@ function Form() {
       await delay(500);
       const body: RegisterConsumerBody = {
         username: formData.formUsername,
-        services: formData.formServices.map((val) => parseInt(val.split('-')[0].trim()))
+        services: formData.formServices.map((val) => parseInt(val.split('-')[0].trim())),
+        enableJwtAuth: formData.formEnableJwt,
+        jwtCredentialsName: formData.formCredentialName ? formData.formCredentialName : ''
       };
       console.log({ body });
       const res = await AdminConsumer.registerConsumer(body);
