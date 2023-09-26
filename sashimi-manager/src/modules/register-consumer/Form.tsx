@@ -20,6 +20,7 @@ type FormSubmitState = 'submitting' | 'success' | 'error';
 type FormSchema = {
   formUsername: string;
   formEnableJwt: boolean;
+  formCredentialName?: string;
   formServices: string[];
 };
 
@@ -27,7 +28,8 @@ type FormSchema = {
 const validationSchema = yup.object().shape({
   formUsername: yup.string().required('Consumer username is required.'),
   formEnableJwt: yup.boolean().required('Choosing whether to enable JWT authentication is required.'),
-  formServices: yup.array().required('At least one service is required.').min(1, 'At least one service is required.')
+  formServices: yup.array().required('At least one service is required.').min(1, 'At least one service is required.'),
+  formCredentialName: yup.string().required('Credential name is required.')
 });
 
 function Form() {
@@ -136,7 +138,7 @@ function Form() {
         {/* username */}
         <div className="flex flex-col justify-center gap-1 text-sm">
           <label htmlFor="form-username" className="tracking-wide flex flex-row items-center justify-start gap-3">
-            <span className="mb-1">consumer username</span>
+            <span className="mb-1">username</span>
             <AiFillInfoCircle />
           </label>
 
@@ -158,7 +160,7 @@ function Form() {
 
         <div className="flex flex-col justify-center gap-1 text-sm">
           <label htmlFor="form-services" className="tracking-wide flex flex-row items-center justify-start gap-3">
-            <span className="mb-1">register to services</span>
+            <span className="mb-1">services</span>
             <AiFillInfoCircle />
           </label>
 
@@ -169,7 +171,7 @@ function Form() {
               onChange={(e) => {
                 setSelectedService(e);
               }}
-              error={validationErrors.formUsername}
+              error={validationErrors.formServices}
             />
           </div>
         </div>
@@ -196,7 +198,7 @@ function Form() {
           </div>
         </div>
 
-        {/* Health checks */}
+        {/* Jwt auth */}
         <div className="flex flex-row items-start justify-between mb-2">
           <div>
             <label htmlFor="form-enableJwt" className="tracking-wide flex flex-row items-center justify-start gap-3">
@@ -213,6 +215,28 @@ function Form() {
             onChange={(e) => handleToggleChange('formEnableJwt', e)}
           />
         </div>
+
+        {formData.formEnableJwt && (
+          <div className="flex flex-col justify-center gap-1 text-sm">
+            <label
+              htmlFor="form-credentialname"
+              className="tracking-wide flex flex-row items-center justify-start gap-3"
+            >
+              <span className="mb-1">credential name</span>
+              <AiFillInfoCircle />
+            </label>
+
+            <div className="">
+              <TextInput
+                id="form-credentialname"
+                name="form-credentialname"
+                value={formData.formCredentialName}
+                onChange={(e) => handleChange('formCredentialName', e.target.value)}
+                error={validationErrors.formCredentialName}
+              />
+            </div>
+          </div>
+        )}
 
         <button
           type="submit"

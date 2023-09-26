@@ -79,9 +79,6 @@ func (jcm *JwtCredentialsManager) CreateNewCredentialHandler(w http.ResponseWrit
 		CreatedAt: time.Now(),
 	}
 
-	// TODO: Add credential to db.
-	log.Info().Msg(utils.JSONStringify(credential))
-
 	created, err := jcm.JwtCredentialsGateway.AddCredential(credential)
 	if err != nil {
 		log.Info().Msg("something went wrong when adding jwt_credentials")
