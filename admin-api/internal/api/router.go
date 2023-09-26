@@ -49,7 +49,7 @@ func NewRouter() *mux.Router {
 	serviceManager := admin.NewServiceManager(pgServiceGateway)
 	routeManager := admin.NewRouteManager(pgRouteGateway)
 	requestManager := admin.NewRequestManager(pgRequestGateway)
-	consumerManager := admin.NewConsumerManager(pgConsumerGateway, pgServiceGateway)
+	consumerManager := admin.NewConsumerManager(pgConsumerGateway, pgServiceGateway, pgJwtCredentialsGateway)
 	jwtCredentialsManager := admin.NewJwtCredentialsManager(pgJwtCredentialsGateway, pgConsumerGateway)
 	adminAuthManager := admin.NewAdminAuthManager([]byte(env.SASHIMI_ADMIN_JWT_KEY))
 

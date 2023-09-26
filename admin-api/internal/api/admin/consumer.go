@@ -8,8 +8,10 @@ import (
 
 	"github.com/google/uuid"
 	cg "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/consumer"
+	jc "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/jwt_credentials"
 	sv "github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/gateway/service"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/models"
+	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/utils"
 	"github.com/rawsashimi1604/sashimi-gateway/admin-api/internal/validator"
 	"github.com/rs/zerolog/log"
 )
@@ -19,14 +21,16 @@ var (
 )
 
 type ConsumerManager struct {
-	consumerGateway cg.ConsumerGateway
-	serviceGateway  sv.ServiceGateway
+	consumerGateway   cg.ConsumerGateway
+	serviceGateway    sv.ServiceGateway
+	credentialGateway jc.JWTCredentialsGateway
 }
 
-func NewConsumerManager(consumerGateway cg.ConsumerGateway, serviceGateway sv.ServiceGateway) *ConsumerManager {
+func NewConsumerManager(consumerGateway cg.ConsumerGateway, serviceGateway sv.ServiceGateway, credentialGateway jc.JWTCredentialsGateway) *ConsumerManager {
 	return &ConsumerManager{
-		consumerGateway: consumerGateway,
-		serviceGateway:  serviceGateway,
+		consumerGateway:   consumerGateway,
+		serviceGateway:    serviceGateway,
+		credentialGateway: credentialGateway,
 	}
 }
 
@@ -71,8 +75,10 @@ func (cm *ConsumerManager) ListConsumers(w http.ResponseWriter, req *http.Reques
 func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *http.Request) {
 
 	type RegisterConsumerRequest struct {
-		Username string `json:"username" validate:"required"`
-		Services []int  `json:"services" validate:"required,min=1"`
+		Username           string `json:"username" validate:"required"`
+		Services           []int  `json:"services" validate:"required,min=1"`
+		EnableJwtAuth      bool   `json:"enableJwtAuth"`
+		JwtCredentialsName string `json:"jwtCredentialsName"`
 	}
 
 	var body = RegisterConsumerRequest{}
@@ -89,6 +95,13 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 	if err != nil {
 		log.Info().Msg(ErrInvalidConsumerBody.Error())
 		http.Error(w, ErrInvalidConsumerBody.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// When jwt auth is enabled, require jwt credentials name.
+	if body.EnableJwtAuth && len(body.JwtCredentialsName) == 0 {
+		log.Info().Msg("require jwt credentials name")
+		http.Error(w, "require jwt credentails name", http.StatusBadRequest)
 		return
 	}
 
@@ -123,6 +136,26 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 		return
 	}
 
+	// Create the jwt credential.
+	jwtKey, _ := utils.GenerateRandomKey()
+	jwtSecret, _ := utils.GenerateRandomKey()
+
+	credential := models.JWTCredentials{
+		Id:        uuid.New(),
+		Key:       jwtKey,
+		Secret:    jwtSecret,
+		Name:      body.JwtCredentialsName,
+		Consumer:  created,
+		CreatedAt: time.Now(),
+	}
+
+	createdCred, err := cm.credentialGateway.AddCredential(credential)
+	if err != nil {
+		log.Info().Msg("something went wrong when adding jwt_credentials")
+		http.Error(w, "something went wrong when adding jwt_credentials", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -133,5 +166,6 @@ func (cm *ConsumerManager) RegisterConsumerHandler(w http.ResponseWriter, req *h
 			"updatedAt": consumer.UpdatedAt,
 			"services":  services,
 		},
+		"credential": createdCred,
 	})
 }
